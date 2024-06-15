@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as fh:
 
 setup(
     name="Overcomplete",
-    version="0.0.0",
+    version="0.0.1",
     description="Personal toolbox for experimenting with Overcomplete Dictionnary Learning (or SAE)",
     long_description=README,
     long_description_content_type="text/markdown",
