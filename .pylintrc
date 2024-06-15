@@ -1,0 +1,24 @@
+[MASTER]
+disable=
+    R0903, # allows to expose only one public method
+    R0914, # allow multiples local variables
+    E0401, # pending issue with pylint see pylint#2603
+    E1123, # issues between pylint and tensorflow since 2.2.0
+    E1120, # see pylint#3613
+    C3001, # lambda function as variable
+    C0116, C0114, # docstring
+    C0103, # we refer and define scientific notation
+    R1721, W0107, # use pass for abstract class
+
+[FORMAT]
+max-line-length=120
+max-args=12
+
+[SIMILARITIES]
+min-similarity-lines=6
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
+
+[TYPECHECK]
+ignored-modules=torch

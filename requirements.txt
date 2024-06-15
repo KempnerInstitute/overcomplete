@@ -3,3 +3,4 @@ numpy
 torch
 torchvision
 timm
+scikit-learn>=1.2

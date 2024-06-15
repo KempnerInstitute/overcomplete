@@ -1,8 +1,8 @@
-import torch
-import torch.nn as nn
 from abc import ABC, abstractmethod
-from torchvision import transforms
 
+import torch
+from torch import nn
+from torchvision import transforms
 import timm
 
 
@@ -24,7 +24,7 @@ class BaseModel(ABC, nn.Module):
     """
 
     def __init__(self, use_half=False, device='cpu'):
-        super(BaseModel, self).__init__()
+        super().__init__()
         self.use_half = use_half
         self.device = device
 
@@ -67,7 +67,7 @@ class DinoV2Model(BaseModel):
     """
 
     def __init__(self, use_half=False, device='cpu'):
-        super(DinoV2Model, self).__init__(use_half, device)
+        super().__init__(use_half, device)
         self.model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').eval().to(self.device)
         if self.use_half:
             self.model = self.model.half()
@@ -122,7 +122,7 @@ class SigLIPModel(BaseModel):
     """
 
     def __init__(self, use_half=False, device='cpu'):
-        super(SigLIPModel, self).__init__(use_half, device)
+        super().__init__(use_half, device)
         self.model = timm.create_model('vit_base_patch16_siglip_224', pretrained=True, num_classes=0).eval().to(
             self.device)
         if self.use_half:
@@ -178,7 +178,7 @@ class ViTModel(BaseModel):
     """
 
     def __init__(self, use_half=False, device='cpu'):
-        super(ViTModel, self).__init__(use_half, device)
+        super().__init__(use_half, device)
         self.model = timm.create_model('vit_base_patch16_224', pretrained=True).eval().to(
             self.device)
         if self.use_half:
