@@ -22,8 +22,12 @@ def load_directory(directory):
     paths = os.listdir(directory)
     images = []
     for path in paths:
-        img = Image.open(os.path.join(directory, path)).convert('RGB')
-        images.append(img)
+        try:
+            img = Image.open(os.path.join(directory, path)).convert('RGB')
+            images.append(img)
+        except (IOError, OSError):
+            # skip files that are not images
+            continue
     return images
 
 

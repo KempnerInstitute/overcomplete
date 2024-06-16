@@ -467,6 +467,7 @@ class OptimDictionaryLearning(BaseOptimDictionaryLearning):
         super().__init__(n_components, device)
         self.model = DictionaryLearning(n_components=n_components,
                                         alpha=sparsity,
+                                        positive_code=True,
                                         fit_algorithm=fit_algorithm,
                                         transform_algorithm=transform_algorithm,
                                         tol=tolerance, **kwargs)
@@ -547,7 +548,7 @@ class OptimSparsePCA(BaseOptimDictionaryLearning):
     SparsePCA-based Dictionary Learning model.
 
     Solve the following optimization problem:
-    min ||X - ZD||_F^2 + λ * ||Z||_1.
+    min ||X - ZD||_F^2 + λ * ||Z||_1 s.t D is orthogonal and X is centered.
 
     Parameters
     ----------
