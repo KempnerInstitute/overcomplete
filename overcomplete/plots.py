@@ -13,6 +13,7 @@ def check_format(arr):
     # if they are in the first dimension
     if isinstance(arr, torch.Tensor):
         arr = to_numpy(arr)
+    arr = np.array(arr)
     if arr.shape[0] == 3:
         return np.moveaxis(arr, 0, -1)
     return arr
