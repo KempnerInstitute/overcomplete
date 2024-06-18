@@ -32,7 +32,7 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap='jet', alpha=0.35):
     -------
     None
     """
-    assert images.shape[0] == heatmaps.shape[0]
+    assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
 
@@ -70,7 +70,7 @@ def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
     -------
     None
     """
-    assert images.shape[0] == heatmaps.shape[0]
+    assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
 
@@ -80,6 +80,7 @@ def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
         image = to_npf32(images[idx])
 
         heatmap = interpolate_torch(heatmaps[idx, :, :, concept_id], image.shape[-2:])
+        heatmap = to_npf32(heatmap)
         hottest_point = np.unravel_index(np.argmax(heatmap, axis=None), heatmap.shape)
 
         x_min = max(hottest_point[0] - zoom_size // 2, 0)
@@ -119,7 +120,7 @@ def contour_top_image(images, heatmaps, concept_id, percentiles=None, cmap="viri
     -------
     None
     """
-    assert images.shape[0] == heatmaps.shape[0]
+    assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
 
