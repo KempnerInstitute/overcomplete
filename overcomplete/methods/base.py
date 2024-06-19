@@ -4,8 +4,10 @@ Base classes for (overcomplete) dictionary learning methods.
 
 from abc import ABC, abstractmethod
 
+from torch import nn
 
-class BaseDictionaryLearning(ABC):
+
+class BaseDictionaryLearning(ABC, nn.Module):
     """
     Abstract base class for Dictionary Learning models.
 
@@ -29,6 +31,7 @@ class BaseDictionaryLearning(ABC):
     """
 
     def __init__(self, n_components, device='cpu'):
+        super(BaseDictionaryLearning, self).__init__()
         self.n_components = n_components
         self.device = device
         self.fitted = False
