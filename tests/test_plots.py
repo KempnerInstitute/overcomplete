@@ -3,12 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 
-from overcomplete.plots import to_numpy, check_format, normalize, clip_percentile, show
+from overcomplete.data import to_npf32
+from overcomplete.visualization.plot_utils import check_format, normalize, clip_percentile
+from overcomplete.visualization import show
 
 
 def test_to_numpy():
     tensor = torch.tensor([1, 2, 3])
-    np_array = to_numpy(tensor)
+    np_array = to_npf32(tensor)
     assert isinstance(np_array, np.ndarray), "Output is not a NumPy array"
     assert np_array.tolist() == [1, 2, 3], f"Expected [1, 2, 3], but got {np_array.tolist()}"
 

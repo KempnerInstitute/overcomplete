@@ -146,7 +146,7 @@ def test_frechet_distance():
     mean2 = torch.tensor([1.0, 1.0])
     cov2 = torch.tensor([[1.5, 0.3], [0.3, 1.5]])
 
-    size = 100_000
+    size = 10_000_000
 
     # Generate random samples
     x1 = torch.distributions.MultivariateNormal(mean1, cov1).sample((size,))

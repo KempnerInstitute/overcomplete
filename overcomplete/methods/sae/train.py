@@ -1,9 +1,7 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
 import time
 from collections import defaultdict
+
+import torch
 
 
 def l2(x):

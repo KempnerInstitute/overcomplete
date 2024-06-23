@@ -36,7 +36,7 @@ class SAE(BaseDictionaryLearning):
 
     def __init__(self, input_size, n_components, encoder_module=None, dictionary_initializer='svd',
                  data_initializer=None, device='cpu'):
-        super(SAE, self).__init__(n_components=n_components, device=device)
+        super().__init__(n_components=n_components, device=device)
 
         if encoder_module is not None:
             self.encoder = encoder_module

@@ -31,7 +31,7 @@ class BaseDictionaryLearning(ABC, nn.Module):
     """
 
     def __init__(self, n_components, device='cpu'):
-        super(BaseDictionaryLearning, self).__init__()
+        super().__init__()
         self.n_components = n_components
         self.device = device
         self.fitted = False

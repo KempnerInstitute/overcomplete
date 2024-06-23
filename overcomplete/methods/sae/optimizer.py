@@ -60,8 +60,7 @@ class CosineScheduler:
         """
         if it >= self.total_iters:
             return self.final_value
-        else:
-            return self.schedule[it]
+        return self.schedule[it]
 
     def step(self):
         """

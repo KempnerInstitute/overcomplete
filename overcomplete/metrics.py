@@ -321,9 +321,9 @@ def frechet_distance(x1, x2):
     eigvals = torch.linalg.eigvals(cov_prod)
     tr_cov_prod_sqrt = eigvals.sqrt().real.sum()
 
-    frechet_distance = mean_diff_squared + trace_sum - 2.0 * tr_cov_prod_sqrt
+    dist = mean_diff_squared + trace_sum - 2.0 * tr_cov_prod_sqrt
 
-    return frechet_distance
+    return dist
 
 
 def codes_correlation_matrix(codes):

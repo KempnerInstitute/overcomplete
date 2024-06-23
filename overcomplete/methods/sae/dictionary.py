@@ -25,7 +25,7 @@ class DictionaryLayer(nn.Module):
     """
 
     def __init__(self, nb_components, dimensions):
-        super(DictionaryLayer, self).__init__()
+        super().__init__()
         self.nb_components = nb_components
         self.dimensions = dimensions
         self.dictionary = nn.Parameter(torch.randn(nb_components, dimensions))
