@@ -217,7 +217,9 @@ class ViT(BaseModel):
         with torch.no_grad():
             if self.use_half:
                 x = x.half()
-            return self.model.forward_features(x)
+            activations = self.model.forward_features(x)
+            activations = activations[:, 1:]  # remove the class token
+            return activations
 
 
 class ResNet(BaseModel):

@@ -58,7 +58,6 @@ class DictionaryLayer(nn.Module):
         method : str or BaseDictionaryLearning, optional
             Method for initializing the dictionary, by default 'svd'.
         """
-        print('Initializing dictionary with', method, '...')
         if method == 'kmeans':
             init = OptimKMeans(self.nb_components)
         elif method == 'pca':

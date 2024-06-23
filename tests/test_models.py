@@ -32,7 +32,7 @@ def test_vit_model(test_image):
     model = ViT(use_half=False, device='cpu')
     test_image = model.preprocess(test_image).unsqueeze(0)
     output = model.forward_features(test_image)
-    assert output.shape == (1, 197, 768)
+    assert output.shape == (1, 196, 768)
 
 
 def test_resnet_model(test_image):
