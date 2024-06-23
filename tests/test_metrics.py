@@ -5,8 +5,10 @@ import scipy
 from scipy.optimize import linear_sum_assignment
 
 from overcomplete.metrics import (
-    reconstruction_loss,
-    relative_reconstruction_loss,
+    avg_l2_loss,
+    avg_l1_loss,
+    relative_avg_l1_loss,
+    relative_avg_l2_loss,
     sparsity,
     sparsity_eps,
     dead_codes,
@@ -24,17 +26,17 @@ from overcomplete.metrics import (
 from .utils import epsilon_equal
 
 
-def test_reconstruction_loss():
+def test_l2_loss():
     x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
     x_hat = torch.tensor([[1.0, 2.0], [2.0, 4.0]])
 
     # Avg(sqrt(x^2).sum(-1))
     expected_loss = 1.0 / 2.0
 
-    assert epsilon_equal(reconstruction_loss(x, x_hat), expected_loss)
+    assert epsilon_equal(avg_l2_loss(x, x_hat), expected_loss)
 
 
-def test_relative_reconstruction_loss():
+def test_relative_l2_loss():
     x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
     x_hat = torch.tensor([[1.0, 2.0], [2.0, 4.0]])
 
@@ -43,7 +45,31 @@ def test_relative_reconstruction_loss():
 
     expected_loss = torch.mean(l2_err_per_sample / l2_x).item()
 
-    assert epsilon_equal(relative_reconstruction_loss(x, x_hat), expected_loss)
+    assert epsilon_equal(relative_avg_l2_loss(x, x_hat), expected_loss)
+
+
+def test_l1_loss():
+    x = torch.tensor([[1.0, 2.0],
+                      [3.0, 4.0]])
+    x_hat = torch.tensor([[1.0, 2.0],
+                          [2.0, 4.0]])
+
+    # Avg(abs(x).sum(-1))
+    expected_loss = 1.0 / 2.0
+
+    assert epsilon_equal(avg_l1_loss(x, x_hat), expected_loss)
+
+
+def test_relative_l1_loss():
+    x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    x_hat = torch.tensor([[1.0, 2.0], [2.0, 4.0]])
+
+    l1_err_per_sample = torch.tensor([0.0, 1.0])
+    l1_x = torch.tensor([3.0, 7.0])
+
+    expected_loss = torch.mean(l1_err_per_sample / l1_x).item()
+
+    assert epsilon_equal(relative_avg_l1_loss(x, x_hat), expected_loss)
 
 
 def test_sparsity():

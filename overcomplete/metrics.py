@@ -5,7 +5,7 @@ import torch
 Epsilon = 1e-6
 
 
-def reconstruction_loss(x, x_hat):
+def avg_l2_loss(x, x_hat):
     """
     Compute the L2 loss, averaged across samples.
 
@@ -26,7 +26,28 @@ def reconstruction_loss(x, x_hat):
     return torch.mean((x - x_hat).square().sum(-1).sqrt()).item()
 
 
-def relative_reconstruction_loss(x, x_hat):
+def avg_l1_loss(x, x_hat):
+    """
+    Compute the L1 loss, averaged across samples.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Original input tensor of shape (batch_size, d).
+    x_hat : torch.Tensor
+        Reconstructed input tensor of shape (batch_size, d).
+
+    Returns
+    -------
+    float
+        Average L1 loss per sample.
+    """
+    assert x.shape == x_hat.shape, "Input tensors must have the same shape"
+    assert len(x.shape) == 2, "Input tensors must be 2D"
+    return torch.mean(torch.abs(x - x_hat).sum(-1)).item()
+
+
+def relative_avg_l2_loss(x, x_hat, epsilon=Epsilon):
     """
     Compute the relative reconstruction loss, average across samples.
 
@@ -41,6 +62,8 @@ def relative_reconstruction_loss(x, x_hat):
         Original input tensor of shape (batch_size, d).
     x_hat : torch.Tensor
         Reconstructed input tensor of shape (batch_size, d).
+    epsilon : float, optional
+        Small value to avoid division by zero, by default 1e-6.
 
     Returns
     -------
@@ -53,7 +76,39 @@ def relative_reconstruction_loss(x, x_hat):
     l2_err_per_sample = (x - x_hat).square().sum(-1).sqrt()
     l2_per_sample = x.square().sum(-1).sqrt()
 
-    return torch.mean(l2_err_per_sample / (l2_per_sample + Epsilon)).item()
+    return torch.mean(l2_err_per_sample / (l2_per_sample + epsilon)).item()
+
+
+def relative_avg_l1_loss(x, x_hat, epsilon=Epsilon):
+    """
+    Compute the relative reconstruction loss, average across samples.
+
+    The first argument is considered as the true value. The order of the arguments
+    is important as the loss is asymmetric:
+
+    ||x - y||_1 / (||x||_1 + epsilon).
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Original input tensor of shape (batch_size, d).
+    x_hat : torch.Tensor
+        Reconstructed input tensor of shape (batch_size, d).
+    epsilon : float, optional
+        Small value to avoid division by zero, by default 1e-6.
+
+    Returns
+    -------
+    float
+        Average relative L1 loss per sample.
+    """
+    assert x.shape == x_hat.shape, "Input tensors must have the same shape"
+    assert len(x.shape) == 2, "Input tensors must be 2D"
+
+    l1_err_per_sample = torch.abs(x - x_hat).sum(-1)
+    l1_per_sample = torch.abs(x).sum(-1)
+
+    return torch.mean(l1_err_per_sample / (l1_per_sample + epsilon)).item()
 
 
 def sparsity(x, dims=None):
