@@ -4,4 +4,4 @@ torch
 torchvision
 timm
 scikit-learn>=1.2.0
-skikit-image
+scikit-image
