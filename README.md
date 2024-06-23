@@ -4,7 +4,7 @@
 
 <div align="center">
     <a href="#">
-        <img src="https://img.shields.io/badge/Python-3.7, 3.8, 3.9, 3.10-efefef">
+        <img src="https://img.shields.io/badge/Python-3.8, 3.9, 3.10-efefef">
     </a>
     <a href="https://github.com/fel-thomas/Overcomplete/actions/workflows/lint.yml/badge.svg">
         <img alt="PyLint" src="https://github.com/fel-thomas/Overcomplete/actions/workflows/lint.yml/badge.svg">
@@ -27,7 +27,7 @@ Overcomplete is a compact research library in Pytorch designed to study (Overcom
 
 # 🚀 Getting Started with Overcomplete
 
-Overcomplete requires Python 3.6 or newer and several dependencies, including Numpy. It supports both only Torch. Installation is straightforward with Pypi:
+Overcomplete requires Python 3.8 or newer and several dependencies, including Numpy. It supports both only Torch. Installation is straightforward with Pypi:
 
 ```bash
 pip install overcomplete

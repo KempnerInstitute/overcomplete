@@ -14,7 +14,7 @@ setup(
     license="MIT",
     install_requires=['numpy', 'matplotlib', 'torch', 'torchvision', 'timm'],
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
