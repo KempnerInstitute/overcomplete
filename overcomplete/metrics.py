@@ -255,7 +255,8 @@ def dictionary_collinearity(dictionary):
 
 def wasserstein_1d(x1, x2):
     """
-    Compute the 1D Wasserstein distance between two sets of codes.
+    Compute the 1D Wasserstein-1 distance between two sets of codes and average
+    across dimensions.
 
     Parameters
     ----------
@@ -279,6 +280,50 @@ def wasserstein_1d(x1, x2):
     dist = torch.mean(torch.abs(x1_sorted - x2_sorted))
 
     return dist
+
+
+def frechet_distance(x1, x2):
+    """
+    Compute the Fréchet distance (Wasserstein-2 distance) between two sets of activations.
+    Assume that the activations are normally distributed.
+
+    ||mu_x1 - mu_x2||^2 + Tr(Cov_x1 + Cov_x2 - 2 * (Cov_x1 * Cov_x2)**(1/2))
+    with mu_x1, mu_x2 the means and Cov_x1, Cov_x2 the covariances of the two sets.
+
+    Parameters
+    ----------
+    x1 : torch.Tensor
+        First set of samples of shape (num_samples, d).
+    x2 : torch.Tensor
+        Second set of samples of shape (num_samples, d).
+
+    Returns
+    -------
+    torch.Tensor
+        Fréchet distance.
+    """
+    assert x1.shape == x2.shape, "The two sets must have the same shape"
+    assert len(x1.shape) == 2, "Input tensors must be 2D"
+
+    mu_x1 = torch.mean(x1, dim=0)
+    mu_x2 = torch.mean(x2, dim=0)
+
+    cov_x1 = torch.cov(x1.T)
+    cov_x2 = torch.cov(x2.T)
+
+    trace_sum = cov_x1.trace() + cov_x2.trace()
+
+    mean_diff = mu_x1 - mu_x2
+    mean_diff_squared = torch.sum(mean_diff ** 2)
+
+    cov_prod = torch.matmul(cov_x1, cov_x2)
+
+    eigvals = torch.linalg.eigvals(cov_prod)
+    tr_cov_prod_sqrt = eigvals.sqrt().real.sum()
+
+    frechet_distance = mean_diff_squared + trace_sum - 2.0 * tr_cov_prod_sqrt
+
+    return frechet_distance
 
 
 def codes_correlation_matrix(codes):

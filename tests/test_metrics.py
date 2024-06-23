@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 import torch
+import scipy
 from scipy.optimize import linear_sum_assignment
 
 from overcomplete.metrics import (
@@ -16,7 +17,8 @@ from overcomplete.metrics import (
     dictionary_collinearity,
     wasserstein_1d,
     codes_correlation_matrix,
-    energy_of_codes
+    energy_of_codes,
+    frechet_distance
 )
 
 from .utils import epsilon_equal
@@ -136,3 +138,44 @@ def test_energy_of_codes():
                                     ((0.5 * 3.0)**2 + (0.5 * 4.0)**2)**0.5])
 
     assert epsilon_equal(energy_of_codes(codes, dictionary), expected_energy)
+
+
+def test_frechet_distance():
+    mean1 = torch.tensor([0.0, 0.0])
+    cov1 = torch.tensor([[1.0, 0.5], [0.5, 1.0]])
+    mean2 = torch.tensor([1.0, 1.0])
+    cov2 = torch.tensor([[1.5, 0.3], [0.3, 1.5]])
+
+    size = 100_000
+
+    # Generate random samples
+    x1 = torch.distributions.MultivariateNormal(mean1, cov1).sample((size,))
+    x2 = torch.distributions.MultivariateNormal(mean2, cov2).sample((size,))
+
+    # Calculate the expected Frechet distance
+    mean_diff = mean1 - mean2
+    mean_diff_squared = torch.sum(mean_diff ** 2)
+
+    cov_prod = torch.matmul(cov1, cov2)
+
+    # pytorch don't have sqrtm, we use sum of sqrt of eigvals
+    cov_prod_sqrt = scipy.linalg.sqrtm(cov_prod.cpu().numpy())
+    cov_prod_sqrt = torch.tensor(cov_prod_sqrt)
+
+    expected_distance = mean_diff_squared + torch.trace(cov1 + cov2 - 2 * cov_prod_sqrt)
+
+    # Test the frechet_distance function
+    computed_distance = frechet_distance(x1, x2)
+
+    assert epsilon_equal(computed_distance, expected_distance, epsilon=1e-2)
+
+    x1 = torch.tensor([[0.0, 0.0], [0.0, 0.0]])
+    x2 = torch.tensor([[0.0, 0.0], [0.0, 0.0]])
+
+    expected_distance = 0.0
+    assert epsilon_equal(frechet_distance(x1, x2), expected_distance)
+
+    x1 = torch.tensor([[1.0, 2.0], [1.0, 2.0]])
+    x2 = torch.tensor([[2.0, 3.0], [2.0, 3.0]])
+
+    assert frechet_distance(x1, x2) > 0.0
