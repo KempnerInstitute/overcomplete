@@ -153,8 +153,8 @@ def sparsity_eps(x, dims=None, threshold=1e-6):
         Average sparsity if dims=None else sparsity across dims.
     """
     if dims is None:
-        return torch.mean((x <= threshold).float())
-    return torch.mean((x <= threshold).float(), dims)
+        return torch.mean((torch.abs(x) <= threshold).float())
+    return torch.mean((torch.abs(x) <= threshold).float(), dims)
 
 
 def dead_codes(z):

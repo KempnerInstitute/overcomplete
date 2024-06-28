@@ -5,3 +5,4 @@ torchvision
 timm
 scikit-learn>=1.2.0
 scikit-image
+einops

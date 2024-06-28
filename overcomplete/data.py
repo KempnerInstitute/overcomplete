@@ -20,6 +20,9 @@ def load_directory(directory):
         List of PIL images.
     """
     paths = os.listdir(directory)
+    paths = [path for path in paths if path.endswith(('.jpg', '.jpeg', '.png'))]
+    paths = sorted(paths)
+
     images = []
     for path in paths:
         try:

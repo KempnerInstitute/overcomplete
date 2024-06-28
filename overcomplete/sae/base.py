@@ -2,6 +2,7 @@ from torch import nn
 
 from ..base import BaseDictionaryLearning
 from .dictionary import DictionaryLayer
+from .factory import ModuleFactory
 
 
 class SAE(BaseDictionaryLearning):
@@ -10,13 +11,14 @@ class SAE(BaseDictionaryLearning):
 
     Parameters
     ----------
-    input_size : int
+    input_size : int or tuple
         Dimensionality of the input data.
     n_components : int
         Number of components in the dictionary.
-    encoder_module : nn.Module, optional
-        Custom encoder module, by default None. If None, a simple Linear + BatchNorm default
-        encoder is used.
+    encoder_module : nn.Module or string, optional
+        Custom encoder module, by default None.
+        If None, a simple Linear + BatchNorm default encoder is used.
+        If string, the name of the registered encoder module.
     dictionary_initializer : str, optional
         Method for initializing the dictionary, by default 'svd'.
     data_initializer : torch.Tensor, optional
@@ -40,6 +42,8 @@ class SAE(BaseDictionaryLearning):
 
         if encoder_module is not None:
             self.encoder = encoder_module
+        elif isinstance(encoder_module, str):
+            self.encoder = ModuleFactory.create_module(encoder_module, input_size, n_components)
         else:
             self.encoder = nn.Sequential(
                 nn.Linear(input_size, n_components),

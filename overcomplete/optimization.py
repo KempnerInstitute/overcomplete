@@ -14,7 +14,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from .base import BaseDictionaryLearning
-from ..data import to_npf32, unwrap_dataloader
+from .data import to_npf32, unwrap_dataloader
 
 
 class BaseOptimDictionaryLearning(BaseDictionaryLearning):

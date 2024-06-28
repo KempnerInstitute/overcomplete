@@ -1,0 +1,392 @@
+"""
+Collections of torch modules for the encoding of SAE.
+"""
+
+from torch import nn
+from einops import rearrange
+
+
+class MLPEncoder(nn.Module):
+    """
+    Linear + Normalisation + Residual (optional) Encoder module for the SAE.
+
+    Parameters
+    ----------
+    input_size : int
+        The input size of the encoder.
+    n_components : int
+        The number of components (or concepts) in the latent representation.
+    hidden_dim : int, optional
+        The hidden dimension of the encoder, by default use the input_size.
+    nb_blocks : int, optional
+        The number of blocks in the encoder, by default 1.
+        Each block consists of a Linear layer, normalisation and an activation.
+    hidden_activation : nn.Module, optional
+        The activation function to use in the hidden layers, by default nn.ReLU.
+    output_activation : nn.Module, optional
+        The activation function to use in the output layer, by default nn.ReLU.
+    norm_layer : nn.Module, optional
+        The normalization layer to use, by default nn.BatchNorm1d.
+    residual : bool, optional
+        Whether to use residual connections, by default True.
+    """
+
+    def __init__(self, input_size, n_components, hidden_dim=None, nb_blocks=1,
+                 hidden_activation=nn.ReLU, output_activation=nn.ReLU, norm_layer=nn.BatchNorm1d,
+                 residual=True):
+        # we authorize nb_blocks = 0 that give the simplest linear + norm block
+        assert nb_blocks >= 0, "The number of blocks must be greater than 0."
+        assert isinstance(input_size, int), "The input size must be a single integer."
+
+        super().__init__()
+
+        if hidden_dim is None:
+            hidden_dim = input_size
+
+        self.input_size = input_size
+        self.n_components = n_components
+        self.hidden_dim = hidden_dim
+        self.nb_blocks = nb_blocks
+        self.hidden_activation = hidden_activation
+        self.output_activation = output_activation
+        self.norm_layer = norm_layer
+        self.residual = residual
+
+        last_dim = input_size
+        self.mlp_blocks = nn.ModuleList()
+
+        # construct the n-1 hidden blocks
+        for _ in range(nb_blocks-1):
+            block = nn.Sequential(
+                nn.Linear(last_dim, hidden_dim),
+                norm_layer(hidden_dim),
+                hidden_activation(),
+            )
+            last_dim = hidden_dim
+            self.mlp_blocks.append(block)
+
+        # last block is just a linear layer to the components/concepts space
+        self.final_block = nn.Sequential(
+            nn.Linear(last_dim, n_components),
+            norm_layer(n_components),
+            output_activation(),
+        )
+
+    def forward(self, x):
+        """
+        Forward pass through the encoder with residual connections.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, input_size).
+
+        Returns
+        -------
+        torch.Tensor
+            Encoded tensor of shape (batch_size, nb_components).
+        """
+        assert len(x.shape) == 2, "Input tensor must have 2 dimensions (batch, input_size)."
+
+        for layer_i, layer in enumerate(self.mlp_blocks):
+            residual = x
+            x = layer(x)
+            # if hidden_dim is not None, we may not be able to do the
+            # first residual connection (as we reduce the dim, but only once)
+            if self.residual and (layer_i != 0 or self.hidden_dim == self.input_size):
+                x += residual
+
+        x = self.final_block(x)
+        return x
+
+
+class AttentionBlock(nn.Module):
+    """
+    Vision Transformer (ViT) style Attention Block with LayerNorm and residual connection.
+
+    Parameters
+    ----------
+    dims : tuple (int, int)
+        The dimensions of the input tensor, nb_token and nb_dim.
+    num_heads : int
+        The number of attention heads.
+    mlp_ratio : float, optional
+        The ratio of the hidden dimension to the input dimension in the MLP, by default 4.0.
+    drop : float, optional
+        Dropout rate, by default 0.0.
+    attn_drop : float, optional
+        Attention dropout rate, by default 0.0.
+    drop_path : float, optional
+        Drop path rate, by default 0.0.
+    act_layer : nn.Module, optional
+        Activation layer, by default nn.GELU.
+    """
+
+    def __init__(self, dims, num_heads, mlp_ratio=4.0, drop=0.0, attn_drop=0.0,
+                 act_layer=nn.GELU):
+        assert len(dims) == 2, "The input dimensions must be a tuple of (nb_token, nb_dim)."
+
+        super().__init__()
+        self.seq_len, self.embed_dim = dims
+        self.num_heads = num_heads
+
+        self.norm1 = nn.LayerNorm(dims)
+        self.attn = nn.MultiheadAttention(self.embed_dim, self.num_heads, dropout=attn_drop)
+        self.norm2 = nn.LayerNorm(dims)
+        self.mlp = nn.Sequential(
+            nn.Linear(self.embed_dim, int(self.embed_dim * mlp_ratio)),
+            act_layer(),
+            nn.Dropout(drop),
+            nn.Linear(int(self.embed_dim * mlp_ratio), self.embed_dim),
+            nn.Dropout(drop),
+        )
+
+    def forward(self, x):
+        """
+        Forward pass through the attention block with residual connections.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, seq_length, input_size).
+
+        Returns
+        -------
+        torch.Tensor
+            Encoded tensor of shape (batch_size, seq_length, input_size).
+        """
+        assert len(x.shape) == 3, "Input tensor must have 3 dimensions (batch, seq_length, input_size)."
+
+        x1 = self.norm1(x)
+        x = x + self.attn(x1, x1, x1)[0]
+        x = x + self.mlp(self.norm2(x))
+        return x
+
+
+class AttentionEncoder(nn.Module):
+    """
+    Attention Encoder module for the SAE with flattening and linear transformation at the end.
+    Uses ViT style attention blocks by default.
+
+    Parameters
+    ----------
+    input_shape : tuple (int, int)
+        The input size of the encoder, nb_token and nb_dim.
+    n_components : int
+        The number of components (or concepts) in the latent representation.
+    hidden_dim : int, optional
+        The hidden dimension of the encoder, by default use the input_size.
+    nb_blocks : int, optional
+        The number of attention blocks in the encoder, by default 1.
+    output_activation : nn.Module, optional
+        The activation function to use in the output layer, by default nn.ReLU.
+    norm_layer : nn.Module, optional
+        The normalization layer to use for the final block, by default nn.LayerNorm.
+    residual : bool, optional
+        Whether to use residual connections, by default True.
+    attention_heads : int, optional
+        The number of attention heads, by default 4.
+    mlp_ratio : float, optional
+        The ratio of the hidden dimension to the input dimension in the MLP, by default 4.0.
+    """
+
+    def __init__(self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
+                 output_activation=nn.ReLU, norm_layer=nn.LayerNorm,
+                 residual=True, attention_heads=4, mlp_ratio=4.0):
+        assert nb_blocks > 0, "The number of blocks must be greater than 0."
+        assert len(input_shape) == 2, "The input shape must be a tuple of (nb_token, nb_dim)."
+
+        super().__init__()
+
+        if hidden_dim is None:
+            hidden_dim = input_shape
+
+        self.input_size = input_shape
+        self.n_components = n_components
+        self.hidden_dim = hidden_dim
+        self.nb_blocks = nb_blocks
+        self.output_activation = output_activation
+        self.norm_layer = norm_layer
+        self.residual = residual
+        self.attention_heads = attention_heads
+        self.mlp_ratio = mlp_ratio
+
+        self.attention_blocks = nn.ModuleList()
+
+        # construct the n attention blocks using ViT-style attention
+        for _ in range(nb_blocks):
+            block = AttentionBlock(
+                dims=input_shape,
+                num_heads=attention_heads,
+                mlp_ratio=mlp_ratio,
+                act_layer=nn.GELU
+            )
+            self.attention_blocks.append(block)
+
+        # flatten and apply final linear transformation
+        self.final_block = nn.Sequential(
+            nn.Linear(input_shape[-1], n_components),
+            norm_layer(n_components),
+            output_activation(),
+        )
+
+    def forward(self, x):
+        """
+        Forward pass through the encoder with attention blocks and residual connections.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, seq_length, input_size).
+
+        Returns
+        -------
+        torch.Tensor
+            Encoded tensor of shape (batch_size * seq_length, n_components).
+        """
+        assert len(x.shape) == 3, "Input tensor must have 3 dimensions (batch, seq_length, input_size)."
+
+        for block in self.attention_blocks:
+            x = block(x)
+
+        # flatten, no more mixing between token of the same input
+        # from (N, t, d) to (N * t, d)
+        x = rearrange(x, 'n t d -> (n t) d')
+        # final block to get concepts/features embeds for each token
+        x = self.final_block(x)
+        return x
+
+
+class ResNetBlock(nn.Module):
+    """
+    ResNet Block with normalization and activation.
+
+    Parameters
+    ----------
+    in_channels : int
+        The number of input channels.
+    out_channels : int
+        The number of output channels.
+    stride : int, optional
+        The stride of the convolution, by default 1.
+    activation : nn.Module, optional
+        The activation function to use, by default nn.ReLU.
+    """
+
+    def __init__(self, input_channels, out_channels, stride=1, activation=nn.GELU):
+        super().__init__()
+        self.conv1 = nn.Conv2d(input_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.norm1 = nn.BatchNorm2d(out_channels)
+        self.act = activation()
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        self.norm2 = nn.BatchNorm2d(out_channels)
+
+        self.downsample = nn.Sequential()
+        if stride != 1 or input_channels != out_channels:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(input_channels, out_channels, kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(out_channels),
+            )
+
+    def forward(self, x):
+        """"
+        Forward pass through the ResNet block.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, in_channels, height, width).
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor of shape (batch_size, out_channels, height, width).
+        """
+        assert len(x.shape) == 4, "Input tensor must have 4 dimensions (batch, channels, height, width)."
+
+        identity = self.downsample(x)
+
+        out = self.conv1(x)
+        out = self.norm1(out)
+        out = self.act(out)
+
+        out = self.conv2(out)
+        out = self.norm2(out)
+
+        out += identity
+        out = self.act(out)
+
+        return out
+
+
+class ResNetEncoder(nn.Module):
+    """
+    ResNetV2-like Encoder module for the SAE.
+
+    Parameters
+    ----------
+    input_channels : int
+        The number of input channels.
+    n_components : int
+        The number of components (or concepts) in the latent representation.
+    hidden_dim : int, optional
+        The hidden dimension of the encoder, by default 64.
+    nb_blocks : int, optional
+        The number of ResNet blocks in the encoder, by default 3.
+    output_activation : nn.Module, optional
+        The activation function to use in the output layer, by default nn.ReLU.
+    """
+
+    def __init__(
+            self, input_channels, n_components, hidden_dim=None, nb_blocks=1,
+            output_activation=nn.GELU):
+        assert nb_blocks > 0, "The number of blocks must be greater than 0."
+        assert isinstance(input_channels, int), "The input channels must be a single integer."
+
+        super().__init__()
+
+        if hidden_dim is None:
+            hidden_dim = input_channels
+
+        self.input_channels = input_channels
+        self.n_components = n_components
+        self.hidden_dim = hidden_dim
+        self.nb_blocks = nb_blocks
+
+        self.resnet_blocks = nn.ModuleList()
+        last_dim = input_channels
+        for _ in range(nb_blocks):
+            self.resnet_blocks.append(ResNetBlock(last_dim, hidden_dim))
+            last_dim = hidden_dim
+        self.resnet_blocks = nn.Sequential(*self.resnet_blocks)
+
+        # flattening / reshape is done in the forward pass
+        self.final_block = nn.Sequential(
+            nn.Linear(last_dim, n_components),
+            nn.BatchNorm1d(n_components),
+            output_activation(),
+        )
+
+    def forward(self, x):
+        """
+        Forward pass through the ResNetV2-like encoder.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, input_channels, height, width).
+
+        Returns
+        -------
+        torch.Tensor
+            Encoded tensor of shape (batch_size, n_components).
+        """
+        assert len(x.shape) == 4, "Input tensor must have 4 dimensions (batch, channels, height, width)."
+
+        x = self.resnet_blocks(x)
+
+        # flatten, no more mixing between 'tokens'/ 'spatial dims' of the same input
+        x = rearrange(x, 'n c h w -> (n h w) c')
+        # then get the final codes / concepts
+        x = self.final_block(x)
+        return x
