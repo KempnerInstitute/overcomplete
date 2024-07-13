@@ -4,17 +4,17 @@ and a factory class to create modules using string identifier.
 
 example usage:
 
-model = ModuleFactory.create_module("mlp_ln_3")
-model = ModuleFactory.create_module("mlp_bn_1_gelu_no_res")
+model = SAEFactory.create_module("mlp_ln_3")
+model = SAEFactory.create_module("mlp_bn_1_gelu_no_res")
 
-model = ModuleFactory.create_module("resnet_3b")
-model = ModuleFactory.create_module("attention_1b")
+model = SAEFactory.create_module("resnet_3b")
+model = SAEFactory.create_module("attention_1b")
 
 you can also pass additional arguments to the module creation function:
 
-model = ModuleFactory.create_module("mlp_ln_3", hidden_dim=128)
-model = ModuleFactory.create_module("resnet_3b", hidden_dim=128)
-model = ModuleFactory.create_module("attention_1b", attention_heads=2)
+model = SAEFactory.create_module("mlp_ln_3", hidden_dim=128)
+model = SAEFactory.create_module("resnet_3b", hidden_dim=128)
+model = SAEFactory.create_module("attention_1b", attention_heads=2)
 """
 
 from torch import nn
@@ -22,7 +22,7 @@ from torch import nn
 from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 
 
-class ModuleFactory:
+class SAEFactory:
     """
     Factory class to create modules using registered module creation functions.
     """
@@ -39,7 +39,7 @@ class ModuleFactory:
             The name to register the module creation function under.
         """
         def decorator(func):
-            ModuleFactory._module_registry[name] = func
+            SAEFactory._module_registry[name] = func
             return func
         return decorator
 
@@ -62,9 +62,9 @@ class ModuleFactory:
         nn.Module
             The initialized module.
         """
-        if name not in ModuleFactory._module_registry:
+        if name not in SAEFactory._module_registry:
             raise ValueError(f"Module '{name}' not found in registry.")
-        return ModuleFactory._module_registry[name](*args, **kwargs)
+        return SAEFactory._module_registry[name](*args, **kwargs)
 
 
 def register_basic_templates():
@@ -81,7 +81,7 @@ def register_basic_templates():
                     if res is not None:
                         name = f"{name}_{res}"
 
-                    @ModuleFactory.register_module(name)
+                    @SAEFactory.register_module(name)
                     def create_mlp(input_size, n_components, **kwargs):
                         return MLPEncoder(
                             input_size=input_size,
@@ -98,7 +98,7 @@ def register_basic_templates():
 
         name_resnet = f"resnet_{nb_blocks}b"
 
-        @ModuleFactory.register_module(name_resnet)
+        @SAEFactory.register_module(name_resnet)
         def create_resnet(input_channels, n_components, **kwargs):
             return ResNetEncoder(
                 input_channels=input_channels,
@@ -109,7 +109,7 @@ def register_basic_templates():
 
         name_attention = f"attention_{nb_blocks}b"
 
-        @ModuleFactory.register_module(name_attention)
+        @SAEFactory.register_module(name_attention)
         def create_attention(input_shape, n_components, hidden_dim=None, **kwargs):
             return AttentionEncoder(
                 input_shape=input_shape,

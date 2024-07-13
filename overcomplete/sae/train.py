@@ -60,7 +60,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 loss = criterion(x, x_hat, z, model.get_dictionary())
 
             epoch_loss += loss.item()
-            epoch_error += torch.mean(l2(x, x_hat, -1)).item()
+            epoch_error += torch.mean(l2(x - x_hat, -1)).item()
             scaler.scale(loss).backward()
 
             if clip_grad:
@@ -77,7 +77,8 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 logs['z'].append(z.detach()[::10])
                 logs['z_l2'].append(l2(z).item())
                 logs['z_sparsity'].append((z == 0.0).float().mean().item())
-                logs['dictionary_sparsity'].append(sparsity_eps(model.get_dictionary(), threshold=1e-6).item())
+                logs['dictionary_sparsity'].append(sparsity_eps(model.get_dictionary(),
+                                                                threshold=1e-6).item())
                 logs['dictionary_norm'].append(l2(model.get_dictionary()).item())
                 logs['lr'].append(optimizer.param_groups[0]['lr'])
                 logs['step_loss'].append(loss.item())
@@ -96,6 +97,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             logs['avg_loss'].append(avg_loss)
-            print(f'Epoch [{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, Error: {avg_error}, Time: {epoch_duration:.4f} seconds')
+            print(f'Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss: .4f}, Error: {avg_error}, \
+                  Time: {epoch_duration: .4f} seconds')
 
     return logs

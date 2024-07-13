@@ -4,7 +4,7 @@ from torch import nn
 
 from overcomplete.sae.modules import (MLPEncoder, AttentionEncoder, ResNetEncoder,
                                       ResNetBlock, AttentionBlock)
-from overcomplete.sae.factory import ModuleFactory
+from overcomplete.sae.factory import SAEFactory
 
 BATCH_SIZE = 4
 SEQ_LENGTH = 16
@@ -154,8 +154,7 @@ def test_resnet_block_downsampling():
     ("attention_3b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64})
 ])
 def test_module_factory(module_name, args, kwargs):
-    print(ModuleFactory._module_registry.keys())
-    model = ModuleFactory.create_module(module_name, *args, **kwargs)
+    model = SAEFactory.create_module(module_name, *args, **kwargs)
     if "input_size" in kwargs:
         input_size = kwargs["input_size"]
     else:
@@ -188,4 +187,4 @@ def test_module_factory(module_name, args, kwargs):
 
 def test_invalid_module():
     with pytest.raises(ValueError):
-        ModuleFactory.create_module("invalid_module_name", INPUT_SIZE, N_COMPONENTS)
+        SAEFactory.create_module("invalid_module_name", INPUT_SIZE, N_COMPONENTS)

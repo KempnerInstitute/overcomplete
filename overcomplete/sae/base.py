@@ -2,7 +2,7 @@ from torch import nn
 
 from ..base import BaseDictionaryLearning
 from .dictionary import DictionaryLayer
-from .factory import ModuleFactory
+from .factory import SAEFactory
 
 
 class SAE(BaseDictionaryLearning):
@@ -43,7 +43,7 @@ class SAE(BaseDictionaryLearning):
         if encoder_module is not None:
             self.encoder = encoder_module
         elif isinstance(encoder_module, str):
-            self.encoder = ModuleFactory.create_module(encoder_module, input_size, n_components)
+            self.encoder = SAEFactory.create_module(encoder_module, input_size, n_components)
         else:
             self.encoder = nn.Sequential(
                 nn.Linear(input_size, n_components),
