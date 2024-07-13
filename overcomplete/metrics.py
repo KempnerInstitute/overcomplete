@@ -5,6 +5,48 @@ import torch
 Epsilon = 1e-6
 
 
+def l2(v, dims=None):
+    """
+    Compute the L2 norm, across 'dims'.
+
+    Parameters
+    ----------
+    v : torch.Tensor
+        Input tensor.
+    dims : tuple, optional
+        Dimensions over which to compute the L2 norm, by default None.
+
+    Returns
+    -------
+    torch.Tensor
+        L2 norm of v if dims=None else L2 norm across dims.
+    """
+    if dims is None:
+        return v.square().sum().sqrt()
+    return v.square().sum(dims).sqrt()
+
+
+def l1(v, dims=None):
+    """
+    Compute the L1 norm, across 'dims'.
+
+    Parameters
+    ----------
+    v : torch.Tensor
+        Input tensor.
+    dims : tuple, optional
+        Dimensions over which to compute the L1 norm, by default None.
+
+    Returns
+    -------
+    torch.Tensor
+        L1 norm of v if dims=None else L1 for across dims.
+    """
+    if dims is None:
+        return torch.abs(v).sum()
+    return torch.abs(v).sum(dims)
+
+
 def avg_l2_loss(x, x_hat):
     """
     Compute the L2 loss, averaged across samples.
@@ -23,7 +65,7 @@ def avg_l2_loss(x, x_hat):
     """
     assert x.shape == x_hat.shape, "Input tensors must have the same shape"
     assert len(x.shape) == 2, "Input tensors must be 2D"
-    return torch.mean((x - x_hat).square().sum(-1).sqrt()).item()
+    return torch.mean(l2(x - x_hat, 1)).item()
 
 
 def avg_l1_loss(x, x_hat):
@@ -44,7 +86,7 @@ def avg_l1_loss(x, x_hat):
     """
     assert x.shape == x_hat.shape, "Input tensors must have the same shape"
     assert len(x.shape) == 2, "Input tensors must be 2D"
-    return torch.mean(torch.abs(x - x_hat).sum(-1)).item()
+    return torch.mean(l1(x - x_hat, 1)).item()
 
 
 def relative_avg_l2_loss(x, x_hat, epsilon=Epsilon):
@@ -73,8 +115,8 @@ def relative_avg_l2_loss(x, x_hat, epsilon=Epsilon):
     assert x.shape == x_hat.shape, "Input tensors must have the same shape"
     assert len(x.shape) == 2, "Input tensors must be 2D"
 
-    l2_err_per_sample = (x - x_hat).square().sum(-1).sqrt()
-    l2_per_sample = x.square().sum(-1).sqrt()
+    l2_err_per_sample = l2(x - x_hat, 1)
+    l2_per_sample = l2(x, 1)
 
     return torch.mean(l2_err_per_sample / (l2_per_sample + epsilon)).item()
 
@@ -105,8 +147,8 @@ def relative_avg_l1_loss(x, x_hat, epsilon=Epsilon):
     assert x.shape == x_hat.shape, "Input tensors must have the same shape"
     assert len(x.shape) == 2, "Input tensors must be 2D"
 
-    l1_err_per_sample = torch.abs(x - x_hat).sum(-1)
-    l1_per_sample = torch.abs(x).sum(-1)
+    l1_err_per_sample = l1(x - x_hat, 1)
+    l1_per_sample = l1(x, 1)
 
     return torch.mean(l1_err_per_sample / (l1_per_sample + epsilon)).item()
 
@@ -437,6 +479,6 @@ def energy_of_codes(codes, dictionary):
     assert codes.shape[1] == dictionary.shape[0], "Number of codes must match dictionary size"
 
     avg_codes = torch.mean(codes, 0)
-    energy = (avg_codes[:, None] * dictionary).square().sum(-1).sqrt()
+    energy = l2(avg_codes[:, None] * dictionary, -1)
 
     return energy
