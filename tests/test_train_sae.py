@@ -4,7 +4,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader, TensorDataset
 from collections import defaultdict
 
-from overcomplete.methods.sae.train import l2, train_sae
+from overcomplete.sae.train import l2, train_sae
 
 from .utils import epsilon_equal
 

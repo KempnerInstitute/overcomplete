@@ -1,6 +1,20 @@
 """
 Collection of module creation functions for SAE encoder
 and a factory class to create modules using string identifier.
+
+example usage:
+
+model = ModuleFactory.create_module("mlp_ln_3")
+model = ModuleFactory.create_module("mlp_bn_1_gelu_no_res")
+
+model = ModuleFactory.create_module("resnet_3b")
+model = ModuleFactory.create_module("attention_1b")
+
+you can also pass additional arguments to the module creation function:
+
+model = ModuleFactory.create_module("mlp_ln_3", hidden_dim=128)
+model = ModuleFactory.create_module("resnet_3b", hidden_dim=128)
+model = ModuleFactory.create_module("attention_1b", attention_heads=2)
 """
 
 from torch import nn
@@ -8,28 +22,27 @@ from torch import nn
 from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 
 
-_module_registry = {}
-
-
-def register_module(name):
-    """
-    Decorator to register a module creation function.
-
-    Parameters
-    ----------
-    name : str
-        The name to register the module creation function under.
-    """
-    def decorator(func):
-        _module_registry[name] = func
-        return func
-    return decorator
-
-
 class ModuleFactory:
     """
     Factory class to create modules using registered module creation functions.
     """
+    _module_registry = {}
+
+    @staticmethod
+    def register_module(name):
+        """
+        Decorator to register a module creation function.
+
+        Parameters
+        ----------
+        name : str
+            The name to register the module creation function under.
+        """
+        def decorator(func):
+            ModuleFactory._module_registry[name] = func
+            return func
+        return decorator
+
     @staticmethod
     def create_module(name, *args, **kwargs):
         """
@@ -49,156 +62,62 @@ class ModuleFactory:
         nn.Module
             The initialized module.
         """
-        if name not in _module_registry:
+        if name not in ModuleFactory._module_registry:
             raise ValueError(f"Module '{name}' not found in registry.")
-        return _module_registry[name](*args, **kwargs)
+        return ModuleFactory._module_registry[name](*args, **kwargs)
 
 
-@register_module("mlp_bn_1")
-def bn_1(input_size, n_components):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        nb_blocks=1,
-        norm_layer=nn.BatchNorm1d
-    )
+def register_basic_templates():
+    # pylint: disable=W0640
+    # register some template mlp models for the factory
+    for norm in ['ln', 'bn']:
+        for nb_blocks in [1, 3]:
+            for act in [None, 'gelu']:
+                for res in [None, 'no_res']:
+
+                    name = f"mlp_{norm}_{nb_blocks}"
+                    if act is not None:
+                        name = f"{name}_{act}"
+                    if res is not None:
+                        name = f"{name}_{res}"
+
+                    @ModuleFactory.register_module(name)
+                    def create_mlp(input_size, n_components, **kwargs):
+                        return MLPEncoder(
+                            input_size=input_size,
+                            n_components=n_components,
+                            nb_blocks=nb_blocks,
+                            norm_layer=nn.LayerNorm if norm == 'ln' else nn.BatchNorm1d,
+                            hidden_activation=nn.GELU if act == 'gelu' else nn.ReLU,
+                            residual=res != 'no_res',
+                            **kwargs
+                        )
+
+    # register basics resnet and attention template
+    for nb_blocks in [1, 3]:
+
+        name_resnet = f"resnet_{nb_blocks}b"
+
+        @ModuleFactory.register_module(name_resnet)
+        def create_resnet(input_channels, n_components, **kwargs):
+            return ResNetEncoder(
+                input_channels=input_channels,
+                n_components=n_components,
+                nb_blocks=nb_blocks,
+                **kwargs
+            )
+
+        name_attention = f"attention_{nb_blocks}b"
+
+        @ModuleFactory.register_module(name_attention)
+        def create_attention(input_shape, n_components, hidden_dim=None, **kwargs):
+            return AttentionEncoder(
+                input_shape=input_shape,
+                n_components=n_components,
+                hidden_dim=hidden_dim,
+                nb_blocks=nb_blocks,
+                **kwargs
+            )
 
 
-@register_module("mlp_ln_1")
-def ln_1(input_size, n_components):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        nb_blocks=1,
-        norm_layer=nn.LayerNorm
-    )
-
-
-@register_module("mlp_bn_3")
-def bn_3(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        norm_layer=nn.BatchNorm1d
-    )
-
-
-@register_module("mlp_ln_3")
-def ln_3(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        norm_layer=nn.LayerNorm
-    )
-
-
-@register_module("mlp_bn_3_no_res")
-def bn_3_no_res(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        norm_layer=nn.BatchNorm1d,
-        residual=False
-    )
-
-
-@register_module("mlp_ln_3_no_res")
-def ln_3_no_res(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        norm_layer=nn.LayerNorm,
-        residual=False
-    )
-
-
-@register_module("mlp_gelu_bn_3")
-def gelu_bn_3(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        hidden_activation=nn.GELU,
-        norm_layer=nn.BatchNorm1d
-    )
-
-
-@register_module("mlp_gelu_ln_3")
-def gelu_ln_3(input_size, n_components, hidden_dim=None):
-    return MLPEncoder(
-        input_size=input_size,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=3,
-        hidden_activation=nn.GELU,
-        norm_layer=nn.LayerNorm
-    )
-
-
-@register_module("resnet_big")
-def resnet_bn(input_channels, n_components, hidden_dim=None, nb_blocks=1):
-    return ResNetEncoder(
-        input_channels=input_channels,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
-
-
-@register_module("resnet_big_3")
-def resnet_bn(input_channels, n_components, hidden_dim=None, nb_blocks=3):
-    return ResNetEncoder(
-        input_channels=input_channels,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
-
-
-@register_module("resnet_small")
-def resnet_bn(input_channels, n_components, hidden_dim=128, nb_blocks=1):
-    return ResNetEncoder(
-        input_channels=input_channels,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
-
-
-@register_module("resnet_small_3")
-def resnet_bn(input_channels, n_components, hidden_dim=128, nb_blocks=3):
-    return ResNetEncoder(
-        input_channels=input_channels,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
-
-
-@register_module("attention")
-def attention_encoder(input_shape, n_components, hidden_dim=None, nb_blocks=1):
-    return AttentionEncoder(
-        input_shape=input_shape,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
-
-
-@register_module("attention_3")
-def attention_encoder(input_shape, n_components, hidden_dim=None, nb_blocks=3):
-    return AttentionEncoder(
-        input_shape=input_shape,
-        n_components=n_components,
-        hidden_dim=hidden_dim,
-        nb_blocks=nb_blocks,
-    )
+register_basic_templates()

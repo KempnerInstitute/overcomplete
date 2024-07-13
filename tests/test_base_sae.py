@@ -1,5 +1,5 @@
 import torch
-from overcomplete.methods import SAE, DictionaryLayer
+from overcomplete.sae import SAE, DictionaryLayer
 
 
 def test_dictionary_layer():

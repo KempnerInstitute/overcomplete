@@ -146,14 +146,15 @@ def test_resnet_block_downsampling():
     ("mlp_ln_3", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("mlp_bn_3_no_res", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("mlp_ln_3_no_res", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_gelu_bn_3", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_gelu_ln_3", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("resnet_big", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 64, "nb_blocks": 3}),
-    ("resnet_small", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 128, "nb_blocks": 1}),
-    ("attention", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64, "nb_blocks": 1}),
-    ("attention_3", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64, "nb_blocks": 3})
+    ("mlp_bn_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
+    ("mlp_ln_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
+    ("resnet_1b", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 64}),
+    ("resnet_3b", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 128}),
+    ("attention_1b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64}),
+    ("attention_3b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64})
 ])
 def test_module_factory(module_name, args, kwargs):
+    print(ModuleFactory._module_registry.keys())
     model = ModuleFactory.create_module(module_name, *args, **kwargs)
     if "input_size" in kwargs:
         input_size = kwargs["input_size"]

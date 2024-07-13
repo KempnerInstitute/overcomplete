@@ -223,7 +223,8 @@ class AttentionEncoder(nn.Module):
             )
             self.attention_blocks.append(block)
 
-        # flatten and apply final linear transformation
+        # flatten and apply final linear transformation, no more mixing between tokens
+        # each token will have a unique concept representation allowed to be reconstructed
         self.final_block = nn.Sequential(
             nn.Linear(input_shape[-1], n_components),
             norm_layer(n_components),
@@ -361,6 +362,8 @@ class ResNetEncoder(nn.Module):
         self.resnet_blocks = nn.Sequential(*self.resnet_blocks)
 
         # flattening / reshape is done in the forward pass
+        # no more mixing between tokens, each token will have a unique concept
+        # representation allowed to be reconstructed
         self.final_block = nn.Sequential(
             nn.Linear(last_dim, n_components),
             nn.BatchNorm1d(n_components),

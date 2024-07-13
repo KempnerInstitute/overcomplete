@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from overcomplete.methods import (
+from overcomplete import (
     OptimPCA, OptimICA, OptimNMF, OptimKMeans,
     OptimDictionaryLearning, OptimSparsePCA, OptimSVD
 )

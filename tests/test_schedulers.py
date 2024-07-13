@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch import nn
 from torch.optim import SGD
-from overcomplete.methods.sae import CosineScheduler, mse_l1_loss
+from overcomplete.sae import CosineScheduler, mse_l1
 
 from .utils import epsilon_equal
 
@@ -26,7 +26,7 @@ def test_mse_l1_criterion():
     dictionary = torch.eye(2)
     penalty = 0.5
 
-    loss = mse_l1_loss(x, x_hat, codes, dictionary, penalty)
+    loss = mse_l1(x, x_hat, codes, dictionary, penalty)
     expected_loss = ((x - x_hat).pow(2).mean() + penalty * codes.abs().mean()).item()
 
     assert epsilon_equal(loss, expected_loss)
