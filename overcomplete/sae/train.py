@@ -3,10 +3,7 @@ from collections import defaultdict
 
 import torch
 
-
-def l2(x):
-    # Compute the L2 norm of a tensor.
-    return torch.sqrt(torch.sum(x ** 2))
+from ..metrics import l2, sparsity_eps
 
 
 def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
@@ -48,6 +45,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
     for epoch in range(nb_epochs):
         start_time = time.time()
         epoch_loss = 0
+        epoch_error = 0
 
         for batch in dataloader:
             if device != "cpu":
@@ -62,6 +60,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 loss = criterion(x, x_hat, z, model.get_dictionary())
 
             epoch_loss += loss.item()
+            epoch_error += torch.mean(l2(x, x_hat, -1)).item()
             scaler.scale(loss).backward()
 
             if clip_grad:
@@ -78,7 +77,10 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 logs['z'].append(z.detach()[::10])
                 logs['z_l2'].append(l2(z).item())
                 logs['z_sparsity'].append((z == 0.0).float().mean().item())
+                logs['dictionary_sparsity'].append(sparsity_eps(model.get_dictionary(), threshold=1e-6).item())
+                logs['dictionary_norm'].append(l2(model.get_dictionary()).item())
                 logs['lr'].append(optimizer.param_groups[0]['lr'])
+                logs['step_loss'].append(loss.item())
 
                 for name, param in model.named_parameters():
                     if param.grad is not None:
@@ -88,10 +90,12 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         end_time = time.time()
         epoch_duration = end_time - start_time
         avg_loss = epoch_loss / num_batches
+        avg_error = epoch_error / num_batches
 
         if monitoring:
+            logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
-            logs['loss'].append(avg_loss)
-            print(f'Epoch [{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, Time: {epoch_duration:.4f} seconds')
+            logs['avg_loss'].append(avg_loss)
+            print(f'Epoch [{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, Error: {avg_error}, Time: {epoch_duration:.4f} seconds')
 
     return logs
