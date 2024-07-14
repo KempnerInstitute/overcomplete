@@ -66,6 +66,18 @@ class SAEFactory:
             raise ValueError(f"Module '{name}' not found in registry.")
         return SAEFactory._module_registry[name](*args, **kwargs)
 
+    @staticmethod
+    def list_modules():
+        """
+        Lists all registered modules.
+
+        Returns
+        -------
+        list
+            A list of names of all registered modules.
+        """
+        return list(SAEFactory._module_registry.keys())
+
 
 def register_basic_templates():
     # pylint: disable=W0640

@@ -3,11 +3,31 @@ import matplotlib.pyplot as plt
 from skimage import measure
 import torch
 
-from ..data import to_npf32
-from .plot_utils import show, interpolate_torch
+from .plot_utils import show, interpolate_cv2, get_image_dimensions, np_channel_last
 
 
-def overlay_top_heatmaps(images, heatmaps, concept_id, cmap='jet', alpha=0.35):
+def _get_representative_ids(heatmaps, concept_id):
+    """
+    Get the top 10 images based on the mean value of the heatmaps for a given concept.
+
+    Parameters
+    ----------
+    heatmaps : torch.Tensor or np.ndarray
+        Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).
+    concept_id : int
+        Index of the concept to visualize.
+
+    Returns
+    -------
+    torch.Tensor or np.ndarray
+        Indices of the top 10 images based on the mean value of the heatmaps for a given concept.
+    """
+    if isinstance(heatmaps, torch.Tensor):
+        return torch.mean(heatmaps[:, :, :, concept_id], dim=(1, 2)).argsort()[-10:]
+    return np.mean(heatmaps[:, :, :, concept_id], axis=(1, 2)).argsort()[-10:]
+
+
+def overlay_top_heatmaps(images, heatmaps, concept_id, cmap="jet", alpha=0.35):
     """
     Visualize the top activating image for a concepts and overlay the associated heatmap.
 
@@ -18,7 +38,7 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap='jet', alpha=0.35):
     ----------
     images : torch.Tensor or PIL.Image or np.ndarray
         Batch of input images of shape (batch_size, channels, height, width).
-    z_heatmaps : torch.Tensor
+    z_heatmaps : torch.Tensor or np.ndarray
         Batch of heatmaps corresponding to the input images of
         shape (batch_size, height, width, num_concepts).
     concept_id : int
@@ -36,14 +56,16 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap='jet', alpha=0.35):
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
 
-    best_ids = torch.mean(heatmaps[:, :, :, concept_id], dim=(1, 2)).argsort()[-10:]
+    best_ids = _get_representative_ids(heatmaps, concept_id)
 
     for i, idx in enumerate(best_ids):
-        img = to_npf32(images[idx])
-        heatmap = interpolate_torch(heatmaps[idx, :, :, concept_id], img.shape[-2:])
+        image = images[idx]
+        width, height = get_image_dimensions(image)
+
+        heatmap = interpolate_cv2(heatmaps[idx, :, :, concept_id], (width, height))
 
         plt.subplot(2, 5, i + 1)
-        show(img)
+        show(image)
         show(heatmap, cmap=cmap, alpha=alpha)
 
 
@@ -74,21 +96,21 @@ def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
 
-    best_ids = torch.mean(heatmaps[:, :, :, concept_id], dim=(1, 2)).argsort()[-10:]
+    best_ids = _get_representative_ids(heatmaps, concept_id)
 
     for i, idx in enumerate(best_ids):
-        image = to_npf32(images[idx])
+        image = np_channel_last(images[idx])
+        width, height = get_image_dimensions(image)
 
-        heatmap = interpolate_torch(heatmaps[idx, :, :, concept_id], image.shape[-2:])
-        heatmap = to_npf32(heatmap)
+        heatmap = interpolate_cv2(heatmaps[idx, :, :, concept_id], (width, height))
         hottest_point = np.unravel_index(np.argmax(heatmap, axis=None), heatmap.shape)
 
         x_min = max(hottest_point[0] - zoom_size // 2, 0)
-        x_max = min(hottest_point[0] + zoom_size // 2, image.shape[1])
+        x_max = min(hottest_point[0] + zoom_size // 2, image.shape[0])
         y_min = max(hottest_point[1] - zoom_size // 2, 0)
-        y_max = min(hottest_point[1] + zoom_size // 2, image.shape[2])
+        y_max = min(hottest_point[1] + zoom_size // 2, image.shape[1])
 
-        zoomed_image = image[:, x_min:x_max, y_min:y_max]
+        zoomed_image = image[x_min:x_max, y_min:y_max]
 
         plt.subplot(2, 5, i + 1)
         show(zoomed_image)
@@ -128,16 +150,16 @@ def contour_top_image(images, heatmaps, concept_id, percentiles=None, cmap="viri
         percentiles = [70]
 
     cmap = plt.get_cmap(cmap)
-    best_ids = torch.mean(heatmaps[:, :, :, concept_id], dim=(1, 2)).argsort()[-10:]
+    best_ids = _get_representative_ids(heatmaps, concept_id)
 
     for i, idx in enumerate(best_ids):
-        img = to_npf32(images[idx])
+        image = images[idx]
+        width, height = get_image_dimensions(image)
         plt.subplot(2, 5, i + 1)
-        show(img)
+        show(image)
 
         heatmap = heatmaps[idx, :, :, concept_id]
-        heatmap = interpolate_torch(heatmap, img.shape[-2:])
-        heatmap = to_npf32(heatmap)
+        heatmap = interpolate_cv2(heatmap, (width, height))
 
         for percentile in percentiles:
             if len(percentiles) == 1:

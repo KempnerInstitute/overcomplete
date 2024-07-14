@@ -43,8 +43,13 @@ def to_npf32(tensor):
     tensor : torch.Tensor or np.ndarray
         Input tensor.
     """
+    # return as is if already npf32
+    if isinstance(tensor, np.ndarray) and tensor.dtype == np.float32:
+        return tensor
+    # torch case
     if isinstance(tensor, torch.Tensor):
         return tensor.detach().cpu().numpy().astype(np.float32)
+    # pil case (and other)
     return np.array(tensor).astype(np.float32)
 
 

@@ -97,7 +97,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             logs['avg_loss'].append(avg_loss)
-            print(f'Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss: .4f}, Error: {avg_error}, \
-                  Time: {epoch_duration: .4f} seconds')
+            print(f'Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss: .4f}, '
+                  f'Error: {avg_error}, Time: {epoch_duration: .4f} seconds')
 
     return logs

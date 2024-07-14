@@ -38,12 +38,14 @@ class SAE(BaseDictionaryLearning):
 
     def __init__(self, input_size, n_components, encoder_module=None, dictionary_initializer='svd',
                  data_initializer=None, device='cpu'):
+        assert isinstance(encoder_module, (str, nn.Module, type(None)))
+
         super().__init__(n_components=n_components, device=device)
 
-        if encoder_module is not None:
-            self.encoder = encoder_module
-        elif isinstance(encoder_module, str):
+        if isinstance(encoder_module, str):
             self.encoder = SAEFactory.create_module(encoder_module, input_size, n_components)
+        elif encoder_module is not None:
+            self.encoder = encoder_module
         else:
             self.encoder = nn.Sequential(
                 nn.Linear(input_size, n_components),
