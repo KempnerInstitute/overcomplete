@@ -53,7 +53,7 @@ def interpolate_cv2(img, target=(224, 224), interpolation=cv2.INTER_CUBIC):
     """
     img = to_npf32(img)
     img = np_channel_last(img)
-    assert img.ndim == 2 or img.ndim == 3, f"Expected 2 or 3 dimensions, but got {img.shape}"
+    assert img.ndim in (2, 3), f"Expected 2 or 3 dimensions, but got {img.shape}"
     return cv2.resize(img, target, interpolation=interpolation)
 
 
@@ -82,15 +82,15 @@ def get_image_dimensions(img):
         return img.size
 
     # numpy / torch case
-    if isinstance(img, np.ndarray) or isinstance(img, torch.Tensor):
+    if isinstance(img, (np.ndarray, torch.Tensor)):
         shape = img.shape
         if len(shape) == 2:  # grayscale
             return shape[1], shape[0]  # inversed width, height
-        elif len(shape) == 3:
+        if len(shape) == 3:
             if shape[0] == 3 or shape[0] == 1:  # it's channel first
                 return shape[2], shape[1]
-            else:  # then it's channel last
-                return shape[1], shape[0]
+            # then it's channel last
+            return shape[1], shape[0]
 
     # cv2 case
     if isinstance(img, cv2.Mat):

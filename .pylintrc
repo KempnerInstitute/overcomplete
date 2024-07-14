@@ -22,4 +22,4 @@ ignore-docstrings=yes
 ignore-imports=no
 
 [TYPECHECK]
-ignored-modules=torch
+ignored-modules=torch, cv2
