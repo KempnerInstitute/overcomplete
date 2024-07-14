@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 import torch
 import scipy
-from scipy.optimize import linear_sum_assignment
 
 from overcomplete.metrics import (
     avg_l2_loss,
@@ -190,7 +189,6 @@ def test_frechet_distance():
 
     expected_distance = mean_diff_squared + torch.trace(cov1 + cov2 - 2 * cov_prod_sqrt)
 
-    # Test the frechet_distance function
     computed_distance = frechet_distance(x1, x2)
 
     assert epsilon_equal(computed_distance, expected_distance, epsilon=1e-2)

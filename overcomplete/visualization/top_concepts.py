@@ -4,6 +4,7 @@ from skimage import measure
 import torch
 
 from .plot_utils import show, interpolate_cv2, get_image_dimensions, np_channel_last
+from .cmaps import VIRIDIS_ALPHA, TAB10_ALPHA
 
 
 def _get_representative_ids(heatmaps, concept_id):
@@ -27,7 +28,7 @@ def _get_representative_ids(heatmaps, concept_id):
     return np.mean(heatmaps[:, :, :, concept_id], axis=(1, 2)).argsort()[-10:]
 
 
-def overlay_top_heatmaps(images, heatmaps, concept_id, cmap="jet", alpha=0.35):
+def overlay_top_heatmaps(images, heatmaps, concept_id, cmap=None, alpha=0.35):
     """
     Visualize the top activating image for a concepts and overlay the associated heatmap.
 
@@ -55,6 +56,13 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap="jet", alpha=0.35):
     assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
     assert heatmaps.ndim == 4
+
+    # if we handle the cmap, choose tab10 if number of concepts is less than 10
+    # else choose a normal one
+    if cmap is None:
+        cmap = TAB10_ALPHA[concept_id] if heatmaps.shape[-1] < 10 else VIRIDIS_ALPHA
+        # and enforce the alpha value to one, as the alpha is already handled by the colormap
+        alpha = 1.0
 
     best_ids = _get_representative_ids(heatmaps, concept_id)
 
