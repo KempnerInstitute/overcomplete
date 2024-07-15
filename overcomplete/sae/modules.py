@@ -29,11 +29,13 @@ class MLPEncoder(nn.Module):
         The normalization layer to use, by default nn.BatchNorm1d.
     residual : bool, optional
         Whether to use residual connections, by default True.
+    device : torch.device, optional
+        The device to use, by default 'cpu'.
     """
 
     def __init__(self, input_size, n_components, hidden_dim=None, nb_blocks=1,
                  hidden_activation=nn.ReLU, output_activation=nn.ReLU, norm_layer=nn.BatchNorm1d,
-                 residual=True):
+                 residual=True, device='cpu'):
         # we authorize nb_blocks = 0 that give the simplest linear + norm block
         assert nb_blocks >= 0, "The number of blocks must be greater than 0."
         assert isinstance(input_size, int), "The input size must be a single integer."
@@ -61,7 +63,7 @@ class MLPEncoder(nn.Module):
                 nn.Linear(last_dim, hidden_dim),
                 norm_layer(hidden_dim),
                 hidden_activation(),
-            )
+            ).to(device)
             last_dim = hidden_dim
             self.mlp_blocks.append(block)
 
@@ -70,7 +72,7 @@ class MLPEncoder(nn.Module):
             nn.Linear(last_dim, n_components),
             norm_layer(n_components),
             output_activation(),
-        )
+        ).to(device)
 
     def forward(self, x):
         """
@@ -120,26 +122,29 @@ class AttentionBlock(nn.Module):
         Drop path rate, by default 0.0.
     act_layer : nn.Module, optional
         Activation layer, by default nn.GELU.
+    device : torch.device, optional
+        The device to use, by default 'cpu'.
     """
 
     def __init__(self, dims, num_heads, mlp_ratio=4.0, drop=0.0, attn_drop=0.0,
-                 act_layer=nn.GELU):
+                 act_layer=nn.GELU, device='cpu'):
         assert len(dims) == 2, "The input dimensions must be a tuple of (nb_token, nb_dim)."
 
         super().__init__()
         self.seq_len, self.embed_dim = dims
         self.num_heads = num_heads
 
-        self.norm1 = nn.LayerNorm(dims)
-        self.attn = nn.MultiheadAttention(self.embed_dim, self.num_heads, dropout=attn_drop)
-        self.norm2 = nn.LayerNorm(dims)
+        self.norm1 = nn.LayerNorm(dims).to(device)
+        self.attn = nn.MultiheadAttention(self.embed_dim,
+                                          self.num_heads, dropout=attn_drop).to(device)
+        self.norm2 = nn.LayerNorm(dims).to(device)
         self.mlp = nn.Sequential(
             nn.Linear(self.embed_dim, int(self.embed_dim * mlp_ratio)),
             act_layer(),
             nn.Dropout(drop),
             nn.Linear(int(self.embed_dim * mlp_ratio), self.embed_dim),
             nn.Dropout(drop),
-        )
+        ).to(device)
 
     def forward(self, x):
         """
@@ -188,11 +193,13 @@ class AttentionEncoder(nn.Module):
         The number of attention heads, by default 4.
     mlp_ratio : float, optional
         The ratio of the hidden dimension to the input dimension in the MLP, by default 4.0.
+    device : torch.device, optional
+        The device to use, by default 'cpu'.
     """
 
     def __init__(self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
                  output_activation=nn.ReLU, norm_layer=nn.LayerNorm,
-                 residual=True, attention_heads=4, mlp_ratio=4.0):
+                 residual=True, attention_heads=4, mlp_ratio=4.0, device='cpu'):
         assert nb_blocks > 0, "The number of blocks must be greater than 0."
         assert len(input_shape) == 2, "The input shape must be a tuple of (nb_token, nb_dim)."
 
@@ -219,8 +226,8 @@ class AttentionEncoder(nn.Module):
                 dims=input_shape,
                 num_heads=attention_heads,
                 mlp_ratio=mlp_ratio,
-                act_layer=nn.GELU
-            )
+                act_layer=nn.GELU,
+            ).to(device)
             self.attention_blocks.append(block)
 
         # flatten and apply final linear transformation, no more mixing between tokens
@@ -229,7 +236,7 @@ class AttentionEncoder(nn.Module):
             nn.Linear(input_shape[-1], n_components),
             norm_layer(n_components),
             output_activation(),
-        )
+        ).to(device)
 
     def forward(self, x):
         """
@@ -272,22 +279,27 @@ class ResNetBlock(nn.Module):
         The stride of the convolution, by default 1.
     activation : nn.Module, optional
         The activation function to use, by default nn.ReLU.
+    device : torch.device, optional
+        The device to use, by default 'cpu'.
     """
 
-    def __init__(self, input_channels, out_channels, stride=1, activation=nn.GELU):
+    def __init__(self, input_channels, out_channels, stride=1, activation=nn.GELU, device='cpu'):
         super().__init__()
-        self.conv1 = nn.Conv2d(input_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.norm1 = nn.BatchNorm2d(out_channels)
-        self.act = activation()
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.norm2 = nn.BatchNorm2d(out_channels)
 
-        self.downsample = nn.Sequential()
+        self.conv1 = nn.Conv2d(input_channels, out_channels, kernel_size=3,
+                               stride=stride, padding=1, bias=False).to(device)
+        self.norm1 = nn.BatchNorm2d(out_channels).to(device)
+        self.act = activation().to(device)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3,
+                               stride=1, padding=1, bias=False).to(device)
+        self.norm2 = nn.BatchNorm2d(out_channels).to(device)
+
+        self.downsample = nn.Sequential().to(device)
         if stride != 1 or input_channels != out_channels:
             self.downsample = nn.Sequential(
                 nn.Conv2d(input_channels, out_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_channels),
-            )
+            ).to(device)
 
     def forward(self, x):
         """"
@@ -336,11 +348,13 @@ class ResNetEncoder(nn.Module):
         The number of ResNet blocks in the encoder, by default 3.
     output_activation : nn.Module, optional
         The activation function to use in the output layer, by default nn.ReLU.
+    device : torch.device, optional
+        The device to use, by default 'cpu'.
     """
 
     def __init__(
             self, input_channels, n_components, hidden_dim=None, nb_blocks=1,
-            output_activation=nn.GELU):
+            output_activation=nn.GELU, device='cpu'):
         assert nb_blocks > 0, "The number of blocks must be greater than 0."
         assert isinstance(input_channels, int), "The input channels must be a single integer."
 
@@ -357,9 +371,9 @@ class ResNetEncoder(nn.Module):
         self.resnet_blocks = nn.ModuleList()
         last_dim = input_channels
         for _ in range(nb_blocks):
-            self.resnet_blocks.append(ResNetBlock(last_dim, hidden_dim))
+            self.resnet_blocks.append(ResNetBlock(last_dim, hidden_dim).to(device))
             last_dim = hidden_dim
-        self.resnet_blocks = nn.Sequential(*self.resnet_blocks)
+        self.resnet_blocks = nn.Sequential(*self.resnet_blocks).to(device)
 
         # flattening / reshape is done in the forward pass
         # no more mixing between tokens, each token will have a unique concept
@@ -368,7 +382,7 @@ class ResNetEncoder(nn.Module):
             nn.Linear(last_dim, n_components),
             nn.BatchNorm1d(n_components),
             output_activation(),
-        )
+        ).to(device)
 
     def forward(self, x):
         """

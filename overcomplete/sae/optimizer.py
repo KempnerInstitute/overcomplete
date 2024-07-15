@@ -1,3 +1,8 @@
+"""
+Module dedicated to everything around the Schedulers of SAE.
+"""
+
+
 import numpy as np
 import torch
 

@@ -9,6 +9,7 @@ disable=
     C0116, C0114, # docstring
     C0103, # we refer and define scientific notation
     R1721, W0107, # use pass for abstract class
+    E1102, # pylint false positive when .to() is used
 
 [FORMAT]
 max-line-length=120

@@ -1,3 +1,7 @@
+"""
+Module for creating and storing custom colormaps.
+"""
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np

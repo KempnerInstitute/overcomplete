@@ -1,3 +1,7 @@
+"""
+Module dedicated for metrics of dictionary learning algorithms.
+"""
+
 from scipy.optimize import linear_sum_assignment
 import torch
 

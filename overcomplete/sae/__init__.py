@@ -1,3 +1,7 @@
+"""
+Sparse Autoencoder (SAE) module of Overcomplete.
+"""
+
 from .base import SAE
 from .dictionary import DictionaryLayer
 from .optimizer import CosineScheduler

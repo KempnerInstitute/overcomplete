@@ -1,3 +1,7 @@
+"""
+Module dedicated to the training of SAE.
+"""
+
 import time
 from collections import defaultdict
 

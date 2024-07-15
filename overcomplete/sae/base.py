@@ -1,3 +1,7 @@
+"""
+Base module for Sparse Autoencoder (SAE) model for dictionary learning.
+"""
+
 from torch import nn
 
 from ..base import BaseDictionaryLearning
@@ -43,7 +47,7 @@ class SAE(BaseDictionaryLearning):
         super().__init__(n_components=n_components, device=device)
 
         if isinstance(encoder_module, str):
-            self.encoder = SAEFactory.create_module(encoder_module, input_size, n_components)
+            self.encoder = SAEFactory.create_module(encoder_module, input_size, n_components, device=self.device)
         elif encoder_module is not None:
             self.encoder = encoder_module
         else:
@@ -51,8 +55,8 @@ class SAE(BaseDictionaryLearning):
                 nn.Linear(input_size, n_components),
                 nn.BatchNorm1d(n_components),
                 nn.ReLU(),
-            )
-        self.dictionary = DictionaryLayer(n_components, input_size)
+            ).to(self.device)
+        self.dictionary = DictionaryLayer(n_components, input_size).to(device)
 
         if data_initializer is not None:
             self.dictionary.initialize_dictionary(data_initializer, dictionary_initializer)
@@ -118,5 +122,13 @@ class SAE(BaseDictionaryLearning):
         return self.dictionary(z)
 
     def fit(self, x):
+        """
+        Method not implemented for SAE. See train_sae function for training the model.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input data tensor.
+        """
         raise NotImplementedError('SAE does not support fit method. You have to train the model \
                                   using a custom training loop.')

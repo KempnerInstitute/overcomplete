@@ -1,3 +1,7 @@
+"""
+Module dedicated for visualizing top concepts in a batch of images.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import measure

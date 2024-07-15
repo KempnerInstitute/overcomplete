@@ -1,3 +1,7 @@
+"""
+Module for data loading and conversion utilities.
+"""
+
 import os
 
 from PIL import Image
@@ -28,7 +32,7 @@ def load_directory(directory):
         try:
             img = Image.open(os.path.join(directory, path)).convert('RGB')
             images.append(img)
-        except (IOError, OSError):
+        except OSError:
             # skip files that are not images
             continue
     return images

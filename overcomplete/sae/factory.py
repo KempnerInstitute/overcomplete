@@ -80,6 +80,9 @@ class SAEFactory:
 
 
 def register_basic_templates():
+    """
+    Register some basic template modules for the factory.
+    """
     # pylint: disable=W0640
     # register some template mlp models for the factory
     for norm in ['ln', 'bn']:

@@ -1,3 +1,7 @@
+"""
+Module dedicated to everything around the Dictionary Layer of SAE.
+"""
+
 import torch
 from torch import nn
 from ..base import BaseDictionaryLearning
@@ -15,6 +19,8 @@ class DictionaryLayer(nn.Module):
         Number of components in the dictionary.
     dimensions : int
         Dimensionality of the input data.
+    device : str, optional
+        Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
 
     Methods
     -------
@@ -24,11 +30,11 @@ class DictionaryLayer(nn.Module):
         Initialize the dictionary using a specified method.
     """
 
-    def __init__(self, nb_components, dimensions):
+    def __init__(self, nb_components, dimensions, device='cpu'):
         super().__init__()
         self.nb_components = nb_components
         self.dimensions = dimensions
-        self.dictionary = nn.Parameter(torch.randn(nb_components, dimensions))
+        self.dictionary = nn.Parameter(torch.randn(nb_components, dimensions)).to(device)
 
     def forward(self, z):
         """
@@ -78,4 +84,4 @@ class DictionaryLayer(nn.Module):
             raise ValueError("Invalid method")
 
         init.fit(x)
-        self.dictionary.data = init.get_dictionary()
+        self.dictionary.data = init.get_dictionary().to(self.dictionary.device)

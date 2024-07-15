@@ -1,3 +1,7 @@
+"""
+Module dedicated for models loading.
+"""
+
 from abc import ABC, abstractmethod
 
 import torch
