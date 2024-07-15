@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 
-from overcomplete.visualization import (overlay_top_heatmaps, zoom_top_images, contour_top_image)
+from overcomplete.visualization import (overlay_top_heatmaps, zoom_top_images, contour_top_image, evidence_top_images)
+from overcomplete.visualization.top_concepts import _get_representative_ids
 
 
 @pytest.fixture
@@ -41,6 +42,24 @@ def test_contour_top_image(sample_images, sample_heatmaps, concept_id):
     fig = plt.gcf()
     assert fig is not None
     assert len(fig.axes) == 10
+
+
+def test_evidence_top_images(sample_images, sample_heatmaps, concept_id):
+    evidence_top_images(sample_images, sample_heatmaps, concept_id)
+    fig = plt.gcf()
+    assert fig is not None
+    assert len(fig.axes) == 10
+
+
+@pytest.mark.parametrize("heatmaps", [
+    torch.randn(20, 56, 56, 10),
+    np.random.randn(20, 56, 56, 10)
+])
+def test_get_representative_ids(heatmaps):
+    concept_id = 3
+    ids = _get_representative_ids(heatmaps, concept_id)
+    assert ids.shape == (10,)
+    assert ids.dtype == torch.int64 if isinstance(heatmaps, torch.Tensor) else np.int64
 
 
 IMG_SIZE = 64
@@ -122,6 +141,25 @@ def test_contour_advanced_types(img_type, channels_first):
     sample_heatmap = generate_sample_heatmap(img_type)
     concept_id = 3
     contour_top_image(sample_image, sample_heatmap, concept_id)
+    fig = plt.gcf()
+    assert fig is not None
+    assert len(fig.axes) == 10
+    imgs = [ax.images[0].get_array().data for ax in fig.axes if ax.images]
+    assert len(imgs) == 10
+    assert imgs[0].shape[0] == imgs[0].shape[1]
+
+
+@pytest.mark.parametrize("img_type,channels_first", [
+    ('torch', True),
+    ('torch', False),
+    ('numpy', True),
+    ('numpy', False)
+])
+def test_evidence_advanced_types(img_type, channels_first):
+    sample_image = generate_sample_image(img_type, channels_first)
+    sample_heatmap = generate_sample_heatmap(img_type)
+    concept_id = 3
+    evidence_top_images(sample_image, sample_heatmap, concept_id)
     fig = plt.gcf()
     assert fig is not None
     assert len(fig.axes) == 10

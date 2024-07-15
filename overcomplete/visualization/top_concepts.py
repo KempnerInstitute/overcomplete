@@ -77,6 +77,57 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap=None, alpha=0.35):
         show(heatmap, cmap=cmap, alpha=alpha)
 
 
+def evidence_top_images(images, heatmaps, concept_id, percentiles=None):
+    """
+    Visualize the top activating image for a concept and highlight the top activating pixels.
+
+    This function identifies the top 10 images based on the mean value of the heatmaps for a given concept,
+    then use the heatmap to highlights the top activating area depending on their percentile value.
+
+    Parameters
+    ----------
+    images : torch.Tensor or PIL.Image or np.ndarray
+        Batch of input images of shape (batch_size, channels, height, width).
+    heatmaps : torch.Tensor or np.ndarray
+        Batch of heatmaps corresponding to the input images of
+        shape (batch_size, height, width, num_concepts).
+    concept_id : int
+        Index of the concept to visualize.
+    percentiles : list of int, optional
+        List of percentiles to highlight, by default None.
+
+    Returns
+    -------
+    None
+    """
+    assert len(images) == len(heatmaps)
+    assert heatmaps.shape[-1] > concept_id
+    assert heatmaps.ndim == 4
+
+    if percentiles is None:
+        # gradation from 50% top activating pixels to 95% top activating pixels
+        # with alpha 0 at start and 1 at the end
+        percentiles = np.linspace(50, 95, 10)
+
+    best_ids = _get_representative_ids(heatmaps, concept_id)
+
+    for i, idx in enumerate(best_ids):
+        image = images[idx]
+        image = np_channel_last(image)
+        width, height = get_image_dimensions(image)
+
+        heatmap = interpolate_cv2(heatmaps[idx, :, :, concept_id], (width, height))
+
+        # use the heatmap to apply alpha depending on the percentile
+        mask = np.zeros_like(heatmap)
+        for percentile in percentiles:
+            mask[heatmap > np.percentile(heatmap, percentile)] += 1.0
+        mask = mask / len(percentiles)
+
+        plt.subplot(2, 5, i + 1)
+        show(image*mask[:, :, None])
+
+
 def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
     """
     Zoom into the hottest point in the heatmaps for a specific concept.
@@ -86,9 +137,9 @@ def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
 
     Parameters
     ----------
-    images : torch.Tensor
+    images : torch.Tensor or PIL.Image or np.ndarray
         Batch of input images of shape (batch_size, channels, height, width).
-    heatmaps : torch.Tensor
+    heatmaps : torch.Tensor or np.ndarray
         Batch of heatmaps corresponding to the input images of
         shape (batch_size, height, width, num_concepts).
     concept_id : int
@@ -133,9 +184,9 @@ def contour_top_image(images, heatmaps, concept_id, percentiles=None, cmap="viri
 
     Parameters
     ----------
-    images : torch.Tensor
+    images : torch.Tensor or PIL.Image or np.ndarray
         Batch of input images of shape (batch_size, channels, height, width).
-    heatmaps : torch.Tensor
+    heatmaps : torch.Tensor or np.ndarray
         Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).
     concept_id : int
         Index of the concept to visualize.
