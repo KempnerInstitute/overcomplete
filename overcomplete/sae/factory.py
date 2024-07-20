@@ -97,9 +97,9 @@ def register_basic_templates():
                         name = f"{name}_{res}"
 
                     @SAEFactory.register_module(name)
-                    def create_mlp(input_size, n_components, **kwargs):
+                    def create_mlp(input_shape, n_components, **kwargs):
                         return MLPEncoder(
-                            input_size=input_size,
+                            input_shape=input_shape,
                             n_components=n_components,
                             nb_blocks=nb_blocks,
                             norm_layer=nn.LayerNorm if norm == 'ln' else nn.BatchNorm1d,
@@ -114,9 +114,9 @@ def register_basic_templates():
         name_resnet = f"resnet_{nb_blocks}b"
 
         @SAEFactory.register_module(name_resnet)
-        def create_resnet(input_channels, n_components, **kwargs):
+        def create_resnet(input_shape, n_components, **kwargs):
             return ResNetEncoder(
-                input_channels=input_channels,
+                input_shape=input_shape,
                 n_components=n_components,
                 nb_blocks=nb_blocks,
                 **kwargs

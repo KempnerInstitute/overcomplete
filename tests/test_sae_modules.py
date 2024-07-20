@@ -78,14 +78,14 @@ def test_attention_encoder(input_size, n_components, hidden_dim, nb_blocks, atte
     assert isinstance(output, torch.Tensor)
 
 
-@pytest.mark.parametrize("input_channels, n_components, hidden_dim, nb_blocks", [
-    (INPUT_CHANNELS, N_COMPONENTS, None, 1),
-    (INPUT_CHANNELS, N_COMPONENTS, 64, 3),
-    (INPUT_CHANNELS, N_COMPONENTS, 128, 5)
+@pytest.mark.parametrize("input_shape, n_components, hidden_dim, nb_blocks", [
+    ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS, None, 1),
+    ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS, 64, 3),
+    ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS, 128, 5)
 ])
-def test_resnet_encoder(input_channels, n_components, hidden_dim, nb_blocks):
-    x = torch.randn(BATCH_SIZE, input_channels, HEIGHT, WIDTH)
-    model = ResNetEncoder(input_channels, n_components, hidden_dim, nb_blocks)
+def test_resnet_encoder(input_shape, n_components, hidden_dim, nb_blocks):
+    x = torch.randn(BATCH_SIZE, *input_shape)
+    model = ResNetEncoder(input_shape, n_components, hidden_dim, nb_blocks)
     output = model(x)
     assert output.shape == (BATCH_SIZE * HEIGHT * WIDTH, n_components)
 
@@ -148,37 +148,23 @@ def test_resnet_block_downsampling():
     ("mlp_ln_3_no_res", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("mlp_bn_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("mlp_ln_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("resnet_1b", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 64}),
-    ("resnet_3b", (INPUT_CHANNELS, N_COMPONENTS), {"hidden_dim": 128}),
+    ("resnet_1b", ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 64}),
+    ("resnet_3b", ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 128}),
     ("attention_1b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64}),
     ("attention_3b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64})
 ])
 def test_module_factory(module_name, args, kwargs):
+
     model = SAEFactory.create_module(module_name, *args, **kwargs)
-    if "input_size" in kwargs:
-        input_size = kwargs["input_size"]
-    else:
-        input_size = args[0]
-
-    if "input_channels" in kwargs:
-        input_channels = kwargs["input_channels"]
-    else:
-        input_channels = args[0]
-
-    if "height" in kwargs and "width" in kwargs:
-        height = kwargs["height"]
-        width = kwargs["width"]
-    else:
-        height, width = HEIGHT, WIDTH
 
     if module_name.startswith("mlp"):
-        x = torch.randn(BATCH_SIZE, input_size)
+        x = torch.randn(BATCH_SIZE, INPUT_SIZE)
         output = model(x)
         assert output.shape == (BATCH_SIZE, N_COMPONENTS)
     elif module_name.startswith("resnet"):
-        x = torch.randn(BATCH_SIZE, input_channels, height, width)
+        x = torch.randn(BATCH_SIZE, INPUT_CHANNELS, HEIGHT, WIDTH)
         output = model(x)
-        assert output.shape == (BATCH_SIZE * height * width, N_COMPONENTS)
+        assert output.shape == (BATCH_SIZE * HEIGHT * WIDTH, N_COMPONENTS)
     elif module_name.startswith("attention"):
         x = torch.randn(BATCH_SIZE, SEQ_LENGTH, INPUT_SIZE)
         output = model(x)

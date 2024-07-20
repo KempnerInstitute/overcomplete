@@ -12,8 +12,8 @@ class MLPEncoder(nn.Module):
 
     Parameters
     ----------
-    input_size : int
-        The input size of the encoder.
+    input_shape : int
+        The input size of the encoder. Only accept a single dimension.
     n_components : int
         The number of components (or concepts) in the latent representation.
     hidden_dim : int, optional
@@ -33,19 +33,19 @@ class MLPEncoder(nn.Module):
         The device to use, by default 'cpu'.
     """
 
-    def __init__(self, input_size, n_components, hidden_dim=None, nb_blocks=1,
+    def __init__(self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
                  hidden_activation=nn.ReLU, output_activation=nn.ReLU, norm_layer=nn.BatchNorm1d,
                  residual=True, device='cpu'):
         # we authorize nb_blocks = 0 that give the simplest linear + norm block
         assert nb_blocks >= 0, "The number of blocks must be greater than 0."
-        assert isinstance(input_size, int), "The input size must be a single integer."
+        assert isinstance(input_shape, int), "The input size must be a single integer."
 
         super().__init__()
 
         if hidden_dim is None:
-            hidden_dim = input_size
+            hidden_dim = input_shape
 
-        self.input_size = input_size
+        self.input_size = input_shape
         self.n_components = n_components
         self.hidden_dim = hidden_dim
         self.nb_blocks = nb_blocks
@@ -54,7 +54,7 @@ class MLPEncoder(nn.Module):
         self.norm_layer = norm_layer
         self.residual = residual
 
-        last_dim = input_size
+        last_dim = input_shape
         self.mlp_blocks = nn.ModuleList()
 
         # construct the n-1 hidden blocks
@@ -176,7 +176,7 @@ class AttentionEncoder(nn.Module):
     Parameters
     ----------
     input_shape : tuple (int, int)
-        The input size of the encoder, nb_token and nb_dim.
+        The input size of the encoder input composed of shape (seq len, dim).
     n_components : int
         The number of components (or concepts) in the latent representation.
     hidden_dim : int, optional
@@ -283,10 +283,10 @@ class ResNetBlock(nn.Module):
         The device to use, by default 'cpu'.
     """
 
-    def __init__(self, input_channels, out_channels, stride=1, activation=nn.GELU, device='cpu'):
+    def __init__(self, in_channels, out_channels, stride=1, activation=nn.GELU, device='cpu'):
         super().__init__()
 
-        self.conv1 = nn.Conv2d(input_channels, out_channels, kernel_size=3,
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3,
                                stride=stride, padding=1, bias=False).to(device)
         self.norm1 = nn.BatchNorm2d(out_channels).to(device)
         self.act = activation().to(device)
@@ -295,9 +295,9 @@ class ResNetBlock(nn.Module):
         self.norm2 = nn.BatchNorm2d(out_channels).to(device)
 
         self.downsample = nn.Sequential().to(device)
-        if stride != 1 or input_channels != out_channels:
+        if stride != 1 or in_channels != out_channels:
             self.downsample = nn.Sequential(
-                nn.Conv2d(input_channels, out_channels, kernel_size=1, stride=stride, bias=False),
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_channels),
             ).to(device)
 
@@ -338,8 +338,8 @@ class ResNetEncoder(nn.Module):
 
     Parameters
     ----------
-    input_channels : int
-        The number of input channels.
+    input_shape : tuple (int, int, int)
+        The input size of the encoder input composed of shape (channels, height, width).
     n_components : int
         The number of components (or concepts) in the latent representation.
     hidden_dim : int, optional
@@ -353,23 +353,24 @@ class ResNetEncoder(nn.Module):
     """
 
     def __init__(
-            self, input_channels, n_components, hidden_dim=None, nb_blocks=1,
+            self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
             output_activation=nn.GELU, device='cpu'):
         assert nb_blocks > 0, "The number of blocks must be greater than 0."
-        assert isinstance(input_channels, int), "The input channels must be a single integer."
+        assert len(input_shape) == 3, "The input shape must contain 3 dimensions (channels, height, width)."
 
         super().__init__()
 
         if hidden_dim is None:
-            hidden_dim = input_channels
+            hidden_dim = input_shape[0]
 
-        self.input_channels = input_channels
+        self.input_channels = input_shape[0]
+        self.spatial_dims = input_shape[1:]
         self.n_components = n_components
         self.hidden_dim = hidden_dim
         self.nb_blocks = nb_blocks
 
         self.resnet_blocks = nn.ModuleList()
-        last_dim = input_channels
+        last_dim = self.input_channels
         for _ in range(nb_blocks):
             self.resnet_blocks.append(ResNetBlock(last_dim, hidden_dim).to(device))
             last_dim = hidden_dim

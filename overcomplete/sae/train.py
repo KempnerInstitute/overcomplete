@@ -52,6 +52,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         epoch_error = 0
 
         for batch in dataloader:
+            # @tfel: maybe warn if input device is not the same as model device
             if device != "cpu":
                 x = batch[0].cuda(non_blocking=True)
             else:
