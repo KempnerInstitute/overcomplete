@@ -84,7 +84,7 @@ def mse_elastic(x, x_hat, codes, dictionary, alpha=0.5):
 
 def mse_l1_double(x, x_hat, codes, dictionary, penalty_codes=0.5, penalty_dictionary=0.5):
     """
-    Compute the Mean Squared Error (MSE) loss with L1 penalty on the codes.
+    Compute the Mean Squared Error (MSE) loss with L1 penalty on the codes and dictionary.
 
     Loss = ||x - x_hat||^2 + penalty_codes * ||z||_1 + penalty_dictionary * ||D||_1
 
