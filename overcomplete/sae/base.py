@@ -78,11 +78,14 @@ class SAE(BaseDictionaryLearning):
             ).to(device)
 
         # initialize the dictionary, but first find the channel dimension
+        # tfel: do we really need this parameter if an encoder module is passed?
         if isinstance(input_shape, int):
             dim = input_shape
         elif len(input_shape) == 2:
+            # attention model case with shape (T C)
             dim = input_shape[1]
         elif len(input_shape) == 3:
+            # convolutional model case with shape (C H W)
             dim = input_shape[0]
         else:
             raise ValueError("Input shape must be 1D, 2D or 3D.")
