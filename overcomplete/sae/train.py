@@ -6,6 +6,7 @@ import time
 from collections import defaultdict
 
 import torch
+from einops import rearrange
 
 from ..metrics import l2, sparsity_eps
 
@@ -64,8 +65,24 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 z, x_hat = model(x)
                 loss = criterion(x, x_hat, z, model.get_dictionary())
 
+            # register loss and epoch reconstruction loss
             epoch_loss += loss.item()
-            epoch_error += torch.mean(l2(x - x_hat, -1)).item()
+            # if grouped entry model (attention or resnet), then x and x_hat
+            # are not the same dimension, we adapt the dim to be able to diff them
+            if len(x.shape) == 4 and len(x_hat.shape) == 2:
+                # conv sae case
+                assert x.shape[1] == x_hat.shape[1], "input and output should have the same number of channels."
+                x_flatten = rearrange(x, 'n c w h -> (n w h) c')
+                epoch_error += torch.mean(l2(x_flatten - x_hat, -1)).item()
+            elif len(x.shape) == 3 and len(x_hat.shape) == 2:
+                # attention sae case
+                assert x.shape[2] == x_hat.shape[1], "input and output should have the same number of channels."
+                x_flatten = rearrange(x, 'n t c -> (n t) c')
+                epoch_error += torch.mean(l2(x_flatten - x_hat, -1)).item()
+            else:
+                assert x.shape == x_hat.shape, "input and output should have the same shape."
+                epoch_error += torch.mean(l2(x - x_hat, -1)).item()
+
             scaler.scale(loss).backward()
 
             if clip_grad:
