@@ -97,7 +97,7 @@ def register_basic_templates():
                         name = f"{name}_{res}"
 
                     @SAEFactory.register_module(name)
-                    def create_mlp(input_shape, n_components, **kwargs):
+                    def create_mlp(input_shape, n_components, nb_blocks=nb_blocks, norm=norm, act=act, res=res, **kwargs):
                         return MLPEncoder(
                             input_shape=input_shape,
                             n_components=n_components,
@@ -114,7 +114,7 @@ def register_basic_templates():
         name_resnet = f"resnet_{nb_blocks}b"
 
         @SAEFactory.register_module(name_resnet)
-        def create_resnet(input_shape, n_components, **kwargs):
+        def create_resnet(input_shape, n_components, nb_blocks=nb_blocks, **kwargs):
             return ResNetEncoder(
                 input_shape=input_shape,
                 n_components=n_components,
@@ -125,7 +125,7 @@ def register_basic_templates():
         name_attention = f"attention_{nb_blocks}b"
 
         @SAEFactory.register_module(name_attention)
-        def create_attention(input_shape, n_components, hidden_dim=None, **kwargs):
+        def create_attention(input_shape, n_components, nb_blocks=nb_blocks, hidden_dim=None, **kwargs):
             return AttentionEncoder(
                 input_shape=input_shape,
                 n_components=n_components,
