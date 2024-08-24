@@ -96,7 +96,7 @@ class MLPEncoder(nn.Module):
             # if hidden_dim is not None, we may not be able to do the
             # first residual connection (as we reduce the dim, but only once)
             if self.residual and (layer_i != 0 or self.hidden_dim == self.input_size):
-                x += residual
+                x = x + residual
 
         x = self.final_block(x)
         return x
@@ -326,7 +326,7 @@ class ResNetBlock(nn.Module):
         out = self.conv2(out)
         out = self.norm2(out)
 
-        out += identity
+        out = out + identity
         out = self.act(out)
 
         return out
