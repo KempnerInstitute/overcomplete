@@ -1,5 +1,5 @@
 """
-Module dedicated to the training of SAE.
+Module for training Sparse Autoencoder (SAE) models.
 """
 
 import time
@@ -72,10 +72,9 @@ def _log_metrics(logs, model, z, loss, optimizer):
 
 
 def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
-              nb_epochs=20, clip_grad=1.0, monitoring=True, device="cpu",
-              use_amp=True, max_nan_fallbacks=5):
+              nb_epochs=20, clip_grad=1.0, monitoring=True, device="cpu"):
     """
-    Train a Sparse Autoencoder (SAE) model with optional AMP and NaN fallback.
+    Train a Sparse Autoencoder (SAE) model.
 
     Parameters
     ----------
@@ -97,8 +96,86 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         Whether to monitor and log training statistics, by default True.
     device : str, optional
         Device to run the training on, by default 'cpu'.
-    use_amp : bool, optional
-        Whether to use Automatic Mixed Precision, by default True.
+
+    Returns
+    -------
+    defaultdict
+        Logs of training statistics.
+    """
+    logs = defaultdict(list)
+
+    for epoch in range(nb_epochs):
+        model.train()
+        start_time = time.time()
+        epoch_loss = 0.0
+        epoch_error = 0.0
+
+        for batch in dataloader:
+            x = batch[0].to(device, non_blocking=True)
+            optimizer.zero_grad()
+
+            z, x_hat = model(x)
+            loss = criterion(x, x_hat, z, model.get_dictionary())
+
+            # tfel: monitoring of NaNs in loss could be added here
+            loss.backward()
+
+            if clip_grad:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clip_grad)
+
+            optimizer.step()
+
+            if scheduler is not None:
+                scheduler.step()
+
+            epoch_loss += loss.item()
+            epoch_error += _compute_reconstruction_error(x, x_hat)
+
+            if monitoring:
+                _log_metrics(logs, model, z, loss, optimizer)
+
+        avg_loss = epoch_loss / len(dataloader)
+        avg_error = epoch_error / len(dataloader)
+        epoch_duration = time.time() - start_time
+
+        if monitoring:
+            logs['avg_loss'].append(avg_loss)
+            logs['time_epoch'].append(epoch_duration)
+            print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
+                  f"Error: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
+
+    return logs
+
+
+def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
+                  nb_epochs=20, clip_grad=1.0, monitoring=True, device="cpu",
+                  max_nan_fallbacks=5):
+    """
+    Train a Sparse Autoencoder (SAE) model with AMP and NaN fallback.
+    Training in fp16 with AMP and fallback to fp32 for the rest of the current
+    epoch if NaNs are detected 'max_nan_fallbacks' times. Next epoch will start
+    again in fp16.
+
+    Parameters
+    ----------
+    model : nn.Module
+        The SAE model to train.
+    dataloader : DataLoader
+        DataLoader providing the training data.
+    criterion : callable
+        Loss function.
+    optimizer : optim.Optimizer
+        Optimizer for updating model parameters.
+    scheduler : callable, optional
+        Learning rate scheduler. If None, no scheduler is used, by default None.
+    nb_epochs : int, optional
+        Number of training epochs, by default 20.
+    clip_grad : float, optional
+        Gradient clipping value, by default 1.0.
+    monitoring : bool, optional
+        Whether to monitor and log training statistics, by default True.
+    device : str, optional
+        Device to run the training on, by default 'cpu'.
     max_nan_fallbacks : int, optional
         Maximum number of NaN fallbacks per epoch before disabling AMP, by default 5.
 
@@ -107,7 +184,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
     defaultdict
         Logs of training statistics.
     """
-    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+    scaler = torch.cuda.amp.GradScaler(enabled=True)
     logs = defaultdict(list)
 
     for epoch in range(nb_epochs):
@@ -121,15 +198,15 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
-            with torch.cuda.amp.autocast(enabled=use_amp):
+            with torch.cuda.amp.autocast(enabled=True):
                 z, x_hat = model(x)
                 loss = criterion(x, x_hat, z, model.get_dictionary())
 
             if torch.isnan(loss) or torch.isinf(loss):
                 nan_fallback_count += 1
                 if monitoring:
-                    print(f"[Warning] NaN detected in loss at Epoch {epoch+1}, \
-                          Iteration {len(logs['step_loss'])+1}. Retrying in full precision.")
+                    print(f"[Warning] NaN detected in loss at Epoch {epoch+1}, "
+                          f"Iteration {len(logs['step_loss'])+1}. Retrying in full precision.")
 
                 with torch.cuda.amp.autocast(enabled=False):
                     z, x_hat = model(x)
@@ -137,16 +214,15 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
 
                 if torch.isnan(loss) or torch.isinf(loss):
                     if monitoring:
-                        print(f"[Error] Loss is NaN even in full precision at Epoch {epoch+1}, \
-                              Iteration {len(logs['step_loss'])+1}. Skipping this batch.")
-                    continue  # Skip the current batch if NaN persists
+                        print(f"[Error] Loss is NaN even in full precision at Epoch {epoch+1}, "
+                              f"Iteration {len(logs['step_loss'])+1}. Skipping this batch.")
+                    continue  # skip the current batch if NaN persists
 
                 if nan_fallback_count >= max_nan_fallbacks:
-                    use_amp = False
-                    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
                     if monitoring:
-                        print(f"[Info] Maximum NaN fallbacks reached at Epoch {epoch+1}. \
-                               Disabling AMP for the rest of this epoch.")
+                        print(f"[Info] Maximum NaN fallbacks reached at Epoch {epoch+1}. "
+                              f"Disabling AMP for the rest of this epoch.")
+                    break
 
             scaler.scale(loss).backward()
 
@@ -176,9 +252,5 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
                   f"Error: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
-
-        # re-enable AMP for the next epoch if it was disabled
-        use_amp = True
-        scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
     return logs

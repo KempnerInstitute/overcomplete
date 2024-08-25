@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from collections import defaultdict
 from einops import rearrange
 
-from overcomplete.sae.train import train_sae
+from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
 from overcomplete.sae import SAE
 
@@ -62,7 +62,7 @@ def test_train_mlp_sae(module_name):
     assert len(logs) == 0
 
     # second training pass with monitoring enabled
-    logs = train_sae(
+    logs = train_sae_amp(
         model,
         dataloader,
         criterion,
@@ -103,7 +103,7 @@ def test_train_resnet_sae():
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
 
-    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=True, device="cpu")
+    logs = train_sae_amp(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=True, device="cpu")
     assert isinstance(logs, defaultdict)
     assert "z" in logs
     assert "z_l2" in logs
@@ -129,7 +129,8 @@ def test_train_attention_sae():
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
 
-    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=False, device="cpu")
+    logs = train_sae_amp(model, dataloader, criterion, optimizer, scheduler,
+                         nb_epochs=2, monitoring=False, device="cpu")
 
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
@@ -185,7 +186,6 @@ def test_train_without_amp(module_name):
         nb_epochs=2,
         monitoring=False,
         device="cpu",
-        use_amp=False
     )
 
     assert isinstance(logs, defaultdict)
