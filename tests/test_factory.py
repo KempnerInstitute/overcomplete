@@ -1,4 +1,5 @@
 import pytest
+import torch
 from torch import nn
 from overcomplete.sae.factory import SAEFactory
 from overcomplete.sae.modules import MLPEncoder, ResNetEncoder, AttentionEncoder
@@ -75,3 +76,24 @@ def test_model_creation(model_name):
 
     model = SAEFactory.create_module(model_name, input_shape=input_shape, n_components=2)
     assert isinstance(model, nn.Module), f"Model {model_name} creation failed or is not an nn.Module"
+
+
+@pytest.mark.parametrize("model_name", SAEFactory.list_modules())
+def test_all_outputs_positive(model_name):
+    if "resnet" in model_name:
+        input_shape = (3, 32, 32)
+    elif "attention" in model_name:
+        input_shape = (10, 16)
+    else:
+        input_shape = 10
+
+    model = SAEFactory.create_module(model_name, input_shape=input_shape, n_components=2)
+
+    if isinstance(input_shape, int):
+        x = torch.randn(2, input_shape)
+    else:
+        x = torch.randn(2, *input_shape)
+
+    output = model(x)
+
+    assert (output >= 0).all(), f"Model {model_name} has negative output values"
