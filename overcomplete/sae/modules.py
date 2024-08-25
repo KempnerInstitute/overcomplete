@@ -294,15 +294,16 @@ class ResNetBlock(nn.Module):
                                stride=1, padding=1, bias=False).to(device)
         self.norm2 = nn.BatchNorm2d(out_channels).to(device)
 
-        self.downsample = nn.Sequential().to(device)
         if stride != 1 or in_channels != out_channels:
             self.downsample = nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_channels),
             ).to(device)
+        else:
+            self.downsample = nn.Identity().to(device)
 
     def forward(self, x):
-        """"
+        """
         Forward pass through the ResNet block.
 
         Parameters
@@ -354,7 +355,7 @@ class ResNetEncoder(nn.Module):
 
     def __init__(
             self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
-            output_activation=nn.GELU, device='cpu'):
+            output_activation=nn.ReLU, device='cpu'):
         assert nb_blocks > 0, "The number of blocks must be greater than 0."
         assert len(input_shape) == 3, "The input shape must contain 3 dimensions (channels, height, width)."
 
