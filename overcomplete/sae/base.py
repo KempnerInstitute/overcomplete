@@ -40,7 +40,8 @@ class SAE(BaseDictionaryLearning):
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
     dictionary_initializer : str, optional
-        Method for initializing the dictionary, by default 'svd'.
+        Method for initializing the dictionary, e.g 'svd', 'kmeans', 'ica',
+        see dictionary module to see all the possible initialization.
     data_initializer : torch.Tensor, optional
         Data used to fit a first approximation and initialize the dictionary, by default None.
 
@@ -56,7 +57,7 @@ class SAE(BaseDictionaryLearning):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, n_components, encoder_module=None, dictionary_initializer='svd',
+    def __init__(self, input_shape, n_components, encoder_module=None, dictionary_initializer=None,
                  data_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
@@ -92,7 +93,10 @@ class SAE(BaseDictionaryLearning):
 
         self.dictionary = DictionaryLayer(n_components, dim).to(device)
         # if needed, initialize the dictionary layer (e.g with SVD)
-        if data_initializer is not None:
+        if dictionary_initializer is not None:
+            if data_initializer is None:
+                raise ValueError("You must provide data_initializer if you want to initialize\
+                                 the dictionary.")
             self.dictionary.initialize_dictionary(data_initializer, dictionary_initializer)
 
     def get_dictionary(self):
