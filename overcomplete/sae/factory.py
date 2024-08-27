@@ -86,7 +86,7 @@ def register_basic_templates():
     # pylint: disable=W0640
     # register some template mlp models for the factory
     for norm in ['ln', 'bn']:
-        for nb_blocks in [1, 3]:
+        for nb_blocks in [1, 2, 3, 4, 5]:
             for act in [None, 'gelu']:
                 for res in [None, 'no_res']:
 
