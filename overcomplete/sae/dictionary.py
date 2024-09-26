@@ -5,8 +5,8 @@ Module dedicated to everything around the Dictionary Layer of SAE.
 import torch
 from torch import nn
 from ..base import BaseDictionaryLearning
-from ..optimization import (OptimKMeans, OptimPCA, OptimICA, OptimNMF,
-                            OptimSparsePCA, OptimSVD, OptimDictionaryLearning)
+from ..optimization import (SkPCA, SkICA, SkNMF, SkKMeans,
+                            SkDictionaryLearning, SkSparsePCA, SkSVD)
 
 
 class DictionaryLayer(nn.Module):
@@ -65,19 +65,19 @@ class DictionaryLayer(nn.Module):
             Method for initializing the dictionary, by default 'svd'.
         """
         if method == 'kmeans':
-            init = OptimKMeans(self.nb_components)
+            init = SkKMeans(self.nb_components)
         elif method == 'pca':
-            init = OptimPCA(self.nb_components)
+            init = SkPCA(self.nb_components)
         elif method == 'ica':
-            init = OptimICA(self.nb_components)
+            init = SkICA(self.nb_components)
         elif method == 'nmf':
-            init = OptimNMF(self.nb_components)
+            init = SkNMF(self.nb_components)
         elif method == 'sparse_pca':
-            init = OptimSparsePCA(self.nb_components)
+            init = SkSparsePCA(self.nb_components)
         elif method == 'svd':
-            init = OptimSVD(self.nb_components)
+            init = SkSVD(self.nb_components)
         elif method == 'dictionary_learning':
-            init = OptimDictionaryLearning(self.nb_components)
+            init = SkDictionaryLearning(self.nb_components)
         elif isinstance(method, BaseDictionaryLearning):
             init = method
         else:

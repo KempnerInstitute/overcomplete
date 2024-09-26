@@ -5,8 +5,13 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 from overcomplete import (
-    OptimPCA, OptimICA, OptimNMF, OptimKMeans,
-    OptimDictionaryLearning, OptimSparsePCA, OptimSVD
+    SkDictionaryLearning,
+    SkICA,
+    SkKMeans,
+    SkNMF,
+    SkPCA,
+    SkSVD,
+    SkSparsePCA,
 )
 
 data_shape = (100, 10)
@@ -36,13 +41,13 @@ def method_encode_decode(model_class, sample_data, n_components, extra_args=None
 
 
 @pytest.mark.parametrize("model_class, extra_args", [
-    (OptimPCA, {}),
-    (OptimICA, {}),
-    (OptimNMF, {}),
-    (OptimKMeans, {}),
-    (OptimDictionaryLearning, {"sparsity": 1.0}),
-    (OptimSparsePCA, {"sparsity": 1.0}),
-    (OptimSVD, {}),
+    (SkPCA, {}),
+    (SkICA, {}),
+    (SkNMF, {}),
+    (SkKMeans, {}),
+    (SkDictionaryLearning, {}),
+    (SkSparsePCA, {}),
+    (SkSVD, {}),
 ])
 def test_optim_models_with_tensor(model_class, extra_args):
     n_components = 2
@@ -50,13 +55,13 @@ def test_optim_models_with_tensor(model_class, extra_args):
 
 
 @pytest.mark.parametrize("model_class, extra_args", [
-    (OptimPCA, {}),
-    (OptimICA, {}),
-    (OptimNMF, {}),
-    (OptimKMeans, {}),
-    (OptimDictionaryLearning, {"sparsity": 1.0}),
-    (OptimSparsePCA, {"sparsity": 1.0}),
-    (OptimSVD, {}),
+    (SkPCA, {}),
+    (SkICA, {}),
+    (SkNMF, {}),
+    (SkKMeans, {}),
+    (SkDictionaryLearning, {}),
+    (SkSparsePCA, {}),
+    (SkSVD, {}),
 ])
 def test_optim_models_with_dataloader(model_class, extra_args):
     n_components = 2
