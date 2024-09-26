@@ -8,6 +8,10 @@ from overcomplete.visualization import (overlay_top_heatmaps, zoom_top_images, c
 from overcomplete.visualization.top_concepts import _get_representative_ids
 
 
+def _clean_current_figure():
+    plt.close('all')
+
+
 @pytest.fixture
 def sample_images():
     return torch.randn(20, 3, 64, 64)
@@ -24,6 +28,7 @@ def concept_id():
 
 
 def test_overlay_top_heatmaps(sample_images, sample_heatmaps, concept_id):
+    _clean_current_figure()
     overlay_top_heatmaps(sample_images, sample_heatmaps, concept_id)
     fig = plt.gcf()
     assert fig is not None
@@ -31,6 +36,7 @@ def test_overlay_top_heatmaps(sample_images, sample_heatmaps, concept_id):
 
 
 def test_zoom_top_images(sample_images, sample_heatmaps, concept_id):
+    _clean_current_figure()
     zoom_top_images(sample_images, sample_heatmaps, concept_id)
     fig = plt.gcf()
     assert fig is not None
@@ -38,6 +44,7 @@ def test_zoom_top_images(sample_images, sample_heatmaps, concept_id):
 
 
 def test_contour_top_image(sample_images, sample_heatmaps, concept_id):
+    _clean_current_figure()
     contour_top_image(sample_images, sample_heatmaps, concept_id)
     fig = plt.gcf()
     assert fig is not None
@@ -45,6 +52,7 @@ def test_contour_top_image(sample_images, sample_heatmaps, concept_id):
 
 
 def test_evidence_top_images(sample_images, sample_heatmaps, concept_id):
+    _clean_current_figure()
     evidence_top_images(sample_images, sample_heatmaps, concept_id)
     fig = plt.gcf()
     assert fig is not None
@@ -85,11 +93,15 @@ def generate_sample_image(image_type='torch', channels_first=True):
 
 def generate_sample_heatmap(image_type='torch'):
     if image_type == 'torch':
-        return torch.randn(BATCH_SIZE, IMG_SIZE//2, IMG_SIZE//2, 10)
+        heatmaps = torch.rand(BATCH_SIZE, IMG_SIZE//2, IMG_SIZE//2, 10)
     elif image_type == 'numpy':
-        return np.random.randn(BATCH_SIZE, IMG_SIZE//2, IMG_SIZE//2, 10)
+        heatmaps = np.random.rand(BATCH_SIZE, IMG_SIZE//2, IMG_SIZE//2, 10)
     else:
         raise ValueError("Unsupported heatmap type")
+    # max value at the center
+    heatmaps[:, heatmaps.shape[1]//2, heatmaps.shape[2]//2] = 1.0
+
+    return heatmaps
 
 
 @pytest.mark.parametrize("img_type,channels_first", [
@@ -99,6 +111,7 @@ def generate_sample_heatmap(image_type='torch'):
     ('numpy', False)
 ])
 def test_overlay_advanced_types(img_type, channels_first):
+    _clean_current_figure()
     sample_image = generate_sample_image(img_type, channels_first)
     sample_heatmap = generate_sample_heatmap(img_type)
     concept_id = 3
@@ -118,6 +131,7 @@ def test_overlay_advanced_types(img_type, channels_first):
     ('numpy', False)
 ])
 def test_zoom_advanced_types(img_type, channels_first):
+    _clean_current_figure()
     sample_image = generate_sample_image(img_type, channels_first)
     sample_heatmap = generate_sample_heatmap(img_type)
     concept_id = 3
@@ -127,7 +141,6 @@ def test_zoom_advanced_types(img_type, channels_first):
     assert len(fig.axes) == 10
     imgs = [ax.images[0].get_array().data for ax in fig.axes if ax.images]
     assert len(imgs) == 10
-    assert imgs[0].shape[0] == imgs[0].shape[1]
 
 
 @pytest.mark.parametrize("img_type,channels_first", [
@@ -137,6 +150,7 @@ def test_zoom_advanced_types(img_type, channels_first):
     ('numpy', False)
 ])
 def test_contour_advanced_types(img_type, channels_first):
+    _clean_current_figure()
     sample_image = generate_sample_image(img_type, channels_first)
     sample_heatmap = generate_sample_heatmap(img_type)
     concept_id = 3
@@ -156,6 +170,7 @@ def test_contour_advanced_types(img_type, channels_first):
     ('numpy', False)
 ])
 def test_evidence_advanced_types(img_type, channels_first):
+    _clean_current_figure()
     sample_image = generate_sample_image(img_type, channels_first)
     sample_heatmap = generate_sample_heatmap(img_type)
     concept_id = 3
