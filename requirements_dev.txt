@@ -1,4 +1,0 @@
-tox
-pytest
-pytest-cov
-pylint
