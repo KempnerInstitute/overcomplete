@@ -1,12 +1,14 @@
+"""
+Utility functions for the optimization module of Overcomplete.
+"""
+
 import torch
 
 
 def matrix_nnls(A, B, max_iter=50, tol=1e-3):
     """
-    Solves the non-negative least squares problem (NNLS).
-
-    min_x ||AX - B||^2 such that x >= 0
-
+    Non-negative least squares problem solver (NNLS):
+        min_x ||AX - B||^2 such that x >= 0.
     Using projected gradient descent scheme.
 
     Parameters

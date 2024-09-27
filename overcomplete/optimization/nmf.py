@@ -56,8 +56,6 @@ def _one_step_hals(A, Z, D, update_Z=True, update_D=True):
     D : torch.Tensor
         Updated dictionary tensor.
     """
-    _assert_shapes(A, Z, D)
-
     if update_Z:
         C = A @ D.T
         B = D @ D.T
@@ -101,8 +99,6 @@ def _one_step_multiplicative_rule(A, Z, D, update_Z=True, update_D=True):
     torch.Tensor
         Updated dictionary tensor.
     """
-    _assert_shapes(A, Z, D)
-
     if update_Z:
         Z = Z * ((A @ D.T) / (Z @ D @ D.T + 1e-10))
 
@@ -136,8 +132,6 @@ def _one_step_nnls_scipy(A, Z, D, update_Z=True, update_D=True):
     torch.Tensor
         Updated dictionary tensor.
     """
-    _assert_shapes(A, Z, D)
-
     if update_Z:
 
         Z_update = []
@@ -190,8 +184,6 @@ def _one_step_nnls(A, Z, D, update_Z=True, update_D=True):
     D : torch.Tensor
         Updated dictionary tensor.
     """
-    _assert_shapes(A, Z, D)
-
     Z = matrix_nnls(D.T, A.T).T if update_Z else Z
     D = matrix_nnls(Z, A) if update_D else D
 

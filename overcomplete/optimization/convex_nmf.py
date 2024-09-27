@@ -275,7 +275,6 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         # @tfel could random init, after experiment it seems that
         # cnmf is really sensitive to the initialization
         Z, W = self.init_semi_nmf(A)
-        # Z, W = self.init_random_z(A), self.init_random_w(A)
 
         Z, W = self.solver_fn(A, Z, W, update_Z=True, update_W=True,
                               strict_convex=self.strict_convex, max_iter=max_iter, tol=self.tol)

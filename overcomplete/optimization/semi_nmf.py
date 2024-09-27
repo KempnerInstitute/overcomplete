@@ -45,7 +45,6 @@ def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
     D : torch.Tensor
         Updated dictionary tensor.
     """
-    _assert_shapes(A, Z, D)
 
     if update_Z:
         # @tfel: one could also use nnls here
