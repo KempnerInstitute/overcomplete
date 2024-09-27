@@ -17,9 +17,7 @@ from .utils import stopping_criterion, _assert_shapes, pos_part, neg_part
 def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
     """
     One step of the Semi-NMF update rules.
-
     The Semi-NMF algorithm updates Z and D alternately:
-
     1. Update Z by solving
        Z = Z * ((A @ D.T)^+ + (Z @ (D @ D.T)^-)) / ((A @ D.T)^- + (Z @ (D @ D.T)^+))^-1.
     2. Update D by solving
@@ -45,7 +43,6 @@ def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
     D : torch.Tensor
         Updated dictionary tensor.
     """
-
     if update_Z:
         # @tfel: one could also use nnls here
         # Z = matrix_nnls(D.T, A.T).T
