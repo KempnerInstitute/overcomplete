@@ -7,3 +7,4 @@ from .sklearn_wrappers import (SkPCA, SkICA, SkNMF, SkKMeans,
                                SkDictionaryLearning, SkSparsePCA, SkSVD)
 from .nmf import NMF
 from .semi_nmf import SemiNMF
+from .convex_nmf import ConvexNMF

@@ -8,8 +8,10 @@ For sake of simplicity, we will use the following notation:
 """
 
 import torch
+from torch.linalg import pinv
+
 from .base import BaseOptimDictionaryLearning
-from .utils import matrix_nnls, stopping_criterion, _assert_shapes
+from .utils import stopping_criterion, _assert_shapes, pos_part, neg_part
 
 
 def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
@@ -18,8 +20,10 @@ def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
 
     The Semi-NMF algorithm updates Z and D alternately:
 
-    1. Update Z by solving Z = A D^T (D D^T)^{-1}
-    2. Update D by solving D = argmin_{D >= 0} ||A - Z D||_F^2
+    1. Update Z by solving
+       Z = Z * ((A @ D.T)^+ + (Z @ (D @ D.T)^-)) / ((A @ D.T)^- + (Z @ (D @ D.T)^+))^-1.
+    2. Update D by solving
+       D = ((A.T @ Z) @ (Z.T @ Z))^T.
 
     Parameters
     ----------
@@ -44,11 +48,18 @@ def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
     _assert_shapes(A, Z, D)
 
     if update_Z:
+        # @tfel: one could also use nnls here
+        # Z = matrix_nnls(D.T, A.T).T
+        # instead we use the update rule from the original paper
+        ATD = A @ D.T
         DDT = D @ D.T
-        Z = A @ D.T @ torch.linalg.pinv(DDT + 1e-8 * torch.eye(DDT.shape[0]))
+        numerator = pos_part(ATD) + (Z @ neg_part(DDT))
+        denominator = neg_part(ATD) + (Z @ pos_part(DDT))
+        Z = Z * torch.sqrt((numerator / (denominator+1e-8)) + 1e-8)
 
     if update_D:
-        D = matrix_nnls(Z, A)
+        ZtZ_inv = torch.linalg.pinv((Z.T @ Z) + torch.eye(Z.shape[1], device=Z.device) * 1e-8)
+        D = ((A.T @ Z) @ ZtZ_inv).T
 
     return Z, D
 
@@ -91,10 +102,8 @@ def semi_nmf_solver(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-
         Z_old = Z.clone()
         Z, D = _one_step_semi_nmf(A, Z, D, update_Z, update_D)
 
-        if update_Z:
-            should_stop = stopping_criterion(Z, Z_old, tol)
-            if should_stop:
-                break
+        if update_Z and tol > 0 and stopping_criterion(Z, Z_old, tol):
+            break
 
     return Z, D
 
@@ -113,15 +122,15 @@ class SemiNMF(BaseOptimDictionaryLearning):
     device: str, optional
         Device to use for tensor computations, by default 'cpu'
     tol: float, optional
-        Tolerance value for the stopping criterion, by default 1e-5.
+        Tolerance value for the stopping criterion, by default 1e-4.
     """
 
-    def __init__(self, n_components, device='cpu', tol=1e-5, **kwargs):
+    def __init__(self, n_components, device='cpu', tol=1e-4, **kwargs):
         super().__init__(n_components, device)
         self.tol = tol
         self.D = None
 
-    def encode(self, A, max_iter=500, tol=1e-5):
+    def encode(self, A, max_iter=300, tol=None):
         """
         Encode the input tensor (the activations) using Semi-NMF.
 
@@ -130,9 +139,9 @@ class SemiNMF(BaseOptimDictionaryLearning):
         A : torch.Tensor or Iterable
             Input tensor of shape (batch_size, n_features).
         max_iter : int, optional
-            Maximum number of iterations, by default 500.
+            Maximum number of iterations, by default 300.
         tol : float, optional
-            Tolerance value for the stopping criterion, by default 1e-5.
+            Tolerance value for the stopping criterion, by default the value set in the constructor.
 
         Returns
         -------
@@ -140,6 +149,8 @@ class SemiNMF(BaseOptimDictionaryLearning):
             Encoded features (the codes).
         """
         self._assert_fitted()
+        if tol is None:
+            tol = self.tol
 
         Z = self.init_random_z(A)
 
@@ -167,7 +178,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
 
         return A_hat
 
-    def fit(self, A, max_iter=500, tol=1e-5):
+    def fit(self, A, max_iter=500):
         """
         Fit the Semi-NMF model to the input data.
 
@@ -177,13 +188,13 @@ class SemiNMF(BaseOptimDictionaryLearning):
             Input tensor of shape (batch_size, n_features).
         max_iter : int, optional
             Maximum number of iterations, by default 500.
-        tol : float, optional
-            Tolerance value, by default 1e-5.
         """
+        # @tfel: we could warm start here, or/and use nnsvdvar instead
+        # of (non-negative) random
         Z = self.init_random_z(A)
-        D = self.init_random_d(A)
+        D = self.init_random_d(A, Z)
 
-        Z, D = semi_nmf_solver(A, Z, D, max_iter=max_iter, tol=tol)
+        Z, D = semi_nmf_solver(A, Z, D, max_iter=max_iter, tol=self.tol)
 
         self.D = D
         self._set_fitted()
@@ -202,25 +213,25 @@ class SemiNMF(BaseOptimDictionaryLearning):
         self._assert_fitted()
         return self.D
 
-    def init_random_d(self, A):
+    def init_random_d(self, A, Z):
         """
-        Initialize the dictionary D using non-negative random values.
+        Initialize the dictionary D using matrix inversion.
 
         Parameters
         ----------
         A : torch.Tensor
             Input tensor of shape (batch_size, n_features).
+        Z : torch.Tensor
+            Codes tensor of shape (batch_size, n_components).
 
         Returns
         -------
         D : torch.Tensor
             Initialized dictionary tensor.
         """
-        mu = torch.sqrt(torch.mean(A) / self.n_components)
-
-        D = torch.randn(self.n_components, A.shape[1], device=self.device) * mu
-        D = torch.abs(D)
-
+        ZtZ = (Z.T @ Z)
+        ZtZ_inv = torch.linalg.pinv(ZtZ)
+        D = ((A.T @ Z) @ ZtZ_inv).T
         return D
 
     def init_random_z(self, A):
@@ -237,8 +248,10 @@ class SemiNMF(BaseOptimDictionaryLearning):
         Z : torch.Tensor
             Initialized codes tensor.
         """
-        mu = torch.sqrt(torch.mean(A) / self.n_components)
+        # for semi-nmf, mean of A could be negative
+        mu = torch.sqrt(torch.mean(torch.abs(A) / self.n_components))
 
         Z = torch.randn(A.shape[0], self.n_components, device=self.device) * mu
+        Z = torch.abs(Z)
 
         return Z

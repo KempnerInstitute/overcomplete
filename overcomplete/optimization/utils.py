@@ -89,3 +89,41 @@ def _assert_shapes(A, Z, D):
     assert A.shape[1] == D.shape[1], "A and D must have the same number of features"
     assert A.shape[0] == Z.shape[0], "A and Z must have the same number of samples"
     assert Z.shape[1] == D.shape[0], "Z and D must have the same number of concepts"
+
+
+def pos_part(A):
+    """
+    Compute the positive part of a tensor.
+
+    A+ = max(0, A)
+
+    Parameters
+    ----------
+    A : torch.Tensor
+        Input tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Output tensor with negative values set to zero.
+    """
+    return torch.relu(A)
+
+
+def neg_part(A):
+    """
+    Compute the negative part of a tensor.
+
+    A- = (|A| - A) / 2.0
+
+    Parameters
+    ----------
+    A : torch.Tensor
+        Input tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Output tensor with positive values set to zero.
+    """
+    return torch.relu(-A)

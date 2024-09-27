@@ -27,8 +27,18 @@ def test_semi_nmf_fit():
     """Test that the SemiNMF model can fit to the data."""
     model = SemiNMF(n_components=n_components, max_iter=2)
     Z, D = model.fit(A)
+    assert (Z >= 0).all(), "Negative values in Z."
     assert D.shape == (n_components, data_shape[1]), "Incorrect shape for D."
     assert Z.shape == (data_shape[0], n_components), "Incorrect shape for Z."
+
+
+def test_semi_nmf_negative_data():
+    """Test how the model handles negative data."""
+    negative_data = torch.randn(data_shape, dtype=torch.float32)
+    model = SemiNMF(n_components=n_components)
+    Z, D = model.fit(negative_data)
+    assert (Z >= 0).all(), "Negative values in Z."
+    # D can be negative, so we don't check it
 
 
 def test_semi_nmf_encode_decode():
@@ -37,6 +47,7 @@ def test_semi_nmf_encode_decode():
     model.fit(A)
 
     Z = model.encode(A)
+    assert (Z >= 0).all(), "Negative values in encoded data."
     assert Z.shape == (data_shape[0], n_components), "Incorrect shape for encoded data."
 
     A_hat = model.decode(Z)
@@ -46,11 +57,14 @@ def test_semi_nmf_encode_decode():
 def test_semi_nmf_reconstruction_error():
     """Test that the reconstruction error decreases after fitting."""
     model = SemiNMF(n_components=n_components, max_iter=100)
-    initial_error = torch.norm(A - model.init_random_z(A) @ model.init_random_d(A), 'fro')
+    init_z = model.init_random_z(A)
+    init_d = model.init_random_d(A, init_z)
+    initial_error = torch.norm(A - init_z @ init_d, 'fro')
     model.fit(A)
     Z = model.encode(A)
     A_hat = model.decode(Z)
     final_error = torch.norm(A - A_hat, 'fro')
+    assert (Z >= 0).all(), "Negative values in Z."
     assert final_error < initial_error, "Reconstruction error did not decrease."
 
 
@@ -60,6 +74,7 @@ def test_semi_nmf_zero_data():
     model = SemiNMF(n_components=n_components)
     Z, D = model.fit(zero_data)
     reconstruction_error = torch.norm(zero_data - Z @ D, 'fro')
+    assert (Z >= 0).all(), "Negative values in Z."
     assert reconstruction_error < 1e-5, "Model did not reconstruct zero data correctly."
 
 
@@ -80,11 +95,16 @@ def test_compare_to_sklearn(repetitions=10):
     """
     Test that SemiNMF achieves similar performance to sklearn NMF.
     """
-    results = []
+    is_ok = False
     for _ in range(repetitions):
         our_model = SemiNMF(n_components=n_components, max_iter=1000)
         Z, D = our_model.fit(A)
         our_error = relative_avg_l2_loss(A, Z @ D)
-        results.append(our_error <= 5.0 * sk_error)
 
-    assert any(results), "SemiNMF did not match sklearn NMF performance."
+        assert (Z >= 0).all(), "Negative values in Z."
+
+        if our_error < 2.0 * sk_error:
+            is_ok = True
+            break
+
+    assert is_ok, "SemiNMF did not match sklearn NMF performance."
