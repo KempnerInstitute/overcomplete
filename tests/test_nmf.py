@@ -12,7 +12,7 @@ data_shape = (50, 10)
 n_components = 5
 
 A = torch.rand(data_shape, dtype=torch.float32)
-optimizers = ['hals', 'mu', 'pgd', 'anls']
+solvers = ['hals', 'mu', 'pgd', 'anls']
 
 sk_model = SkNMF(n_components=n_components, max_iter=1000, solver='mu')
 Z_sk = sk_model.fit_transform(A.numpy())
@@ -20,24 +20,24 @@ D_sk = sk_model.components_
 sk_error = relative_avg_l2_loss(A, Z_sk @ D_sk)
 
 
-@pytest.mark.parametrize("optimizer", optimizers)
-def test_nmf_initialization(optimizer):
+@pytest.mark.parametrize("solver", solvers)
+def test_nmf_initialization(solver):
     """Test that the NMF class initializes properly with valid parameters."""
-    model = NMF(n_components=n_components, optimizer=optimizer)
+    model = NMF(n_components=n_components, solver=solver)
     assert model.n_components == n_components, "Number of components not set correctly"
-    assert model.optimizer == optimizer, "Optimizer not set correctly"
+    assert model.solver == solver, "solver not set correctly"
 
 
-def test_nmf_invalid_optimizer():
-    """Test that initializing NMF with an invalid optimizer raises an error."""
+def test_nmf_invalid_solver():
+    """Test that initializing NMF with an invalid solver raises an error."""
     with pytest.raises(AssertionError):
-        NMF(n_components=n_components, optimizer='invalid_optimizer')
+        NMF(n_components=n_components, solver='invalid_solver')
 
 
-@pytest.mark.parametrize("optimizer", optimizers)
-def test_nmf_fit(optimizer):
+@pytest.mark.parametrize("solver", solvers)
+def test_nmf_fit(solver):
     """Test that the NMF model can fit to the data."""
-    model = NMF(n_components=n_components, optimizer=optimizer, max_iter=2)
+    model = NMF(n_components=n_components, solver=solver, max_iter=2)
     Z, D = model.fit(A)
     assert D.shape == (n_components, data_shape[1]), "Dictionary D has incorrect shape after fitting"
     assert Z.shape == (data_shape[0], n_components), "Codes Z have incorrect shape after fitting"
@@ -57,10 +57,10 @@ def test_nmf_encode_decode():
     assert (A_hat >= 0).all(), "Decoded data contains negative values"
 
 
-@pytest.mark.parametrize("optimizer", optimizers)
-def test_nmf_reconstruction_error(optimizer):
+@pytest.mark.parametrize("solver", solvers)
+def test_nmf_reconstruction_error(solver):
     """Test that the reconstruction error decreases after fitting."""
-    model = NMF(n_components=n_components, optimizer=optimizer, max_iter=100)
+    model = NMF(n_components=n_components, solver=solver, max_iter=100)
     initial_error = torch.norm(A - model.init_random_z(A) @ model.init_random_d(A), 'fro')
     model.fit(A)
     Z = model.encode(A)
@@ -78,28 +78,31 @@ def test_nmf_zero_data():
     assert torch.norm(D) == 0, "Dictionary D should be zero for zero input data"
 
 
-@pytest.mark.parametrize("optimizer", optimizers)
-def test_nmf_large_number_of_components(optimizer):
+@pytest.mark.parametrize("solver", solvers)
+def test_nmf_large_number_of_components(solver):
     """Test the NMF model with a number of components equal to the number of features."""
-    little_nmf = NMF(n_components=1, optimizer=optimizer)
+    little_nmf = NMF(n_components=1, solver=solver)
     little_nmf.fit(A)
     error_little = torch.square(A - little_nmf.decode(little_nmf.encode(A))).sum()
 
-    big_nmf = NMF(n_components=100, optimizer=optimizer)
+    big_nmf = NMF(n_components=100, solver=solver)
     big_nmf.fit(A)
     error_big = torch.square(A - big_nmf.decode(big_nmf.encode(A))).sum()
 
     assert error_big <= error_little, "Reconstruction error is higher for maximal components"
 
 
-@pytest.mark.parametrize("optimizer", optimizers)
-def test_compare_to_sklearn(optimizer, repetitions=10):
+@pytest.mark.parametrize("solver", solvers)
+def test_compare_to_sklearn(solver, repetitions=10):
     """Test that each NMF method can at least achieve one time better or similar perf to sklearn model."""
-    results = []
+    is_ok = False
     for _ in range(repetitions):
-        our_nmf = NMF(n_components=n_components, optimizer=optimizer, max_iter=10_000)
+        our_nmf = NMF(n_components=n_components, solver=solver, max_iter=10_000)
         Z, D = our_nmf.fit(A)
         our_error = relative_avg_l2_loss(A, Z @ D)
-        results.append(our_error <= 5.0 * sk_error)
 
-    assert any(results), f"The {optimizer} runs can't achieved similar performance to sklearn NMF"
+        if our_error <= 2.0 * sk_error:
+            is_ok = True
+            break
+
+    assert is_ok, f"The {solver} runs can't achieved similar performance to sklearn NMF"

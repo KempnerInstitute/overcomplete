@@ -424,36 +424,36 @@ class NMF(BaseOptimDictionaryLearning):
         Number of components to learn.
     device: str, optional
         Device to use for tensor computations, by default 'cpu'
-    optimizer: str, optional
+    solver: str, optional
         Optimization algorithm to use, by default 'hals'. Can be one of:
         - 'hals': Hierarchical Alternating Least Squares
         - 'mu': Multiplicative update rules
         - 'pgd': Projected Gradient Descent
         - 'anls': Alternating Non-negative Least Squares
     tol: float, optional
-        Tolerance value for the stopping criterion, by default 1e-5.
+        Tolerance value for the stopping criterion, by default 1e-4.
     """
 
-    _OPTIMIZERS = {
+    _SOLVERS = {
         'hals': hierarchical_als,
         'mu': multiplicative_update,
         'pgd': projected_gradient_descent,
         'anls': alternating_nnls
     }
 
-    def __init__(self, n_components, device='cpu', optimizer='hals', tol=1e-10, **kwargs):
+    def __init__(self, n_components, device='cpu', solver='hals', tol=1e-4, **kwargs):
         super().__init__(n_components, device)
 
-        assert optimizer in self._OPTIMIZERS, f"Unknown optimizer: {
-            optimizer}, should be one of {list(self._OPTIMIZERS.keys())}"
+        assert solver in self._SOLVERS, f"Unknown optimizer: {
+            solver}, should be one of {list(self._SOLVERS.keys())}"
 
-        self.optimizer = optimizer
-        self.optimizer_fn = self._OPTIMIZERS[optimizer]
+        self.solver = solver
+        self.solver_fn = self._SOLVERS[solver]
         self.tol = tol
 
         self.D = None
 
-    def encode(self, A, max_iter=300, tol=1e-5):
+    def encode(self, A, max_iter=300, tol=None):
         """
         Encode the input tensor (the activations) using NMF.
 
@@ -464,7 +464,7 @@ class NMF(BaseOptimDictionaryLearning):
         max_iter : int, optional
             Maximum number of iterations, by default 100.
         tol : float, optional
-            Tolerance value for the stopping criterion, by default 1e-5.
+            Tolerance value for the stopping criterion, by default the value set in the constructor.
 
         Returns
         -------
@@ -474,8 +474,11 @@ class NMF(BaseOptimDictionaryLearning):
         self._assert_fitted()
         assert (A >= 0).all(), 'Input tensor must be non-negative'
 
+        if tol is None:
+            tol = self.tol
+
         Z = self.init_random_z(A)
-        Z, _ = self.optimizer_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol)
+        Z, _ = self.solver_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol)
 
         return Z
 
@@ -499,7 +502,7 @@ class NMF(BaseOptimDictionaryLearning):
 
         return A_hat
 
-    def fit(self, A, max_iter=500, tol=1e-5):
+    def fit(self, A, max_iter=500):
         """
         Fit the NMF model to the input data.
 
@@ -508,9 +511,7 @@ class NMF(BaseOptimDictionaryLearning):
         A : torch.Tensor or Iterable
             Input tensor of shape (batch_size, n_features).
         max_iter : int, optional
-            Maximum number of iterations, by default 1000.
-        tol : float, optional
-            Tolerance value, by default 1e-5.
+            Maximum number of iterations, by default 500.
         """
         assert (A >= 0).all(), 'Input tensor must be non-negative'
 
@@ -520,7 +521,7 @@ class NMF(BaseOptimDictionaryLearning):
             Z = self.init_random_z(A)
             D = self.init_random_d(A)
 
-        Z, D = self.optimizer_fn(A, Z, D, max_iter=max_iter, tol=tol)
+        Z, D = self.solver_fn(A, Z, D, max_iter=max_iter, tol=self.tol)
 
         self.D = D
         self._set_fitted()
