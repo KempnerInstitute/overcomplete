@@ -200,8 +200,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
     }
 
     def __init__(self, n_components, device='cpu', tol=1e-4, strict_convex=False, solver='mu', **kwargs):
-        assert solver in self._SOLVERS, f"Unknown optimizer: {
-            solver}, should be one of {list(self._SOLVERS.keys())}"
+        assert solver in self._SOLVERS, f"Unknown solver {solver}."
 
         super().__init__(n_components, device)
 

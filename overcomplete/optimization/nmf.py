@@ -282,7 +282,7 @@ def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     return Z, D
 
 
-def projected_gradient_descent(A, Z, D, lr=1e-1, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
     """
     Projected gradient descent optimizer for NMF.
 
@@ -324,7 +324,7 @@ def projected_gradient_descent(A, Z, D, lr=1e-1, update_Z=True, update_D=True, m
     if update_D:
         to_optimize.append(D)
 
-    optimizer = torch.optim.Adam(to_optimize, lr=lr)
+    optimizer = torch.optim.Adam(to_optimize, lr=lr, weight_decay=1e-5)
 
     for iter_i in range(max_iter):
         optimizer.zero_grad()
@@ -436,8 +436,7 @@ class NMF(BaseOptimDictionaryLearning):
     def __init__(self, n_components, device='cpu', solver='hals', tol=1e-4, **kwargs):
         super().__init__(n_components, device)
 
-        assert solver in self._SOLVERS, f"Unknown optimizer: {
-            solver}, should be one of {list(self._SOLVERS.keys())}"
+        assert solver in self._SOLVERS, f'Unknown solver {solver}'
 
         self.solver = solver
         self.solver_fn = self._SOLVERS[solver]
