@@ -21,6 +21,10 @@ class DictionaryLayer(nn.Module):
         Dimensionality of the input data.
     device : str, optional
         Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
+    normalize : str or callable, optional
+        Whether to normalize the dictionary, by default 'l2' normalization is applied.
+        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
+        If a custom normalization is needed, a callable can be passed.
 
     Methods
     -------
@@ -29,12 +33,34 @@ class DictionaryLayer(nn.Module):
     initialize_dictionary(x, method='svd'):
         Initialize the dictionary using a specified method.
     """
+    _NORMALIZATIONS = {
+        # project each concept in the dictionary "on" the l2 ball
+        'l2': lambda x: x / (torch.norm(x, p=2, dim=1, keepdim=True) + 1e-8),
+        # re-project (if necessary) each concept of the dictionary "inside" the l2 ball
+        'max_l2': lambda x: x / torch.amax(torch.norm(x, p=2, dim=1, keepdim=True), 1, keepdim=True),
+        # project each concept in the dictionary "on" the l1 ball
+        'l1': lambda x: x / (torch.norm(x, p=1, dim=1, keepdim=True) + 1e-8),
+        # re-project (if necessary) each concept in the dictionary "inside" the l1 ball
+        'max_l1': lambda x: x / torch.amax(torch.norm(x, p=1, dim=1, keepdim=True), 1, keepdim=True),
+        # no projection
+        'identity': lambda x: x
+    }
 
-    def __init__(self, nb_components, dimensions, device='cpu'):
+    def __init__(self, nb_components, dimensions, normalize='l2', device='cpu'):
         super().__init__()
         self.nb_components = nb_components
         self.dimensions = dimensions
-        self.dictionary = nn.Parameter(torch.randn(nb_components, dimensions)).to(device)
+        self.device = device
+
+        # weights should not be accessed directly because of possible normalization/projections
+        self._weights = nn.Parameter(torch.randn(nb_components, dimensions)).to(device)
+
+        if isinstance(normalize, str):
+            self.normalize = self._NORMALIZATIONS[normalize]
+        elif callable(normalize):
+            self.normalize = normalize
+        else:
+            raise ValueError("Invalid normalization function")
 
     def forward(self, z):
         """
@@ -50,8 +76,20 @@ class DictionaryLayer(nn.Module):
         torch.Tensor
             Reconstructed input tensor of shape (batch_size, dimensions).
         """
-        x_hat = torch.matmul(z, self.dictionary)
+        dictionary = self.get_dictionary()
+        x_hat = torch.matmul(z, dictionary)
         return x_hat
+
+    def get_dictionary(self):
+        """
+        Get the dictionary.
+
+        Returns
+        -------
+        torch.Tensor
+            The dictionary tensor of shape (nb_components, dimensions).
+        """
+        return self.normalize(self._weights)
 
     def initialize_dictionary(self, x, method='svd'):
         """
@@ -81,7 +119,9 @@ class DictionaryLayer(nn.Module):
         elif isinstance(method, BaseDictionaryLearning):
             init = method
         else:
-            raise ValueError("Invalid method")
+            # if we can call .fit(x) on the method, we consider it valid
+            assert hasattr(method, 'fit'), "Invalid initialization object, must have a .fit() method"
+            init = method
 
         init.fit(x)
-        self.dictionary.data = init.get_dictionary().to(self.dictionary.device)
+        self._weights.data = init.get_dictionary().to(self.device)

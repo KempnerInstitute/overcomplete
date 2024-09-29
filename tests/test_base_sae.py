@@ -12,7 +12,7 @@ def test_dictionary_layer():
 
     x = torch.randn(10, dimensions)
     layer.initialize_dictionary(x, method='svd')
-    assert layer.dictionary.shape == (nb_components, dimensions)
+    assert layer.get_dictionary().shape == (nb_components, dimensions)
 
 
 def test_sae():

@@ -107,7 +107,7 @@ class SAE(BaseDictionaryLearning):
         torch.Tensor
             Learned dictionary tensor of shape (nb_components, input_size).
         """
-        return self.dictionary.dictionary
+        return self.dictionary.get_dictionary()
 
     def forward(self, x):
         """
