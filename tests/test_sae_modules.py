@@ -4,7 +4,7 @@ from torch import nn
 
 from overcomplete.sae.modules import (MLPEncoder, AttentionEncoder, ResNetEncoder,
                                       ResNetBlock, AttentionBlock)
-from overcomplete.sae.factory import SAEFactory
+from overcomplete.sae.factory import EncoderFactory
 
 BATCH_SIZE = 4
 SEQ_LENGTH = 16
@@ -23,8 +23,8 @@ N_COMPONENTS = 10
 def test_mlp_encoder(input_size, n_components, hidden_dim, nb_blocks):
     x = torch.randn(BATCH_SIZE, input_size)
     model = MLPEncoder(input_size, n_components, hidden_dim, nb_blocks)
-    output = model(x)
-    assert output.shape == (BATCH_SIZE, n_components)
+    pre_codes, codes = model(x)
+    assert pre_codes.shape == codes.shape == (BATCH_SIZE, n_components)
 
 
 @pytest.mark.parametrize("dims, num_heads, mlp_ratio", [
@@ -34,9 +34,9 @@ def test_mlp_encoder(input_size, n_components, hidden_dim, nb_blocks):
 def test_attention_block(dims, num_heads, mlp_ratio):
     x = torch.randn(BATCH_SIZE, *dims)
     model = AttentionBlock(dims, num_heads, mlp_ratio)
-    output = model(x)
-    assert output.shape == (BATCH_SIZE, dims[0], dims[1])
-    assert isinstance(output, torch.Tensor)
+    activations = model(x)
+    assert activations.shape == (BATCH_SIZE, dims[0], dims[1])
+    assert isinstance(activations, torch.Tensor)
 
 
 @pytest.mark.parametrize("dim, num_heads, mlp_ratio, drop, attn_drop, act_layer", [
@@ -48,9 +48,9 @@ def test_attention_block(dims, num_heads, mlp_ratio):
 def test_attention_block_configurations(dim, num_heads, mlp_ratio, drop, attn_drop, act_layer):
     x = torch.randn(BATCH_SIZE, SEQ_LENGTH, dim)
     model = AttentionBlock((SEQ_LENGTH, dim), num_heads, mlp_ratio, drop, attn_drop, act_layer)
-    output = model(x)
-    assert output.shape == (BATCH_SIZE, SEQ_LENGTH, dim)
-    assert isinstance(output, torch.Tensor)
+    activations = model(x)
+    assert activations.shape == (BATCH_SIZE, SEQ_LENGTH, dim)
+    assert isinstance(activations, torch.Tensor)
 
 
 @pytest.mark.parametrize("batch_size, seq_length, dim", [
@@ -73,9 +73,10 @@ def test_attention_encoder(input_size, n_components, hidden_dim, nb_blocks, atte
     x = torch.randn(BATCH_SIZE, SEQ_LENGTH, input_size)
     model = AttentionEncoder((SEQ_LENGTH, input_size), n_components, hidden_dim, nb_blocks,
                              attention_heads=attention_heads, mlp_ratio=mlp_ratio)
-    output = model(x)
-    assert output.shape == (BATCH_SIZE * SEQ_LENGTH, n_components)
-    assert isinstance(output, torch.Tensor)
+    pre_codes, codes = model(x)
+    assert pre_codes.shape == codes.shape == (BATCH_SIZE * SEQ_LENGTH, n_components)
+    assert isinstance(pre_codes, torch.Tensor)
+    assert isinstance(codes, torch.Tensor)
 
 
 @pytest.mark.parametrize("input_shape, n_components, hidden_dim, nb_blocks", [
@@ -86,8 +87,10 @@ def test_attention_encoder(input_size, n_components, hidden_dim, nb_blocks, atte
 def test_resnet_encoder(input_shape, n_components, hidden_dim, nb_blocks):
     x = torch.randn(BATCH_SIZE, *input_shape)
     model = ResNetEncoder(input_shape, n_components, hidden_dim, nb_blocks)
-    output = model(x)
-    assert output.shape == (BATCH_SIZE * HEIGHT * WIDTH, n_components)
+    pre_codes, codes = model(x)
+    assert pre_codes.shape == codes.shape == (BATCH_SIZE * HEIGHT * WIDTH, n_components)
+    assert isinstance(pre_codes, torch.Tensor)
+    assert isinstance(codes, torch.Tensor)
 
 
 @pytest.mark.parametrize("input_channels, out_channels, stride, activation", [
@@ -140,14 +143,11 @@ def test_resnet_block_downsampling():
 
 
 @pytest.mark.parametrize("module_name, args, kwargs", [
+    ("linear", (INPUT_SIZE, N_COMPONENTS), {}),
     ("mlp_bn_1", (INPUT_SIZE, N_COMPONENTS), {}),
     ("mlp_ln_1", (INPUT_SIZE, N_COMPONENTS), {}),
     ("mlp_bn_3", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("mlp_ln_3", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_bn_3_no_res", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_ln_3_no_res", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_bn_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-    ("mlp_ln_3_gelu", (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ("resnet_1b", ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 64}),
     ("resnet_3b", ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 128}),
     ("attention_1b", ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64}),
@@ -155,22 +155,22 @@ def test_resnet_block_downsampling():
 ])
 def test_module_factory(module_name, args, kwargs):
 
-    model = SAEFactory.create_module(module_name, *args, **kwargs)
+    model = EncoderFactory.create_module(module_name, *args, **kwargs)
 
     if module_name.startswith("mlp"):
         x = torch.randn(BATCH_SIZE, INPUT_SIZE)
-        output = model(x)
-        assert output.shape == (BATCH_SIZE, N_COMPONENTS)
+        pre_codes, codes = model(x)
+        assert pre_codes.shape == codes.shape == (BATCH_SIZE, N_COMPONENTS)
     elif module_name.startswith("resnet"):
         x = torch.randn(BATCH_SIZE, INPUT_CHANNELS, HEIGHT, WIDTH)
-        output = model(x)
-        assert output.shape == (BATCH_SIZE * HEIGHT * WIDTH, N_COMPONENTS)
+        pre_codes, codes = model(x)
+        assert pre_codes.shape == codes.shape == (BATCH_SIZE * HEIGHT * WIDTH, N_COMPONENTS)
     elif module_name.startswith("attention"):
         x = torch.randn(BATCH_SIZE, SEQ_LENGTH, INPUT_SIZE)
-        output = model(x)
-        assert output.shape == (BATCH_SIZE * SEQ_LENGTH, N_COMPONENTS)
+        pre_codes, codes = model(x)
+        assert pre_codes.shape == codes.shape == (BATCH_SIZE * SEQ_LENGTH, N_COMPONENTS)
 
 
 def test_invalid_module():
     with pytest.raises(ValueError):
-        SAEFactory.create_module("invalid_module_name", INPUT_SIZE, N_COMPONENTS)
+        EncoderFactory.create_module("invalid_module_name", INPUT_SIZE, N_COMPONENTS)

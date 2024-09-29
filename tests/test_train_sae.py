@@ -13,22 +13,11 @@ from overcomplete.sae import SAE
 @pytest.mark.parametrize(
     "module_name",
     [
+        'linear',
         'mlp_ln_1',
-        'mlp_ln_1_no_res',
-        'mlp_ln_1_gelu',
-        'mlp_ln_1_gelu_no_res',
         'mlp_ln_3',
-        'mlp_ln_3_no_res',
-        'mlp_ln_3_gelu',
-        'mlp_ln_3_gelu_no_res',
         'mlp_bn_1',
-        'mlp_bn_1_no_res',
-        'mlp_bn_1_gelu',
-        'mlp_bn_1_gelu_no_res',
         'mlp_bn_3',
-        'mlp_bn_3_no_res',
-        'mlp_bn_3_gelu',
-        'mlp_bn_3_gelu_no_res',
     ]
 )
 def test_train_mlp_sae(module_name):
@@ -146,22 +135,11 @@ def test_train_attention_sae():
 @pytest.mark.parametrize(
     "module_name",
     [
+        'linear',
         'mlp_ln_1',
-        'mlp_ln_1_no_res',
-        'mlp_ln_1_gelu',
-        'mlp_ln_1_gelu_no_res',
         'mlp_ln_3',
-        'mlp_ln_3_no_res',
-        'mlp_ln_3_gelu',
-        'mlp_ln_3_gelu_no_res',
         'mlp_bn_1',
-        'mlp_bn_1_no_res',
-        'mlp_bn_1_gelu',
-        'mlp_bn_1_gelu_no_res',
         'mlp_bn_3',
-        'mlp_bn_3_no_res',
-        'mlp_bn_3_gelu',
-        'mlp_bn_3_gelu_no_res',
     ]
 )
 def test_train_without_amp(module_name):

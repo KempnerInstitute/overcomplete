@@ -1,6 +1,6 @@
 import pytest
 
-from overcomplete.sae import MLPEncoder, AttentionEncoder, ResNetEncoder, SAEFactory, SAE
+from overcomplete.sae import MLPEncoder, AttentionEncoder, ResNetEncoder, EncoderFactory, SAE
 
 
 INPUT_SIZE = 32
@@ -50,14 +50,11 @@ def test_default_sae_device_propagation(device):
 @ pytest.mark.parametrize(
     "device, module_name, args, kwargs",
     [
+        ('cpu', 'linear', (INPUT_SIZE, N_COMPONENTS), {}),
         ('cpu', 'mlp_bn_1', (INPUT_SIZE, N_COMPONENTS), {}),
         ('cpu', 'mlp_ln_1', (INPUT_SIZE, N_COMPONENTS), {}),
         ('cpu', 'mlp_bn_3', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
         ('cpu', 'mlp_ln_3', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('cpu', 'mlp_bn_3_no_res', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('cpu', 'mlp_ln_3_no_res', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('cpu', 'mlp_bn_3_gelu', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('cpu', 'mlp_ln_3_gelu', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
         ('cpu', 'resnet_1b', ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 64}),
         ('cpu', 'resnet_3b', ((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS), {"hidden_dim": 128}),
         ('cpu', 'attention_1b', ((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS), {"hidden_dim": 64}),
@@ -66,14 +63,10 @@ def test_default_sae_device_propagation(device):
         ('meta', 'mlp_ln_1', (INPUT_SIZE, N_COMPONENTS), {}),
         ('meta', 'mlp_bn_3', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
         ('meta', 'mlp_ln_3', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('meta', 'mlp_bn_3_no_res', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('meta', 'mlp_ln_3_no_res', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('meta', 'mlp_bn_3_gelu', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
-        ('meta', 'mlp_ln_3_gelu', (INPUT_SIZE, N_COMPONENTS), {"hidden_dim": 64}),
     ]
 )
 def test_module_factory(device, module_name, args, kwargs):
-    model = SAEFactory.create_module(module_name, *args, **kwargs, device=device)
+    model = EncoderFactory.create_module(module_name, *args, **kwargs, device=device)
 
     for param in model.parameters():
         assert param.device.type == device

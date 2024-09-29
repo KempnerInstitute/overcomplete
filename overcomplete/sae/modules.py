@@ -28,14 +28,14 @@ class MLPEncoder(nn.Module):
     norm_layer : nn.Module, optional
         The normalization layer to use, by default nn.BatchNorm1d.
     residual : bool, optional
-        Whether to use residual connections, by default True.
+        Whether to use residual connections, by default False.
     device : torch.device, optional
         The device to use, by default 'cpu'.
     """
 
     def __init__(self, input_shape, n_components, hidden_dim=None, nb_blocks=1,
                  hidden_activation=nn.ReLU, output_activation=nn.ReLU, norm_layer=nn.BatchNorm1d,
-                 residual=True, device='cpu'):
+                 residual=False, device='cpu'):
         # we authorize nb_blocks = 0 that give the simplest linear + norm block
         assert nb_blocks >= 0, "The number of blocks must be greater than 0."
         assert isinstance(input_shape, int), "The input size must be a single integer."
@@ -71,8 +71,8 @@ class MLPEncoder(nn.Module):
         self.final_block = nn.Sequential(
             nn.Linear(last_dim, n_components),
             norm_layer(n_components),
-            output_activation(),
         ).to(device)
+        self.final_activation = output_activation()
 
     def forward(self, x):
         """
@@ -85,8 +85,10 @@ class MLPEncoder(nn.Module):
 
         Returns
         -------
-        torch.Tensor
-            Encoded tensor of shape (batch_size, nb_components).
+        pre_z : torch.Tensor
+            Pre-activation (pre-codes) tensor of shape (batch_size, n_components).
+        z : torch.Tensor
+            Encoded tensor (codes) of shape (batch_size, n_components).
         """
         assert len(x.shape) == 2, "Input tensor must have 2 dimensions (batch, input_size)."
 
@@ -98,8 +100,10 @@ class MLPEncoder(nn.Module):
             if self.residual and (layer_i != 0 or self.hidden_dim == self.input_size):
                 x = x + residual
 
-        x = self.final_block(x)
-        return x
+        pre_z = self.final_block(x)
+        z = self.final_activation(pre_z)
+
+        return pre_z, z
 
 
 class AttentionBlock(nn.Module):
@@ -235,8 +239,9 @@ class AttentionEncoder(nn.Module):
         self.final_block = nn.Sequential(
             nn.Linear(input_shape[-1], n_components),
             norm_layer(n_components),
-            output_activation(),
         ).to(device)
+
+        self.final_activation = output_activation()
 
     def forward(self, x):
         """
@@ -249,8 +254,10 @@ class AttentionEncoder(nn.Module):
 
         Returns
         -------
-        torch.Tensor
-            Encoded tensor of shape (batch_size * seq_length, n_components).
+        pre_z : torch.Tensor
+            Pre-activation (pre-codes) tensor of shape (batch_size * seq_length, n_components).
+        z : torch.Tensor
+            Encoded tensor (codes) of shape (batch_size * seq_length, n_components).
         """
         assert len(x.shape) == 3, "Input tensor must have 3 dimensions (batch, seq_length, input_size)."
 
@@ -260,9 +267,12 @@ class AttentionEncoder(nn.Module):
         # flatten, no more mixing between token of the same input
         # from (N, t, d) to (N * t, d)
         x = rearrange(x, 'n t d -> (n t) d')
+
         # final block to get concepts/features embeds for each token
-        x = self.final_block(x)
-        return x
+        pre_z = self.final_block(x)
+        z = self.final_activation(pre_z)
+
+        return pre_z, z
 
 
 class ResNetBlock(nn.Module):
@@ -383,8 +393,8 @@ class ResNetEncoder(nn.Module):
         self.final_block = nn.Sequential(
             nn.Linear(last_dim, n_components),
             nn.BatchNorm1d(n_components),
-            output_activation(),
         ).to(device)
+        self.final_activation = output_activation()
 
     def forward(self, x):
         """
@@ -397,8 +407,10 @@ class ResNetEncoder(nn.Module):
 
         Returns
         -------
-        torch.Tensor
-            Encoded tensor of shape (batch_size, n_components).
+        pre_z : torch.Tensor
+            Pre-activation (pre-codes) tensor of shape (batch_size, n_components).
+        z :
+            Encoded tensor (codes) of shape (batch_size, n_components).
         """
         assert len(x.shape) == 4, "Input tensor must have 4 dimensions (batch, channels, height, width)."
 
@@ -406,6 +418,9 @@ class ResNetEncoder(nn.Module):
 
         # flatten, no more mixing between 'tokens'/ 'spatial dims' of the same input
         x = rearrange(x, 'n c h w -> (n h w) c')
+
         # then get the final codes / concepts
-        x = self.final_block(x)
-        return x
+        pre_z = self.final_block(x)
+        z = self.final_activation(pre_z)
+
+        return pre_z, z

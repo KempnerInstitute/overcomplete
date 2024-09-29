@@ -6,7 +6,7 @@ from torch import nn
 
 from ..base import BaseDictionaryLearning
 from .dictionary import DictionaryLayer
-from .factory import SAEFactory
+from .factory import EncoderFactory
 
 
 class SAE(BaseDictionaryLearning):
@@ -44,6 +44,8 @@ class SAE(BaseDictionaryLearning):
         see dictionary module to see all the possible initialization.
     data_initializer : torch.Tensor, optional
         Data used to fit a first approximation and initialize the dictionary, by default None.
+    device : str, optional
+        Device to run the model on, by default 'cpu'.
 
     Methods
     -------
@@ -66,17 +68,14 @@ class SAE(BaseDictionaryLearning):
 
         # initialize the encoder
         if isinstance(encoder_module, str):
-            assert encoder_module in SAEFactory.list_modules(), f"Encoder '{encoder_module}' not found in registry."
-            self.encoder = SAEFactory.create_module(encoder_module, input_shape, n_components, device=device)
+            assert encoder_module in EncoderFactory.list_modules(), f"Encoder '{encoder_module}' not found in registry."
+            self.encoder = EncoderFactory.create_module(encoder_module, input_shape, n_components, device=device)
         elif encoder_module is not None:
             self.encoder = encoder_module
         else:
+            # default encoder
             assert isinstance(input_shape, int), "Default encoder assumes input_shape is an int."
-            self.encoder = nn.Sequential(
-                nn.Linear(input_shape, n_components),
-                nn.BatchNorm1d(n_components),
-                nn.ReLU(),
-            ).to(device)
+            self.encoder = EncoderFactory.create_module("linear", input_shape, n_components, device=device)
 
         # initialize the dictionary, but first find the channel dimension
         # tfel: do we really need this parameter if an encoder module is passed?
@@ -121,10 +120,16 @@ class SAE(BaseDictionaryLearning):
 
         Returns
         -------
-        tuple
-            Latent representation tensor and reconstructed input tensor.
+        tuple (z, x_hat)
+            The codes (z) and and reconstructed input tensor (x_hat).
         """
         z = self.encode(x)
+
+        if isinstance(z, tuple):
+            # if z is a tuple, it means that the encoder returns the pre-codes and the codes
+            # (before the activation fn)
+            pre_z, z = z
+
         return z, self.decode(z)
 
     def encode(self, x):
@@ -138,8 +143,9 @@ class SAE(BaseDictionaryLearning):
 
         Returns
         -------
-        torch.Tensor
-            Latent representation tensor of shape (batch_size, nb_components).
+        torch.Tensor or tuple
+            Latent representation tensor (z) of shape (batch_size, nb_components).
+            If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
         """
         return self.encoder(x)
 

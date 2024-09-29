@@ -4,17 +4,16 @@ and a factory class to create modules using string identifier.
 
 example usage:
 
-model = SAEFactory.create_module("mlp_ln_3")
-model = SAEFactory.create_module("mlp_bn_1_gelu_no_res")
+model = EncoderFactory.create_module("mlp_ln_1") # 1 block mlp with layer norm
+model = EncoderFactory.create_module("mlp_bn_3") # 3 blocks mlp with batch norm
 
-model = SAEFactory.create_module("resnet_3b")
-model = SAEFactory.create_module("attention_1b")
+model = EncoderFactory.create_module("resnet_1b") # 1 block resnet
+model = EncoderFactory.create_module("attention_3b") # 3 blocks attention
 
 you can also pass additional arguments to the module creation function:
 
-model = SAEFactory.create_module("mlp_ln_3", hidden_dim=128)
-model = SAEFactory.create_module("resnet_3b", hidden_dim=128)
-model = SAEFactory.create_module("attention_1b", attention_heads=2)
+model = EncoderFactory.create_module("mlp_ln_1", hidden_dim=128)
+model = EncoderFactory.create_module("attention_1b", attention_heads=2)
 """
 
 from torch import nn
@@ -22,7 +21,7 @@ from torch import nn
 from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 
 
-class SAEFactory:
+class EncoderFactory:
     """
     Factory class to create modules using registered module creation functions.
     """
@@ -39,7 +38,7 @@ class SAEFactory:
             The name to register the module creation function under.
         """
         def decorator(func):
-            SAEFactory._module_registry[name] = func
+            EncoderFactory._module_registry[name] = func
             return func
         return decorator
 
@@ -62,9 +61,9 @@ class SAEFactory:
         nn.Module
             The initialized module.
         """
-        if name not in SAEFactory._module_registry:
+        if name not in EncoderFactory._module_registry:
             raise ValueError(f"Module '{name}' not found in registry.")
-        return SAEFactory._module_registry[name](*args, **kwargs)
+        return EncoderFactory._module_registry[name](*args, **kwargs)
 
     @staticmethod
     def list_modules():
@@ -76,63 +75,99 @@ class SAEFactory:
         list
             A list of names of all registered modules.
         """
-        return list(SAEFactory._module_registry.keys())
+        return list(EncoderFactory._module_registry.keys())
 
 
-def register_basic_templates():
-    """
-    Register some basic template modules for the factory.
-    """
-    # pylint: disable=W0640
-    # register some template mlp models for the factory
-    for norm in ['ln', 'bn']:
-        for nb_blocks in [1, 2, 3, 4, 5]:
-            for act in [None, 'gelu']:
-                for res in [None, 'no_res']:
-
-                    name = f"mlp_{norm}_{nb_blocks}"
-                    if act is not None:
-                        name = f"{name}_{act}"
-                    if res is not None:
-                        name = f"{name}_{res}"
-
-                    @SAEFactory.register_module(name)
-                    def create_mlp(input_shape, n_components, nb_blocks=nb_blocks, norm=norm, act=act, res=res, **kwargs):
-                        return MLPEncoder(
-                            input_shape=input_shape,
-                            n_components=n_components,
-                            nb_blocks=nb_blocks,
-                            norm_layer=nn.LayerNorm if norm == 'ln' else nn.BatchNorm1d,
-                            hidden_activation=nn.GELU if act == 'gelu' else nn.ReLU,
-                            residual=res != 'no_res',
-                            **kwargs
-                        )
-
-    # register basics resnet and attention template
-    for nb_blocks in [1, 3]:
-
-        name_resnet = f"resnet_{nb_blocks}b"
-
-        @SAEFactory.register_module(name_resnet)
-        def create_resnet(input_shape, n_components, nb_blocks=nb_blocks, **kwargs):
-            return ResNetEncoder(
-                input_shape=input_shape,
-                n_components=n_components,
-                nb_blocks=nb_blocks,
-                **kwargs
-            )
-
-        name_attention = f"attention_{nb_blocks}b"
-
-        @SAEFactory.register_module(name_attention)
-        def create_attention(input_shape, n_components, nb_blocks=nb_blocks, hidden_dim=None, **kwargs):
-            return AttentionEncoder(
-                input_shape=input_shape,
-                n_components=n_components,
-                hidden_dim=hidden_dim,
-                nb_blocks=nb_blocks,
-                **kwargs
-            )
+@EncoderFactory.register_module("linear")
+def linear(input_shape, n_components, **kwargs):
+    return MLPEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=0,
+        norm_layer=nn.Identity,
+        ** kwargs
+    )
 
 
-register_basic_templates()
+@EncoderFactory.register_module("mlp_ln_1")
+def mlp_ln_1(input_shape, n_components, **kwargs):
+    return MLPEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=1,
+        norm_layer=nn.LayerNorm,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("mlp_ln_3")
+def mlp_ln_3(input_shape, n_components, **kwargs):
+    return MLPEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=3,
+        norm_layer=nn.LayerNorm,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("mlp_bn_1")
+def mlp_bn_1(input_shape, n_components, **kwargs):
+    return MLPEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=1,
+        norm_layer=nn.BatchNorm1d,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("mlp_bn_3")
+def mlp_bn_3(input_shape, n_components, **kwargs):
+    return MLPEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=3,
+        norm_layer=nn.BatchNorm1d,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("resnet_1b")
+def resnet_1b(input_shape, n_components, **kwargs):
+    return ResNetEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=1,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("resnet_3b")
+def resnet_3b(input_shape, n_components, **kwargs):
+    return ResNetEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=3,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("attention_1b")
+def attention_1b(input_shape, n_components, **kwargs):
+    return AttentionEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=1,
+        **kwargs
+    )
+
+
+@EncoderFactory.register_module("attention_3b")
+def attention_3b(input_shape, n_components, **kwargs):
+    return AttentionEncoder(
+        input_shape=input_shape,
+        n_components=n_components,
+        nb_blocks=3,
+        **kwargs
+    )
