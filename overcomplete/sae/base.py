@@ -152,18 +152,10 @@ class SAE(BaseDictionaryLearning):
 
         Returns
         -------
-        tuple (z, x_hat)
-            The codes (z) and and reconstructed input tensor (x_hat).
+        SAEOuput
+            Return the pre_codes (z_pre), codes (z) and reconstructed input tensor (x_hat).
         """
-        z = self.encode(x)
-
-        if isinstance(z, tuple):
-            # if z is a tuple, it means that the encoder returns the pre-codes and the codes
-            # (before the activation fn)
-            pre_codes, codes = z
-        else:
-            pre_codes = z
-            codes = z
+        pre_codes, codes = self.encode(x)
 
         x_reconstructed = self.decode(codes)
 
@@ -180,9 +172,9 @@ class SAE(BaseDictionaryLearning):
 
         Returns
         -------
-        torch.Tensor or tuple
-            Latent representation tensor (z) of shape (batch_size, nb_components).
-            If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
+        tuple (pre_codes, codes)
+            Latent representation tensor before (z_pre) and after (z) activation function.
+            The shape are the same (batch_size, nb_components).
         """
         return self.encoder(x)
 

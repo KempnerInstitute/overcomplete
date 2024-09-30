@@ -266,9 +266,9 @@ class JumpSAE(SAE):
         super().__init__(input_shape, n_components, encoder_module,
                          dictionary_initializer, data_initializer, device)
 
-        self.kernel = self._KERNELS[kernel]
+        self.kernel_fn = self._KERNELS[kernel]
         self.bandwith = torch.tensor(bandwith, device=device)
-        self.threshold = nn.Parameter(torch.zeros(n_components), requires_grad=True).to(device)
+        self.thresholds = nn.Parameter(torch.zeros(n_components), requires_grad=True).to(device)
 
     def get_dictionary(self):
         """
@@ -295,15 +295,7 @@ class JumpSAE(SAE):
         tuple (z, x_hat)
             The codes (z) and and reconstructed input tensor (x_hat).
         """
-        z = self.encode(x)
-
-        if isinstance(z, tuple):
-            # if z is a tuple, it means that the encoder returns the pre-codes and the codes
-            # (before the activation fn)
-            pre_codes, codes = z
-        else:
-            pre_codes = z
-            codes = z
+        pre_codes, codes = self.encode(x)
 
         x_reconstructed = self.decode(codes)
 
@@ -324,7 +316,14 @@ class JumpSAE(SAE):
             Latent representation tensor (z) of shape (batch_size, nb_components).
             If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
         """
-        return self.encoder(x)
+        pre_codes, codes = self.encoder(x)
+
+        # re-parametrization trick to avoid threshold going to 0
+        # as it would zero out the gradient for the threshold
+        exp_thresholds = torch.exp(self.thresholds)
+        codes = jump_relu(codes, exp_thresholds, bandwith=self.bandwith, kernel_fn=self.kernel_fn)
+
+        return pre_codes, codes
 
     def decode(self, z):
         """
