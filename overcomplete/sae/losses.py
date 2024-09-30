@@ -164,6 +164,6 @@ def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
     residual_hat = pre_codes @ dictionary
     auxilary_mse = (residual - residual_hat).square().mean()
 
-    loss = mse + auxilary_mse
+    loss = 0.5 * mse + 0.5 * auxilary_mse
 
     return loss
