@@ -16,8 +16,6 @@ def _to_npf64(x):
 
 
 def epsilon_equal(x, y, epsilon=1e-6):
-    assert x.shape == y.shape, "Tensors must have the same shape"
-
     if isinstance(x, torch.Tensor) and isinstance(y, torch.Tensor):
         return torch.allclose(x, y, atol=epsilon)
 

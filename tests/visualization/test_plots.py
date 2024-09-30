@@ -10,7 +10,7 @@ from overcomplete.visualization.plot_utils import (np_channel_last, normalize, c
                                                    interpolate_cv2, interpolate_torch)
 from overcomplete.visualization import show
 
-from .utils import epsilon_equal
+from ..utils import epsilon_equal
 
 
 def test_to_numpy():

@@ -22,7 +22,7 @@ from overcomplete.metrics import (
     frechet_distance
 )
 
-from .utils import epsilon_equal
+from ..utils import epsilon_equal
 
 
 def test_l2_loss():

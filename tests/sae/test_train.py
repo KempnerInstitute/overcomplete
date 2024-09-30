@@ -17,7 +17,7 @@ def test_train_model():
         def forward(self, x):
             z = self.encoder(x)
             x_hat = self.decoder(z)
-            return z, x_hat
+            return z, z, x_hat
 
         def get_dictionary(self):
             return torch.eye(5, 10)

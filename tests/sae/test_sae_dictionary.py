@@ -3,7 +3,7 @@ import pytest
 
 from overcomplete.sae import DictionaryLayer
 
-from .utils import epsilon_equal
+from ..utils import epsilon_equal
 
 
 def test_dictionary_layer_initialization():

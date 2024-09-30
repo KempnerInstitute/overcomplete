@@ -7,7 +7,7 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE
+from overcomplete.sae import SAE, JumpSAE
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,8 @@ from overcomplete.sae import SAE
         'mlp_bn_3',
     ]
 )
-def test_train_mlp_sae(module_name):
+@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+def test_train_mlp_sae(module_name, sae_class):
     """Ensure we can train MLP SAE using common configurations."""
     torch.autograd.set_detect_anomaly(True)
 
@@ -30,7 +31,7 @@ def test_train_mlp_sae(module_name):
     criterion = mse_l1
     n_components = 2
 
-    model = SAE(data.shape[1], n_components, encoder_module=module_name)
+    model = sae_class(data.shape[1], n_components, encoder_module=module_name)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -69,7 +70,8 @@ def test_train_mlp_sae(module_name):
     assert "time_epoch" in logs
 
 
-def test_train_resnet_sae():
+@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+def test_train_resnet_sae(sae_class):
     """Ensure we can train resnet sae"""
     torch.autograd.set_detect_anomaly(True)
 
@@ -82,7 +84,7 @@ def test_train_resnet_sae():
     dataloader = DataLoader(dataset, batch_size=10)
     n_components = 2
 
-    model = SAE(data.shape[1:], n_components, encoder_module="resnet_3b")
+    model = sae_class(data.shape[1:], n_components, encoder_module="resnet_3b")
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -100,7 +102,8 @@ def test_train_resnet_sae():
     assert "time_epoch" in logs
 
 
-def test_train_attention_sae():
+@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+def test_train_attention_sae(sae_class):
     """Ensure we can train attention sae"""
     torch.autograd.set_detect_anomaly(True)
 
@@ -113,7 +116,7 @@ def test_train_attention_sae():
     dataloader = DataLoader(dataset, batch_size=10)
     n_components = 2
 
-    model = SAE(data.shape[1:], n_components, encoder_module="attention_3b")
+    model = sae_class(data.shape[1:], n_components, encoder_module="attention_3b")
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -142,7 +145,8 @@ def test_train_attention_sae():
         'mlp_bn_3',
     ]
 )
-def test_train_without_amp(module_name):
+@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+def test_train_without_amp(module_name, sae_class):
     """Ensure we can train SAE without AMP."""
     data = torch.randn(10, 10)
     dataset = TensorDataset(data)
@@ -150,7 +154,7 @@ def test_train_without_amp(module_name):
     criterion = mse_l1
     n_components = 2
 
-    model = SAE(data.shape[1], n_components, encoder_module=module_name)
+    model = sae_class(data.shape[1], n_components, encoder_module=module_name)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None

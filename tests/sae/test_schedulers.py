@@ -4,7 +4,7 @@ from torch import nn
 from torch.optim import SGD
 from overcomplete.sae import CosineScheduler, mse_l1
 
-from .utils import epsilon_equal
+from ..utils import epsilon_equal
 
 
 def test_cosine_scheduler():
