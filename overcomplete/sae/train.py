@@ -115,7 +115,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             optimizer.zero_grad()
 
             z_pre, z, x_hat = model(x)
-            loss = criterion(x, x_hat, z, model.get_dictionary())
+            loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
 
             # tfel: monitoring of NaNs in loss could be added here
             loss.backward()
@@ -198,9 +198,9 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
-            with torch.cuda.amp.autocast(enabled=True):
+            with torch.amp.autocast('cuda', enabled=True):
                 z_pre, z, x_hat = model(x)
-                loss = criterion(x, x_hat, z, model.get_dictionary())
+                loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
 
             if torch.isnan(loss) or torch.isinf(loss):
                 nan_fallback_count += 1
@@ -208,7 +208,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
                     print(f"[Warning] NaN detected in loss at Epoch {epoch+1}, "
                           f"Iteration {len(logs['step_loss'])+1}. Retrying in full precision.")
 
-                with torch.cuda.amp.autocast(enabled=False):
+                with torch.amp.autocast('cuda', enabled=False):
                     z, x_hat = model(x)
                     loss = criterion(x, x_hat, z, model.get_dictionary())
 

@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from collections import defaultdict
 
 from overcomplete.sae.train import train_sae
+from overcomplete.sae.losses import mse_l1
 
 
 def test_train_model():
@@ -27,8 +28,7 @@ def test_train_model():
     dataset = TensorDataset(data)
     dataloader = DataLoader(dataset, batch_size=10)
 
-    def criterion(x, x_hat, z, dictionary):
-        return ((x - x_hat).pow(2).mean() + z.abs().mean())
+    criterion = mse_l1
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None

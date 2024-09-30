@@ -75,9 +75,9 @@ def test_train_resnet_sae(sae_class):
     """Ensure we can train resnet sae"""
     torch.autograd.set_detect_anomaly(True)
 
-    def criterion(x, x_hat, z, dictionary):
+    def criterion(x, x_hat, z_pre, z, dictionary):
         x = rearrange(x, 'n c w h -> (n w h) c')
-        return mse_l1(x, x_hat, z, dictionary)
+        return mse_l1(x, x_hat, z_pre, z, dictionary)
 
     data = torch.randn(10, 10, 5, 5)
     dataset = TensorDataset(data)
@@ -107,9 +107,9 @@ def test_train_attention_sae(sae_class):
     """Ensure we can train attention sae"""
     torch.autograd.set_detect_anomaly(True)
 
-    def criterion(x, x_hat, z, dictionary):
+    def criterion(x, x_hat, z_pre, z, dictionary):
         x = rearrange(x, 'n t c -> (n t) c')
-        return mse_l1(x, x_hat, z, dictionary)
+        return mse_l1(x, x_hat, z_pre, z, dictionary)
 
     data = torch.randn(10, 10, 64)
     dataset = TensorDataset(data)
