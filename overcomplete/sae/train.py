@@ -114,7 +114,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
-            z, x_hat = model(x)
+            z_pre, z, x_hat = model(x)
             loss = criterion(x, x_hat, z, model.get_dictionary())
 
             # tfel: monitoring of NaNs in loss could be added here
@@ -199,7 +199,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             optimizer.zero_grad()
 
             with torch.cuda.amp.autocast(enabled=True):
-                z, x_hat = model(x)
+                z_pre, z, x_hat = model(x)
                 loss = criterion(x, x_hat, z, model.get_dictionary())
 
             if torch.isnan(loss) or torch.isinf(loss):
