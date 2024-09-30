@@ -11,6 +11,7 @@ In Convex NMF, we aim to factorize A ≈ Z D = Z A W.
 """
 
 import torch
+from tqdm import tqdm
 
 from .base import BaseOptimDictionaryLearning
 from .semi_nmf import SemiNMF
@@ -49,7 +50,7 @@ def _one_step_multiplicative_update(A, Z, W, update_Z=True, update_W=True,
 
 
 def cnmf_multiplicative_update_solver(
-        A, Z, W, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5):
+        A, Z, W, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5, verbose=False):
     """
     Convex NMF Multiplicative update optimizer.
 
@@ -73,6 +74,8 @@ def cnmf_multiplicative_update_solver(
         Maximum number of iterations, by default 500.
     tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-5.
+    verbose : bool, optional
+        Whether to print optimization information, by default False.
 
     Returns
     -------
@@ -81,7 +84,7 @@ def cnmf_multiplicative_update_solver(
     W : torch.Tensor
         Updated coefficient tensor.
     """
-    for _ in range(max_iter):
+    for _ in tqdm(range(max_iter), disable=not verbose):
         Z_old = Z.clone()
         Z, W = _one_step_multiplicative_update(A, Z, W, update_Z=update_Z, update_W=update_W,
                                                strict_convex=strict_convex)
@@ -93,7 +96,7 @@ def cnmf_multiplicative_update_solver(
 
 
 def cnmf_pgd_solver(
-        A, Z, W, lr=1e-2, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5):
+        A, Z, W, lr=1e-2, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5, verbose=False):
     """
     Convex NMF PGD optimizer.
 
@@ -119,6 +122,8 @@ def cnmf_pgd_solver(
         Maximum number of iterations, by default 500.
     tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-5.
+    verbose : bool, optional
+        Whether to print optimization information, by default False.
 
     Returns
     -------
@@ -140,7 +145,7 @@ def cnmf_pgd_solver(
 
     optimizer = torch.optim.Adam(to_optimize, lr=lr)
 
-    for iter_i in range(max_iter):
+    for iter_i in tqdm(range(max_iter), disable=not verbose):
         optimizer.zero_grad()
         # @tfel: add possibility to pass custom loss here
         D = W @ A
@@ -192,6 +197,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
     solver: str, optional
         Optimization solver to use, either 'mu' (Multiplicative Update) or 'pgd' like method,
         by default 'mu'.
+    verbose: bool, optional
+        Whether to print optimization information, by default False.
     """
 
     _SOLVERS = {
@@ -199,7 +206,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         'pgd': cnmf_pgd_solver,
     }
 
-    def __init__(self, n_components, device='cpu', tol=1e-4, strict_convex=False, solver='mu', **kwargs):
+    def __init__(self, n_components, device='cpu', tol=1e-4, strict_convex=False, solver='pgd',
+                 verbose=False, **kwargs):
         assert solver in self._SOLVERS, f"Unknown solver {solver}."
 
         super().__init__(n_components, device)
@@ -210,6 +218,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         self.solver = solver
         self.solver_fn = self._SOLVERS[solver]
         self.tol = tol
+        self.verbose = verbose
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -235,7 +244,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
 
         Z = self.init_random_z(A)
         Z, _ = self.solver_fn(A, Z, self.W, update_Z=True, update_W=False,
-                              strict_convex=self.strict_convex, max_iter=max_iter, tol=tol)
+                              strict_convex=self.strict_convex, max_iter=max_iter, tol=tol,
+                              verbose=self.verbose)
 
         return Z
 
@@ -271,12 +281,15 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         max_iter : int, optional
             Maximum number of iterations, by default 500.
         """
-        # @tfel could random init, after experiment it seems that
-        # cnmf is really sensitive to the initialization
-        Z, W = self.init_semi_nmf(A)
+        # @tfel more costly and require Z Zt inverse (could be impossible in practice)
+        # but better init could be done as proposed in the original article
+        # Z, W = self.init_semi_nmf(A)
+        Z = self.init_random_z(A)
+        W = self.init_random_w(A)
 
         Z, W = self.solver_fn(A, Z, W, update_Z=True, update_W=True,
-                              strict_convex=self.strict_convex, max_iter=max_iter, tol=self.tol)
+                              strict_convex=self.strict_convex, max_iter=max_iter, tol=self.tol,
+                              verbose=self.verbose)
 
         self.Z = Z
         self.W = W
