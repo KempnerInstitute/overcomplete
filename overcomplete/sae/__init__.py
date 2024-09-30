@@ -9,3 +9,4 @@ from .losses import mse_l1
 from .train import train_sae
 from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 from .factory import EncoderFactory
+from .jump_sae import JumpSAE, jump_relu, heaviside
