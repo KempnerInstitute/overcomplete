@@ -7,7 +7,9 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE, JumpSAE
+from overcomplete.sae import SAE, JumpSAE, TopKSAE
+
+all_sae = [SAE, JumpSAE, TopKSAE]
 
 
 @pytest.mark.parametrize(
@@ -20,7 +22,7 @@ from overcomplete.sae import SAE, JumpSAE
         'mlp_bn_3',
     ]
 )
-@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+@pytest.mark.parametrize("sae_class", all_sae)
 def test_train_mlp_sae(module_name, sae_class):
     """Ensure we can train MLP SAE using common configurations."""
     torch.autograd.set_detect_anomaly(True)
@@ -70,7 +72,7 @@ def test_train_mlp_sae(module_name, sae_class):
     assert "time_epoch" in logs
 
 
-@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+@pytest.mark.parametrize("sae_class", all_sae)
 def test_train_resnet_sae(sae_class):
     """Ensure we can train resnet sae"""
     torch.autograd.set_detect_anomaly(True)
@@ -102,7 +104,7 @@ def test_train_resnet_sae(sae_class):
     assert "time_epoch" in logs
 
 
-@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+@pytest.mark.parametrize("sae_class", all_sae)
 def test_train_attention_sae(sae_class):
     """Ensure we can train attention sae"""
     torch.autograd.set_detect_anomaly(True)
@@ -145,7 +147,7 @@ def test_train_attention_sae(sae_class):
         'mlp_bn_3',
     ]
 )
-@pytest.mark.parametrize("sae_class", [SAE, JumpSAE])
+@pytest.mark.parametrize("sae_class", all_sae)
 def test_train_without_amp(module_name, sae_class):
     """Ensure we can train SAE without AMP."""
     data = torch.randn(10, 10)

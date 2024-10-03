@@ -1,10 +1,10 @@
 import pytest
 
 import torch
-from overcomplete.sae import SAE, DictionaryLayer, JumpSAE
+from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE
 from overcomplete.sae.base import SAEOutput
 
-all_sae = [SAE, JumpSAE]
+all_sae = [SAE, JumpSAE, TopKSAE]
 
 
 def test_dictionary_layer():

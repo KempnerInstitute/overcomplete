@@ -1,6 +1,7 @@
 import pytest
 
-from overcomplete.sae import MLPEncoder, AttentionEncoder, ResNetEncoder, EncoderFactory, SAE, JumpSAE
+from overcomplete.sae import (MLPEncoder, AttentionEncoder, ResNetEncoder,
+                              EncoderFactory, SAE, JumpSAE, TopKSAE)
 
 
 INPUT_SIZE = 32
@@ -10,7 +11,7 @@ SEQ_LENGTH = 4
 HEIGHT = 7
 WIDTH = 7
 
-all_sae = [SAE, JumpSAE]
+all_sae = [SAE, JumpSAE, TopKSAE]
 
 
 @pytest.mark.parametrize("device", ['cpu', 'meta'])
