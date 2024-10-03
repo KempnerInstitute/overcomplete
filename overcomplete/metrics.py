@@ -196,8 +196,6 @@ def l0(x, dims=None):
     torch.Tensor
         Average sparsity if dims=None else sparsity across dims.
     """
-    assert x.dtype == torch.float32, "Input tensor must be of type float32"
-
     if dims is None:
         return torch.mean((x == 0).float())
     return torch.mean((x == 0).float(), dims)
@@ -253,8 +251,6 @@ def l1_l2_ratio(x, dims=-1):
     torch.Tensor
         the l1/l2 ratio.
     """
-    assert x.dtype == torch.float32, "Input tensor must be of type float32"
-
     l1_norm = l1(x, dims)
     l2_norm = l2(x, dims) + Epsilon
 
