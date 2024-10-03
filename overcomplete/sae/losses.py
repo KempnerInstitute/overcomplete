@@ -26,7 +26,7 @@ from ..metrics import hoyer, kappa_4, lp, l1, dead_codes
 # pylint: disable=W0613
 
 
-def _mse_with_penalty(x, x_hat, pre_codes, codes, dictionary, penalty, penalty_fn):
+def _mse_with_penalty(x, x_hat, pre_codes, codes, dictionary, penalty=1.0, penalty_fn=None):
     """
     Compute the Mean Squared Error (MSE) loss with a given penalty function.
 
@@ -55,8 +55,13 @@ def _mse_with_penalty(x, x_hat, pre_codes, codes, dictionary, penalty, penalty_f
         Loss value.
     """
     mse = (x - x_hat).square().mean()
-    reg = torch.mean(penalty_fn(codes))
-    return mse + penalty * reg
+
+    if penalty_fn is None:
+        reg = 0.0
+    else:
+        reg = torch.mean(penalty_fn(codes)) * penalty
+
+    return mse + reg
 
 
 # l1 should be dependent on the codes dimension, hoyer and kappa are not

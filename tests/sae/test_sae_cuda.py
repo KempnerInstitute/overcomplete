@@ -1,7 +1,7 @@
 import pytest
 
 from overcomplete.sae import (MLPEncoder, AttentionEncoder, ResNetEncoder,
-                              EncoderFactory, SAE, JumpSAE, TopKSAE)
+                              EncoderFactory, SAE, JumpSAE, TopKSAE, QSAE)
 
 
 INPUT_SIZE = 32
@@ -11,10 +11,10 @@ SEQ_LENGTH = 4
 HEIGHT = 7
 WIDTH = 7
 
-all_sae = [SAE, JumpSAE, TopKSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE]
 
 
-@pytest.mark.parametrize("device", ['cpu', 'meta'])
+@ pytest.mark.parametrize("device", ['cpu', 'meta'])
 def test_mlp_encoder_device_propagation(device):
     encoder = MLPEncoder(INPUT_SIZE, N_COMPONENTS, device=device)
 
@@ -22,7 +22,7 @@ def test_mlp_encoder_device_propagation(device):
         assert param.device.type == device
 
 
-@pytest.mark.parametrize("device", ['cpu', 'meta'])
+@ pytest.mark.parametrize("device", ['cpu', 'meta'])
 def test_attention_encoder_device_propagation(device):
     encoder = AttentionEncoder((SEQ_LENGTH, INPUT_SIZE), N_COMPONENTS, device=device)
 
@@ -30,7 +30,7 @@ def test_attention_encoder_device_propagation(device):
         assert param.device.type == device
 
 
-@pytest.mark.parametrize("device", ['cpu', 'meta'])
+@ pytest.mark.parametrize("device", ['cpu', 'meta'])
 def test_resnet_encoder_device_propagation(device):
     encoder = ResNetEncoder((INPUT_CHANNELS, HEIGHT, WIDTH), N_COMPONENTS, device=device)
 
@@ -38,8 +38,8 @@ def test_resnet_encoder_device_propagation(device):
         assert param.device.type == device
 
 
-@pytest.mark.parametrize("device, ", ['cpu', 'meta'])
-@pytest.mark.parametrize("sae_class", all_sae)
+@ pytest.mark.parametrize("device, ", ['cpu', 'meta'])
+@ pytest.mark.parametrize("sae_class", all_sae)
 def test_default_sae_device_propagation(device, sae_class):
     model = sae_class(32, 5, encoder_module=None, device=device)
 
@@ -51,7 +51,7 @@ def test_default_sae_device_propagation(device, sae_class):
         assert param.device.type == device
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     "device, module_name, args, kwargs",
     [
         ('cpu', 'linear', (INPUT_SIZE, N_COMPONENTS), {}),

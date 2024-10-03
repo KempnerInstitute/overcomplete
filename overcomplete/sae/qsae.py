@@ -5,7 +5,7 @@ Module for Quantized Sparse SAE (Q-SAE).
 import torch
 from torch import nn
 
-from overcomplete.sae.base import SAE, SAEOutput
+from overcomplete.sae.base import SAE
 
 
 class QSAE(SAE):
@@ -13,9 +13,10 @@ class QSAE(SAE):
     Quantized SAE.
 
     @tfel: The Quantized Sparse Autoencoder is a sparse autoencoder that will learn
-    level of codes for each dimension, and project the pre_code to the closest
-    quantization point in a set of 2q points. The quantization points are
-    symmetric around 0 (Q = [-q, -q+1, ..., q-1, q]).
+    level of codes shared across dimension, and project the pre_code to the closest
+    quantization point in a set of q points. The quantization points are learned
+    during training and are initialize around 0:
+        Q0 = [-1, ..., 1], with #|Q| = q.
 
     @tfel: this is an unpublished work, please cite the Overcomplete library
     if you use it.
@@ -57,18 +58,18 @@ class QSAE(SAE):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, n_components, q=2, hard=False,
+    def __init__(self, input_shape, n_components, q=4, hard=False,
                  encoder_module=None, dictionary_initializer=None, data_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
+        assert q > 1, "You need at least 2 quantization levels."
 
         super().__init__(input_shape, n_components, encoder_module,
                          dictionary_initializer, data_initializer, device)
 
-        # from 1..q on each concepts. we will symmetrize it later
-        # todo check arange ou faire juste un linspace 0, 1?
-        self._Q = torch.arange(q, device=device).float() + 1.0
-        self._Q = self._Q.unsqueeze(0).repeat(n_components, 1)
+        # initialize linearly around [-1, 1]
+        Q = torch.linspace(-1.0, 1.0, q, device=device).float()
+        self.Q = nn.Parameter(Q, requires_grad=True)
 
         self.hard = hard
 
@@ -89,25 +90,21 @@ class QSAE(SAE):
         """
         pre_codes, codes = self.encoder(x)
 
-        # symmetrize Q: concatenate -Q and Q along the last dimension
-        Q = torch.cat([-self._Q, self._Q], dim=-1)
-
         # compute the distance from pre_codes to each quantization state
-        dist = (pre_codes.unsqueeze(-1) - Q).square()
+        dist = (pre_codes[:, :, None] - self.Q[None, None, :]).square()
 
-        # take the closest id
         if self.hard:
+            # take the closest id, costly
             closest_idx = dist.argmin(dim=-1)
 
-            # could be more efficient, i simply convert to one-hot and
-            # do a matrix multiplication to get the closest Q value
-            one_hot = torch.nn.functional.one_hot(closest_idx, num_classes=Q.size(-1)).float()
-            quantized_codes = torch.sum(one_hot * Q[None, :, :], -1)
+            # @tfel: could be more efficient
+            one_hot = torch.nn.functional.one_hot(closest_idx, num_classes=self.Q.size(-1)).float()
+            quantized_codes = torch.sum(one_hot * self.Q[None, None, :], -1)
         else:
             # soft quantization
             # compute the softmax of the negative distance
             closest_idx = torch.nn.functional.softmax(-dist, dim=-1)
-            quantized_codes = torch.sum(closest_idx * Q[None, :, :], -1)
+            quantized_codes = torch.sum(closest_idx * self.Q[None, None, :], -1)
 
         # straight-through estimator
         quantized_codes = codes + quantized_codes - codes.detach()
@@ -115,31 +112,3 @@ class QSAE(SAE):
         quantized_codes = torch.relu(quantized_codes)
 
         return pre_codes, quantized_codes
-
-    def decode(self, z):
-        """
-        Decode latent representation to reconstruct input data.
-
-        Parameters
-        ----------
-        z : torch.Tensor
-            Latent representation tensor of shape (batch_size, nb_components).
-
-        Returns
-        -------
-        torch.Tensor
-            Reconstructed input tensor of shape (batch_size, input_size).
-        """
-        return self.dictionary(z)
-
-    def fit(self, x):
-        """
-        Method not implemented for SAE. See train_sae function for training the model.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input data tensor.
-        """
-        raise NotImplementedError('SAE does not support fit method. You have to train the model \
-                                  using a custom training loop.')

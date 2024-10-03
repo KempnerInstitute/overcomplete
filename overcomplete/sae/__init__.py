@@ -11,3 +11,4 @@ from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 from .factory import EncoderFactory
 from .jump_sae import JumpSAE, jump_relu, heaviside
 from .topk_sae import TopKSAE
+from .qsae import QSAE
