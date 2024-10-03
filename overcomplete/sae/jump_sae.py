@@ -5,9 +5,7 @@ Module for JumpReLU Sparse Autoencoder (JumpSAE).
 import torch
 from torch import nn
 
-from .base import SAE, SAEOutput
-from .dictionary import DictionaryLayer
-from .factory import EncoderFactory
+from .base import SAE
 from .kernels import (rectangle_kernel, gaussian_kernel, triangular_kernel, cosine_kernel,
                       epanechnikov_kernel, quartic_kernel, silverman_kernel, cauchy_kernel)
 
@@ -192,6 +190,10 @@ class JumpSAE(SAE):
     The JumpReLU function is not differentiable at the threshold, the idea
     is to use a pseudo-gradient to approximate the gradient at the threshold.
 
+    @tfel: JumpSAE hyperparameters are sensitive to the data distribution.
+           I strongly to standardize (mean=0, std=1) the input data before
+           training the model.
+
     For more information, see:
         - "Jumping Ahead: Improving Reconstruction Fidelity with JumpReLU Sparse Autoencoders"
             by Rajamanoharan et al. (2024), https://arxiv.org/abs/2407.14435
@@ -270,37 +272,6 @@ class JumpSAE(SAE):
         self.bandwith = torch.tensor(bandwith, device=device)
         self.thresholds = nn.Parameter(torch.zeros(n_components), requires_grad=True).to(device)
 
-    def get_dictionary(self):
-        """
-        Return the learned dictionary.
-
-        Returns
-        -------
-        torch.Tensor
-            Learned dictionary tensor of shape (nb_components, input_size).
-        """
-        return self.dictionary.get_dictionary()
-
-    def forward(self, x):
-        """
-        Perform a forward pass through the autoencoder.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input tensor of shape (batch_size, input_size).
-
-        Returns
-        -------
-        tuple (z, x_hat)
-            The codes (z) and and reconstructed input tensor (x_hat).
-        """
-        pre_codes, codes = self.encode(x)
-
-        x_reconstructed = self.decode(codes)
-
-        return SAEOutput(pre_codes, codes, x_reconstructed)
-
     def encode(self, x):
         """
         Encode input data to latent representation.
@@ -316,12 +287,17 @@ class JumpSAE(SAE):
             Latent representation tensor (z) of shape (batch_size, nb_components).
             If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
         """
-        pre_codes, codes = self.encoder(x)
+        pre_codes, _ = self.encoder(x)
 
         # re-parametrization trick to avoid threshold going to 0
         # as it would zero out the gradient for the threshold
         exp_thresholds = torch.exp(self.thresholds)
-        codes = jump_relu(codes, exp_thresholds, bandwith=self.bandwith, kernel_fn=self.kernel_fn)
+
+        # see paper, appendix J
+        codes = torch.relu(pre_codes)
+
+        codes = jump_relu(codes, exp_thresholds, bandwith=self.bandwith,
+                          kernel_fn=self.kernel_fn)
 
         return pre_codes, codes
 
@@ -340,15 +316,3 @@ class JumpSAE(SAE):
             Reconstructed input tensor of shape (batch_size, input_size).
         """
         return self.dictionary(z)
-
-    def fit(self, x):
-        """
-        Method not implemented for SAE. See train_sae function for training the model.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input data tensor.
-        """
-        raise NotImplementedError('SAE does not support fit method. You have to train the model \
-                                  using a custom training loop.')

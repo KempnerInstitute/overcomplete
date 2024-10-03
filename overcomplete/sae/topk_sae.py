@@ -5,7 +5,7 @@ Module for Top-k Sparse SAE (TopKSAE).
 import torch
 from torch import nn
 
-from overcomplete.sae.base import SAE, SAEOutput
+from overcomplete.sae.base import SAE
 
 
 class TopKSAE(SAE):
@@ -70,37 +70,6 @@ class TopKSAE(SAE):
 
         self.top_k = top_k if top_k is not None else min(n_components // 10, 1)
 
-    def get_dictionary(self):
-        """
-        Return the learned dictionary.
-
-        Returns
-        -------
-        torch.Tensor
-            Learned dictionary tensor of shape (nb_components, input_size).
-        """
-        return self.dictionary.get_dictionary()
-
-    def forward(self, x):
-        """
-        Perform a forward pass through the autoencoder.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input tensor of shape (batch_size, input_size).
-
-        Returns
-        -------
-        tuple (z, x_hat)
-            The codes (z) and and reconstructed input tensor (x_hat).
-        """
-        pre_codes, codes = self.encode(x)
-
-        x_reconstructed = self.decode(codes)
-
-        return SAEOutput(pre_codes, codes, x_reconstructed)
-
     def encode(self, x):
         """
         Encode input data to latent representation.
@@ -122,31 +91,3 @@ class TopKSAE(SAE):
         z_topk = torch.zeros_like(codes).scatter(-1, z_topk.indices, z_topk.values)
 
         return pre_codes, z_topk
-
-    def decode(self, z):
-        """
-        Decode latent representation to reconstruct input data.
-
-        Parameters
-        ----------
-        z : torch.Tensor
-            Latent representation tensor of shape (batch_size, nb_components).
-
-        Returns
-        -------
-        torch.Tensor
-            Reconstructed input tensor of shape (batch_size, input_size).
-        """
-        return self.dictionary(z)
-
-    def fit(self, x):
-        """
-        Method not implemented for SAE. See train_sae function for training the model.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input data tensor.
-        """
-        raise NotImplementedError('SAE does not support fit method. You have to train the model \
-                                  using a custom training loop.')
