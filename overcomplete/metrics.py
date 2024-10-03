@@ -51,6 +51,29 @@ def l1(v, dims=None):
     return torch.abs(v).sum(dims)
 
 
+def lp(v, p=0.5, dims=None):
+    """
+    Compute the Lp norm, across 'dims'.
+
+    Parameters
+    ----------
+    v : torch.Tensor
+        Input tensor.
+    p : float, optional
+        Power of the norm, by default 0.5.
+    dims : tuple, optional
+        Dimensions over which to compute the Lp norm, by default None.
+
+    Returns
+    -------
+    torch.Tensor
+        Lp norm of v if dims=None else Lp norm across dims.
+    """
+    if dims is None:
+        return torch.norm(v, p)
+    return torch.norm(v, p, dims)
+
+
 def avg_l2_loss(x, x_hat):
     """
     Compute the L2 loss, averaged across samples.
@@ -157,7 +180,7 @@ def relative_avg_l1_loss(x, x_hat, epsilon=Epsilon):
     return torch.mean(l1_err_per_sample / (l1_per_sample + epsilon)).item()
 
 
-def sparsity(x, dims=None):
+def l0(x, dims=None):
     """
     Compute the average number of zero elements.
 
@@ -178,6 +201,10 @@ def sparsity(x, dims=None):
     if dims is None:
         return torch.mean((x == 0).float())
     return torch.mean((x == 0).float(), dims)
+
+
+# alias for the default sparsity metric
+sparsity = l0
 
 
 def sparsity_eps(x, dims=None, threshold=1e-6):
@@ -201,6 +228,101 @@ def sparsity_eps(x, dims=None, threshold=1e-6):
     if dims is None:
         return torch.mean((torch.abs(x) <= threshold).float())
     return torch.mean((torch.abs(x) <= threshold).float(), dims)
+
+
+# alias for the default sparsity metric with epsilon
+l0_eps = sparsity_eps
+
+
+def l1_l2_ratio(x, dims=-1):
+    """
+    Compute the L1/L2 ratio of a tensor. By default, the ratio is computed across
+    the last dimension. This score is a useful metric to evaluate the sparsity of
+    a tensor. It is however sensitive to the dimensions of the data, for an unbiased
+    metric, consider using the Hoyer score.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input tensor.
+    dims : tuple, optional
+        Dimensions over which to compute the ratio, by default -1.
+
+    Returns
+    -------
+    torch.Tensor
+        the l1/l2 ratio.
+    """
+    assert x.dtype == torch.float32, "Input tensor must be of type float32"
+
+    l1_norm = l1(x, dims)
+    l2_norm = l2(x, dims) + Epsilon
+
+    return l1_norm / l2_norm
+
+
+def hoyer(x):
+    """
+    Compute the Hoyer sparsity of a tensor. The hoyer score include the dimension normalization
+    factor. A score of 1 indicates a perfectly sparse representation, while a score of 0 indicates
+    a dense representation.
+
+    hoyer(x) = d^0.5 - (||x||_1 / ||x||_2) / (d^0.5 - 1).
+
+    The score is computed across the last dimension.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        A 2D tensor of shape (batch_size, d).
+
+    Returns
+    -------
+    torch.Tensor (batch_size,)
+        Hoyer sparsity for each vector in the batch.
+    """
+    assert len(x.shape) == 2, "Input tensor must be 2D"
+
+    d_sqrt = torch.sqrt(torch.tensor(x.shape[1]))
+    l1_l2 = l1_l2_ratio(x, 1)
+
+    score = (d_sqrt - l1_l2) / (d_sqrt - 1)
+
+    return score
+
+
+def kappa_4(x):
+    """
+    Compute the Kappa-4 sparsity of a tensor. The Kappa-4 score is a metric to evaluate the sparsity
+    of a distribution. It is the kurtosis, which measure the "peakedness" of a distribution.
+
+    See the following papers for more details:
+    "Sparse coding of sensory inputs", by Olshausen and Field, 2004.
+    "Comparing Measures of Sparsity", by Niall Hurley and Scott Rickard, 2009.
+
+    @tfel: there is a little inconsistency between the two papers, for theoretical considerations
+    I implemented the version from the second paper.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input tensor.
+    dims : tuple, optional
+        Dimensions over which to compute the ratio, by default -1.
+
+    Returns
+    -------
+    torch.Tensor
+        the Kappa-4 sparsity.
+    """
+    assert len(x.shape) == 2, "Input tensor must be 2D"
+
+    x4 = (x ** 4).sum(1)
+    x2_2 = x.square().sum(1).square()
+
+    score = x4 / (x2_2 + Epsilon)
+
+    return score
 
 
 def dead_codes(z):

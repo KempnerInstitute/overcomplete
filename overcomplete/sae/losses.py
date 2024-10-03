@@ -17,17 +17,20 @@ They all share the same signature:
 Additional arguments can be passed as keyword arguments.
 """
 
+from functools import partial
+
 import torch
+from ..metrics import hoyer, kappa_4, lp, l1, dead_codes
 
 # disable W0613 (unused-argument) to keep the same signature for all loss functions
 # pylint: disable=W0613
 
 
-def mse_l1(x, x_hat, pre_codes, codes, dictionary, penalty=1.0):
+def _mse_with_penalty(x, x_hat, pre_codes, codes, dictionary, penalty, penalty_fn):
     """
-    Compute the Mean Squared Error (MSE) loss with L1 penalty on the codes.
+    Compute the Mean Squared Error (MSE) loss with a given penalty function.
 
-    Loss = ||x - x_hat||^2 + penalty * ||z||_1
+    Loss = ||x - x_hat||^2 + penalty * penalty_fn(z)
 
     Parameters
     ----------
@@ -41,8 +44,10 @@ def mse_l1(x, x_hat, pre_codes, codes, dictionary, penalty=1.0):
         Encoded tensor.
     dictionary : torch.Tensor
         Dictionary tensor.
-    penalty : float, optional
-        L1 penalty coefficient, by default 1.0.
+    penalty : float
+        Penalty coefficient.
+    penalty_fn : callable
+        Penalty function.
 
     Returns
     -------
@@ -50,8 +55,14 @@ def mse_l1(x, x_hat, pre_codes, codes, dictionary, penalty=1.0):
         Loss value.
     """
     mse = (x - x_hat).square().mean()
-    l1 = codes.abs().mean()
-    return mse + penalty * l1
+    reg = torch.mean(penalty_fn(codes))
+    return mse + penalty * reg
+
+
+# l1 should be dependent on the codes dimension, hoyer and kappa are not
+mse_l1 = partial(_mse_with_penalty, penalty_fn=l1)
+mse_hoyer = partial(_mse_with_penalty, penalty_fn=hoyer)
+mse_kappa_4 = partial(_mse_with_penalty, penalty_fn=kappa_4)
 
 
 def mse_elastic(x, x_hat, pre_codes, codes, dictionary, alpha=0.5):
@@ -93,44 +104,6 @@ def mse_elastic(x, x_hat, pre_codes, codes, dictionary, alpha=0.5):
     return loss
 
 
-def mse_l1_double(x, x_hat, pre_codes, codes, dictionary, penalty_codes=0.5, penalty_dictionary=0.5):
-    """
-    Compute the Mean Squared Error (MSE) loss with L1 penalty on the codes and dictionary.
-
-    Loss = ||x - x_hat||^2 + penalty_codes * ||z||_1 + penalty_dictionary * ||D||_1
-
-    Parameters
-    ----------
-    x : torch.Tensor
-        Input tensor.
-    x_hat : torch.Tensor
-        Reconstructed tensor.
-    pre_codes : torch.Tensor
-        Encoded tensor before activation function.
-    codes : torch.Tensor
-        Encoded tensor.
-    dictionary : torch.Tensor
-        Dictionary tensor.
-    penalty_codes : float, optional
-        L1 penalty for concepts coefficient / codes, by default 1/2.
-    penalty_dictionary : float, optional
-        L1 penalty for dictionary / codebook, by default 1/2.
-
-    Returns
-    -------
-    torch.Tensor
-        Loss value.
-    """
-    mse = (x - x_hat).square().mean()
-
-    l1_codes = codes.abs().mean()
-    l1_dict = dictionary.abs().mean()
-
-    loss = mse + penalty_codes * l1_codes + penalty_dictionary * l1_dict
-
-    return loss
-
-
 def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
     """
     The Top-K Auxiliary loss (AuxK).
@@ -167,3 +140,37 @@ def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
     loss = 0.5 * mse + 0.5 * auxilary_mse
 
     return loss
+
+
+def reanimation_regularizer(x, x_hat, pre_codes, codes, dictionary, penalty=0.1):
+    """
+    Additional term to the loss function that tries to revive dead codes.
+
+    The idea is to increase the value of the `pre_codes` to allow the dead_codes
+    to fire again by pushing the `pre_codes` towards the positive orthant.
+
+        reg = -1/(sum_i dead_mask_i) * sum_i(pre_codes_i * dead_mask_i).
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input tensor.
+    x_hat : torch.Tensor
+        Reconstructed tensor.
+    pre_codes : torch.Tensor
+        Encoded tensor before activation function.
+    codes : torch.Tensor
+        Encoded tensor.
+    dictionary : torch.Tensor
+        Dictionary tensor.
+    penalty : float, optional
+        Penalty coefficient.
+    """
+    # codes that havent fired in this batch
+    dead_mask = dead_codes(codes)
+
+    # push the `pre_codes` towards the positive orthant
+    reg = -(pre_codes * dead_mask).sum() / (dead_mask.sum() + 1e-6)
+    reg = reg * penalty
+
+    return reg

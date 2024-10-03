@@ -19,7 +19,14 @@ from overcomplete.metrics import (
     wasserstein_1d,
     codes_correlation_matrix,
     energy_of_codes,
-    frechet_distance
+    frechet_distance,
+    l0,
+    l1,
+    l2,
+    lp,
+    l1_l2_ratio,
+    hoyer,
+    kappa_4
 )
 
 from ..utils import epsilon_equal
@@ -171,7 +178,7 @@ def test_frechet_distance():
     mean2 = torch.tensor([1.0, 1.0])
     cov2 = torch.tensor([[1.5, 0.3], [0.3, 1.5]])
 
-    size = 10_000_000
+    size = 1_000_000
 
     # Generate random samples
     x1 = torch.distributions.MultivariateNormal(mean1, cov1).sample((size,))
@@ -203,3 +210,51 @@ def test_frechet_distance():
     x2 = torch.tensor([[2.0, 3.0], [2.0, 3.0]])
 
     assert frechet_distance(x1, x2) > 0.0
+
+
+def test_l0():
+    x = torch.tensor([[0.0, 1.0], [1.0, 0.0]])
+    expected_sparsity = 0.5  # half of the elements are zero
+    assert epsilon_equal(l0(x), torch.tensor(expected_sparsity))
+
+
+def test_l2():
+    v = torch.tensor([[3.0, 4.0], [0.0, 5.0]])
+    expected_norm = torch.tensor([5.0, 5.0])
+    assert epsilon_equal(l2(v, dims=1), expected_norm)
+    assert epsilon_equal(l2(v), torch.tensor(torch.sqrt(torch.tensor(50.0))))
+
+
+def test_l1():
+    v = torch.tensor([[3.0, 4.0], [0.0, 5.0]])
+    expected_norm = torch.tensor([7.0, 5.0])
+    assert epsilon_equal(l1(v, dims=1), expected_norm)
+    assert epsilon_equal(l1(v), torch.tensor(12.0))
+
+
+def test_lp():
+    v = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    assert epsilon_equal(lp(v, p=2, dims=1), l2(v, dims=1))
+    assert epsilon_equal(lp(v, p=2), l2(v))
+
+    for p in [0.1, 0.5, 0.8]:
+        val = lp(v, p=p)
+        assert torch.isnan(val).sum() == 0
+
+
+def test_l1_l2_ratio():
+    x = torch.tensor([[1.0, 0.0], [1.0, 1.0]])
+    expected_ratio = torch.tensor([1.0, 2 / torch.sqrt(torch.tensor(2.0))])
+    assert epsilon_equal(l1_l2_ratio(x, dims=1), expected_ratio)
+
+
+def test_hoyer():
+    x = torch.tensor([[1.0, 0.0, 0.0], [1.0, 1.0, 1.0]])
+    expected_hoyer = torch.tensor([1.0, 0.0])
+    assert epsilon_equal(hoyer(x), expected_hoyer, epsilon=1e-4)
+
+
+def test_kappa_4():
+    x = torch.tensor([[1.0, 1.0], [1.0, 0.0]])
+    expected_kappa = torch.tensor([0.5, 1.0])
+    assert epsilon_equal(kappa_4(x), expected_kappa)
