@@ -270,7 +270,8 @@ class JumpSAE(SAE):
 
         self.kernel_fn = self._KERNELS[kernel]
         self.bandwith = torch.tensor(bandwith, device=device)
-        self.thresholds = nn.Parameter(torch.zeros(n_components), requires_grad=True).to(device)
+
+        self.thresholds = nn.Parameter(torch.zeros(n_components, device=device), requires_grad=True)
 
     def encode(self, x):
         """
@@ -300,19 +301,3 @@ class JumpSAE(SAE):
                           kernel_fn=self.kernel_fn)
 
         return pre_codes, codes
-
-    def decode(self, z):
-        """
-        Decode latent representation to reconstruct input data.
-
-        Parameters
-        ----------
-        z : torch.Tensor
-            Latent representation tensor of shape (batch_size, nb_components).
-
-        Returns
-        -------
-        torch.Tensor
-            Reconstructed input tensor of shape (batch_size, input_size).
-        """
-        return self.dictionary(z)
