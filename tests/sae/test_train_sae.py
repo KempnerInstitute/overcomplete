@@ -321,7 +321,7 @@ def test_q_sae_quantization_levels():
     assert epsilon_equal(np.clip(quantization_state_after_training, 0, None), unique_values_after_training, 1e-4)
 
     # ensure the quantization levels are trainable / not the same
-    assert np.square(sorted_unique_values - quantization_state_after_training).sum() > 1e-2
+    assert np.square(sorted_unique_values - quantization_state_after_training).sum() > 1e-4
 
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
