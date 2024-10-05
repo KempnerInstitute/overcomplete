@@ -76,6 +76,10 @@ class SAE(BaseDictionaryLearning):
         see dictionary module to see all the possible initialization.
     data_initializer : torch.Tensor, optional
         Data used to fit a first approximation and initialize the dictionary, by default None.
+    dictionary_normalization : str or callable, optional
+        Whether to normalize the dictionary, by default 'l2' normalization is applied.
+        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
+        If a custom normalization is needed, a callable can be passed.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -92,7 +96,7 @@ class SAE(BaseDictionaryLearning):
     """
 
     def __init__(self, input_shape, n_components, encoder_module=None, dictionary_initializer=None,
-                 data_initializer=None, device='cpu'):
+                 data_initializer=None, dictionary_normalization='l2', device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
 
@@ -122,7 +126,7 @@ class SAE(BaseDictionaryLearning):
         else:
             raise ValueError("Input shape must be 1D, 2D or 3D.")
 
-        self.dictionary = DictionaryLayer(n_components, dim).to(device)
+        self.dictionary = DictionaryLayer(n_components, dim, dictionary_normalization, device)
         # if needed, initialize the dictionary layer (e.g with SVD)
         if dictionary_initializer is not None:
             if data_initializer is None:

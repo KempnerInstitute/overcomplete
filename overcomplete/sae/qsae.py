@@ -5,7 +5,7 @@ Module for Quantized Sparse SAE (Q-SAE).
 import torch
 from torch import nn
 
-from overcomplete.sae.base import SAE
+from .base import SAE
 
 
 class QSAE(SAE):
@@ -42,6 +42,10 @@ class QSAE(SAE):
         see dictionary module to see all the possible initialization.
     data_initializer : torch.Tensor, optional
         Data used to fit a first approximation and initialize the dictionary, by default None.
+    dictionary_normalization : str or callable, optional
+        Whether to normalize the dictionary, by default 'l2' normalization is applied.
+        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
+        If a custom normalization is needed, a callable can be passed.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -59,16 +63,18 @@ class QSAE(SAE):
     """
 
     def __init__(self, input_shape, n_components, q=4, hard=False,
-                 encoder_module=None, dictionary_initializer=None, data_initializer=None, device='cpu'):
+                 encoder_module=None, dictionary_initializer=None, data_initializer=None,
+                 dictionary_normalization='l2', device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         assert q > 1, "You need at least 2 quantization levels."
 
         super().__init__(input_shape, n_components, encoder_module,
-                         dictionary_initializer, data_initializer, device)
+                         dictionary_initializer, data_initializer,
+                         dictionary_normalization, device)
 
         # initialize linearly around [-1, 1]
-        Q = torch.linspace(-1.0, 1.0, q, device=device).float()
+        Q = torch.linspace(0.0, 1.0, q, device=device).float()
         self.Q = nn.Parameter(Q, requires_grad=True)
 
         self.hard = hard

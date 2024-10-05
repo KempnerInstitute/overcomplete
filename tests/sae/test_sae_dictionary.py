@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from overcomplete.sae import DictionaryLayer
+from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE
 
 from ..utils import epsilon_equal
 
@@ -68,7 +68,6 @@ def test_dictionary_layer_normalizations():
     layer_max_l2._weights.data *= 2  # Set norms greater than 1
     dictionary_max_l2 = layer_max_l2.get_dictionary()
     norms_max_l2 = torch.norm(dictionary_max_l2, p=2, dim=1)
-    print(norms_max_l2)
     assert torch.all(norms_max_l2 <= 1.0 + 1e-4)
 
     # Test 'l1' normalization
@@ -135,3 +134,46 @@ def test_dictionary_layer_get_dictionary_normalization():
     norms = torch.norm(dictionary, p=2, dim=1)
     expected_norms = torch.ones(nb_components)
     assert epsilon_equal(norms, expected_norms)
+
+
+@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE])
+def test_sae_init_dictionary_layer_normalizations(sae_class):
+    nb_components = 5
+    dimensions = 10
+
+    # Test 'l2' normalization
+    sae_l2 = sae_class(input_shape=dimensions, n_components=nb_components,
+                       dictionary_normalization='l2')
+
+    dictionary_l2 = sae_l2.get_dictionary()
+    norms_l2 = torch.norm(dictionary_l2, p=2, dim=1)
+    expected_norms_l2 = torch.ones(nb_components)
+    assert epsilon_equal(norms_l2, expected_norms_l2)
+
+    # Test 'max_l2' normalization
+    sae_max_l2 = sae_class(input_shape=dimensions, n_components=nb_components,
+                           dictionary_normalization='max_l2')
+    dictionary_max_l2 = sae_max_l2.get_dictionary()
+    norms_max_l2 = torch.norm(dictionary_max_l2, p=2, dim=1)
+    assert torch.all(norms_max_l2 <= 1.0 + 1e-4)
+
+    # Test 'l1' normalization
+    sae_l1 = sae_class(input_shape=dimensions, n_components=nb_components,
+                       dictionary_normalization='l1')
+    dictionary_l1 = sae_l1.get_dictionary()
+    norms_l1 = torch.norm(dictionary_l1, p=1, dim=1)
+    expected_norms_l1 = torch.ones(nb_components)
+    assert epsilon_equal(norms_l1, expected_norms_l1)
+
+    # Test 'max_l1' normalization
+    sae_max_l1 = sae_class(input_shape=dimensions, n_components=nb_components,
+                           dictionary_normalization='max_l1')
+    dictionary_max_l1 = sae_max_l1.get_dictionary()
+    norms_max_l1 = torch.norm(dictionary_max_l1, p=1, dim=1)
+    assert torch.all(norms_max_l1 <= 1.0 + 1e-4)
+
+    # Test 'identity' normalization
+    sae = sae_class(input_shape=dimensions, n_components=nb_components,
+                    dictionary_normalization='identity')
+    dictionary_identity = sae.get_dictionary()
+    assert torch.equal(dictionary_identity, sae.dictionary._weights)

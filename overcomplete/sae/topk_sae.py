@@ -42,6 +42,10 @@ class TopKSAE(SAE):
         see dictionary module to see all the possible initialization.
     data_initializer : torch.Tensor, optional
         Data used to fit a first approximation and initialize the dictionary, by default None.
+    dictionary_normalization : str or callable, optional
+        Whether to normalize the dictionary, by default 'l2' normalization is applied.
+        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
+        If a custom normalization is needed, a callable can be passed.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -59,14 +63,16 @@ class TopKSAE(SAE):
     """
 
     def __init__(self, input_shape, n_components, top_k=None,
-                 encoder_module=None, dictionary_initializer=None, data_initializer=None, device='cpu'):
+                 encoder_module=None, dictionary_initializer=None, data_initializer=None,
+                 dictionary_normalization='l2', device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         if isinstance(top_k, int):
             assert top_k > 0
 
         super().__init__(input_shape, n_components, encoder_module,
-                         dictionary_initializer, data_initializer, device)
+                         dictionary_initializer, data_initializer,
+                         dictionary_normalization, device)
 
         self.top_k = top_k if top_k is not None else min(n_components // 10, 1)
 
