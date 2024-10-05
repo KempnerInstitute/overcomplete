@@ -26,7 +26,8 @@ from overcomplete.metrics import (
     lp,
     l1_l2_ratio,
     hoyer,
-    kappa_4
+    kappa_4,
+    r2_score
 )
 
 from ..utils import epsilon_equal
@@ -258,3 +259,33 @@ def test_kappa_4():
     x = torch.tensor([[1.0, 1.0], [1.0, 0.0]])
     expected_kappa = torch.tensor([0.5, 1.0])
     assert epsilon_equal(kappa_4(x), expected_kappa)
+
+
+def test_r2_score_perfect_reconstruction():
+    # Perfect reconstruction
+    x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    x_hat = x.clone()
+    assert epsilon_equal(r2_score(x, x_hat), 1.0)
+
+
+def test_r2_score_zero_reconstruction():
+    # Mean reconstruction
+    x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    x_hat = x.mean() * torch.ones_like(x)
+    assert epsilon_equal(r2_score(x, x_hat), 0.0)
+
+
+def test_r2_worst_than_mean_reconstruction():
+    # Worst than mean reconstruction
+    x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    x_hat = torch.zeros_like(x)
+    r2 = r2_score(x, x_hat)
+    assert r2 <= 0
+
+
+def test_r2_score_partial_reconstruction():
+    # Partial reconstruction
+    x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+    x_hat = torch.tensor([[1.0, 1.5], [3.0, 3.5]])
+    r2 = r2_score(x, x_hat)
+    assert 0 < r2 < 1

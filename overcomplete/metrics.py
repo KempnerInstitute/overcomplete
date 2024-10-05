@@ -321,6 +321,35 @@ def kappa_4(x):
     return score
 
 
+def r2_score(x, x_hat):
+    """
+    Compute the R^2 score (coefficient of determination) for the reconstruction.
+    A score of 1 indicates a perfect reconstruction while a score of 0 indicates
+    that the reconstruction is as good as the mean.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Original input tensor of shape (batch_size, d).
+    x_hat : torch.Tensor
+        Reconstructed input tensor of shape (batch_size, d).
+
+    Returns
+    -------
+    float
+        R^2 score.
+    """
+    assert x.shape == x_hat.shape, "Input tensors must have the same shape"
+    assert len(x.shape) == 2, "Input tensors must be 2D"
+
+    ss_res = torch.mean((x - x_hat) ** 2)
+    ss_tot = torch.mean((x - x.mean()) ** 2)
+
+    r2 = 1 - (ss_res / (ss_tot + Epsilon))
+
+    return torch.mean(r2)
+
+
 def dead_codes(z):
     """
     Check for codes that never fire and return the percentage of codes that never fire.
