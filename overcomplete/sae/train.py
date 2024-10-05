@@ -8,7 +8,7 @@ from collections import defaultdict
 import torch
 from einops import rearrange
 
-from ..metrics import l2, sparsity_eps
+from ..metrics import l2, sparsity_eps, sparsity
 
 
 def _compute_reconstruction_error(x, x_hat):
@@ -40,12 +40,14 @@ def _compute_reconstruction_error(x, x_hat):
     return torch.mean(l2(x_flatten - x_hat, -1)).item()
 
 
-def _log_metrics(logs, model, z, loss, optimizer):
+def _log_metrics(monitoring, logs, model, z, loss, optimizer):
     """
     Log training metrics for the current training step.
 
     Parameters
     ----------
+    monitoring : int
+        Monitoring level, for 1 store only basic statistics, for 2 store more detailed statistics.
     logs : defaultdict
         Logs of training statistics.
     model : nn.Module
@@ -57,22 +59,31 @@ def _log_metrics(logs, model, z, loss, optimizer):
     optimizer : optim.Optimizer
         Optimizer for updating model parameters.
     """
-    logs['z'].append(z.detach()[::10])
-    logs['z_l2'].append(l2(z).item())
-    logs['z_sparsity'].append((z == 0.0).float().mean().item())
-    logs['dictionary_sparsity'].append(sparsity_eps(model.get_dictionary(), threshold=1e-6).item())
-    logs['dictionary_norm'].append(l2(model.get_dictionary()).item())
-    logs['lr'].append(optimizer.param_groups[0]['lr'])
-    logs['step_loss'].append(loss.item())
+    if monitoring == 0:
+        return
 
-    for name, param in model.named_parameters():
-        if param.grad is not None:
-            logs[f'params_norm_{name}'].append(l2(param).item())
-            logs[f'params_grad_norm_{name}'].append(l2(param.grad).item())
+    if monitoring > 0:
+        logs['lr'].append(optimizer.param_groups[0]['lr'])
+        logs['z_sparsity'].append(sparsity(z).mean().item())
+        logs['step_loss'].append(loss.item())
+
+    if monitoring > 1:
+        # store directly some z values
+        # and the params / gradients norms
+        logs['z'].append(z.detach()[::10])
+        logs['z_l2'].append(l2(z).item())
+
+        logs['dictionary_sparsity'].append(sparsity(model.get_dictionary()).mean().item())
+        logs['dictionary_norms'].append(l2(model.get_dictionary(), -1).mean().item())
+
+        for name, param in model.named_parameters():
+            if param.grad is not None:
+                logs[f'params_norm_{name}'].append(l2(param).item())
+                logs[f'params_grad_norm_{name}'].append(l2(param.grad).item())
 
 
 def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
-              nb_epochs=20, clip_grad=1.0, monitoring=True, device="cpu"):
+              nb_epochs=20, clip_grad=1.0, monitoring=1, device="cpu"):
     """
     Train a Sparse Autoencoder (SAE) model.
 
@@ -92,8 +103,12 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         Number of training epochs, by default 20.
     clip_grad : float, optional
         Gradient clipping value, by default 1.0.
-    monitoring : bool, optional
-        Whether to monitor and log training statistics, by default True.
+    monitoring : int, optional
+        Whether to monitor and log training statistics, the options are:
+         (1) monitor and log training losses.
+         (2) monitor and log training losses and statistics about gradients norms and z statistics.
+         (0) silent.
+        By default 1.
     device : str, optional
         Device to run the training on, by default 'cpu'.
 
@@ -106,6 +121,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
 
     for epoch in range(nb_epochs):
         model.train()
+
         start_time = time.time()
         epoch_loss = 0.0
         epoch_error = 0.0
@@ -128,17 +144,16 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             if scheduler is not None:
                 scheduler.step()
 
-            epoch_loss += loss.item()
-            epoch_error += _compute_reconstruction_error(x, x_hat)
-
             if monitoring:
-                _log_metrics(logs, model, z, loss, optimizer)
-
-        avg_loss = epoch_loss / len(dataloader)
-        avg_error = epoch_error / len(dataloader)
-        epoch_duration = time.time() - start_time
+                epoch_loss += loss.item()
+                epoch_error += _compute_reconstruction_error(x, x_hat)
+                _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring:
+            avg_loss = epoch_loss / len(dataloader)
+            avg_error = epoch_error / len(dataloader)
+            epoch_duration = time.time() - start_time
+
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
@@ -148,7 +163,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
 
 
 def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
-                  nb_epochs=20, clip_grad=1.0, monitoring=True, device="cpu",
+                  nb_epochs=20, clip_grad=1.0, monitoring=1, device="cuda",
                   max_nan_fallbacks=5):
     """
     Train a Sparse Autoencoder (SAE) model with AMP and NaN fallback.
@@ -172,10 +187,14 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
         Number of training epochs, by default 20.
     clip_grad : float, optional
         Gradient clipping value, by default 1.0.
-    monitoring : bool, optional
-        Whether to monitor and log training statistics, by default True.
+    monitoring : int, optional
+        Whether to monitor and log training statistics, the options are:
+         (1) monitor and log training losses.
+         (2) monitor and log training losses and statistics about gradients norms and z statistics.
+         (0) silent.
+        By default 1.
     device : str, optional
-        Device to run the training on, by default 'cpu'.
+        Device to run the training on, by default 'cuda'.
     max_nan_fallbacks : int, optional
         Maximum number of NaN fallbacks per epoch before disabling AMP, by default 5.
 
@@ -184,21 +203,23 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
     defaultdict
         Logs of training statistics.
     """
-    scaler = torch.cuda.amp.GradScaler(enabled=True)
+    scaler = torch.amp.GradScaler(device, enabled=True)
     logs = defaultdict(list)
 
     for epoch in range(nb_epochs):
         model.train()
+
         start_time = time.time()
         epoch_loss = 0.0
         epoch_error = 0.0
+
         nan_fallback_count = 0
 
         for batch in dataloader:
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
-            with torch.amp.autocast('cuda', enabled=True):
+            with torch.amp.autocast(device, enabled=True):
                 z_pre, z, x_hat = model(x)
                 loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
 
@@ -206,10 +227,10 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
                 nan_fallback_count += 1
                 if monitoring:
                     print(f"[Warning] NaN detected in loss at Epoch {epoch+1}, "
-                          f"Iteration {len(logs['step_loss'])+1}. Retrying in full precision.")
+                          f"Iteration {len(logs['step_loss'])+1}. Switching to full precision.")
 
-                with torch.amp.autocast('cuda', enabled=False):
-                    z, x_hat = model(x)
+                with torch.amp.autocast(device, enabled=False):
+                    z_pre, z, x_hat = model(x)
                     loss = criterion(x, x_hat, z, model.get_dictionary())
 
                 if torch.isnan(loss) or torch.isinf(loss):
@@ -236,20 +257,20 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             if scheduler is not None:
                 scheduler.step()
 
-            epoch_loss += loss.item()
-            epoch_error += _compute_reconstruction_error(x, x_hat)
-
             if monitoring:
-                _log_metrics(logs, model, z, loss, optimizer)
-
-        avg_loss = epoch_loss / len(dataloader)
-        avg_error = epoch_error / len(dataloader)
-        epoch_duration = time.time() - start_time
+                epoch_loss += loss.item()
+                epoch_error += _compute_reconstruction_error(x, x_hat)
+                _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring:
+            avg_loss = epoch_loss / len(dataloader)
+            avg_error = epoch_error / len(dataloader)
+            epoch_duration = time.time() - start_time
+
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
+
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
                   f"Error: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
 
