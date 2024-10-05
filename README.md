@@ -43,7 +43,7 @@ import overcomplete
 todo
 ```
 
-# Notebooks 
+# Notebooks
 
 - Starter Notebook: <a href="https://colab.research.google.com/drive/todo" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Google Colab" style="vertical-align: middle;"></a>
 
@@ -58,5 +58,4 @@ todo
 
 # Authors
 
-- [Thomas Fel](https://thomasfel.fr) - thomas_fel@brown.edu, PhD Student, Brown University & DEEL (ANITI)
-- [Remi Cadène](todo) - todo
+- [Thomas Fel](https://thomasfel.me) - tfel@g.harvard.edu, Kempner Research Fellow, Harvard University.
