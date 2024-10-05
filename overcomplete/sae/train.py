@@ -8,14 +8,19 @@ from collections import defaultdict
 import torch
 from einops import rearrange
 
-from ..metrics import l2, sparsity_eps, sparsity
+from ..metrics import l2, sparsity, r2_score
 
 
 def _compute_reconstruction_error(x, x_hat):
     """
     Try to match the shapes of x and x_hat to compute the reconstruction error.
+
     If the input (x) shape is 4D assume it is (n, c, w, h), if it is 3D assume
     it is (n, t, c). Else, assume it is already flattened.
+
+    Concerning the reconstruction error, we want a measure that could be compared
+    across different input shapes, so we use the R2 score: 1 means perfect
+    reconstruction, 0 means no reconstruction at all.
 
     Parameters
     ----------
@@ -37,7 +42,9 @@ def _compute_reconstruction_error(x, x_hat):
         assert x.shape == x_hat.shape, "Input and output shapes must match."
         x_flatten = x
 
-    return torch.mean(l2(x_flatten - x_hat, -1)).item()
+    r2 = r2_score(x_flatten, x_hat)
+
+    return r2.item()
 
 
 def _log_metrics(monitoring, logs, model, z, loss, optimizer):
@@ -157,7 +164,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"Error: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
+                  f"R2: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
 
     return logs
 
@@ -272,6 +279,6 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"Error: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
+                  f"R2: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
 
     return logs
