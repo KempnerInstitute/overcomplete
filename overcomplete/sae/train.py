@@ -71,7 +71,6 @@ def _log_metrics(monitoring, logs, model, z, loss, optimizer):
 
     if monitoring > 0:
         logs['lr'].append(optimizer.param_groups[0]['lr'])
-        logs['z_sparsity'].append(sparsity(z).mean().item())
         logs['step_loss'].append(loss.item())
 
     if monitoring > 1:
@@ -132,6 +131,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         start_time = time.time()
         epoch_loss = 0.0
         epoch_error = 0.0
+        epoch_sparsity = 0.0
 
         for batch in dataloader:
             x = batch[0].to(device, non_blocking=True)
@@ -154,17 +154,22 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
+                epoch_sparsity += sparsity(z).mean().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring:
             avg_loss = epoch_loss / len(dataloader)
             avg_error = epoch_error / len(dataloader)
+            avg_sparsity = epoch_sparsity / len(dataloader)
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
+            logs['z_sparsity'].append(avg_sparsity)
+
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"R2: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
+                  f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"Time: {epoch_duration:.4f} seconds")
 
     return logs
 
@@ -219,6 +224,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
         start_time = time.time()
         epoch_loss = 0.0
         epoch_error = 0.0
+        epoch_sparsity = 0.0
 
         nan_fallback_count = 0
 
@@ -267,14 +273,17 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
+                epoch_sparsity += sparsity(z).mean().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring:
             avg_loss = epoch_loss / len(dataloader)
             avg_error = epoch_error / len(dataloader)
+            avg_sparsity = epoch_sparsity / len(dataloader)
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
+            logs['z_sparsity'].append(avg_sparsity)
             logs['time_epoch'].append(epoch_duration)
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
 
