@@ -64,7 +64,7 @@ def test_train_mlp_sae(module_name, sae_class):
         optimizer,
         scheduler,
         nb_epochs=2,
-        monitoring=True,
+        monitoring=2,
         device="cpu",
     )
 
@@ -99,7 +99,7 @@ def test_train_resnet_sae(sae_class):
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
 
-    logs = train_sae_amp(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=True, device="cpu")
+    logs = train_sae_amp(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
     assert "z" in logs
     assert "z_l2" in logs
@@ -132,7 +132,7 @@ def test_train_attention_sae(sae_class):
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
 
-    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=True, device="cpu")
+    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
     assert "z" in logs
     assert "z_l2" in logs
@@ -177,6 +177,63 @@ def test_train_without_amp(module_name, sae_class):
 
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
+
+
+def test_monitoring():
+    """Ensure monitoring granularity is working."""
+    data = torch.randn(10, 10)
+    dataset = TensorDataset(data)
+    dataloader = DataLoader(dataset, batch_size=10)
+    criterion = mse_l1
+    n_components = 2
+
+    model = SAE(data.shape[1], n_components, encoder_module="linear")
+
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    scheduler = None
+
+    logs = train_sae(
+        model,
+        dataloader,
+        criterion,
+        optimizer,
+        scheduler,
+        nb_epochs=1,
+        monitoring=False,
+        device="cpu",
+    )
+
+    assert isinstance(logs, defaultdict)
+    assert len(logs) == 0
+
+    logs = train_sae(
+        model,
+        dataloader,
+        criterion,
+        optimizer,
+        scheduler,
+        nb_epochs=1,
+        monitoring=1,
+        device="cpu",
+    )
+
+    assert isinstance(logs, defaultdict)
+    assert "lr" in logs
+    assert "z" not in logs
+
+    logs = train_sae(
+        model,
+        dataloader,
+        criterion,
+        optimizer,
+        scheduler,
+        nb_epochs=1,
+        monitoring=2,
+        device="cpu",
+    )
+
+    assert isinstance(logs, defaultdict)
+    assert "z" in logs
 
 
 def test_top_k_constraint():

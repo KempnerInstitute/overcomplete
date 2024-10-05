@@ -29,10 +29,10 @@ def test_top_k_auxiliary_loss():
 
     dictionary = torch.eye(2)
 
-    loss = top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary)
+    loss = top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary, penalty=0.1)
     expected_loss = (x - x_hat).square().mean()
 
-    assert epsilon_equal(loss, expected_loss)
+    assert epsilon_equal(loss, expected_loss * 1.1)
 
     # now remove the code, so the aux loss will be non zero and the overall
     # loss will be higher

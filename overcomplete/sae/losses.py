@@ -109,7 +109,7 @@ def mse_elastic(x, x_hat, pre_codes, codes, dictionary, alpha=0.5):
     return loss
 
 
-def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
+def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary, penalty=0.1):
     """
     The Top-K Auxiliary loss (AuxK).
 
@@ -120,10 +120,25 @@ def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
     Similar to Ghost-grads, it consist in trying to "revive" the dead codes
     by trying the predict the residual using the 50% of the top non choosen codes.
 
-    Loss = ||x - x_hat||^2 + ||x - (x_hat D * top_half(z_pre - z)||^2
+    Loss = ||x - x_hat||^2 + penalty * ||x - (x_hat D * top_half(z_pre - z)||^2
 
     @tfel the order actually matter here! residual is x - x_hat and
     should be in this specific order.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input tensor.
+    x_hat : torch.Tensor
+        Reconstructed tensor.
+    pre_codes : torch.Tensor
+        Encoded tensor before activation function.
+    codes : torch.Tensor
+        Encoded tensor.
+    dictionary : torch.Tensor
+        Dictionary tensor.
+    penalty : float, optional
+        Penalty coefficient.
     """
     # select the 50% of non choosen codes and predict the residual
     # using those non choosen codes
@@ -142,7 +157,7 @@ def top_k_auxiliary_loss(x, x_hat, pre_codes, codes, dictionary):
     residual_hat = pre_codes @ dictionary
     auxilary_mse = (residual - residual_hat).square().mean()
 
-    loss = 0.5 * mse + 0.5 * auxilary_mse
+    loss = mse + penalty * auxilary_mse
 
     return loss
 

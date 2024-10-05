@@ -38,7 +38,7 @@ def test_train_model():
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
 
-    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=True, device="cpu")
+    logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
     assert "z" in logs
     assert "z_l2" in logs
