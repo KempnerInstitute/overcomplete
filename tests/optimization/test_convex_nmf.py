@@ -3,7 +3,7 @@ import torch
 from sklearn.decomposition import NMF as SkNMF
 
 from overcomplete.optimization import ConvexNMF
-from overcomplete.metrics import relative_avg_l2_loss
+from overcomplete.metrics import relative_avg_l2_loss, sparsity
 
 data_shape = (50, 10)
 n_components = 5
@@ -148,3 +148,17 @@ def test_compare_strict_convex_to_sklearn(solver, repetition=10):
             break
 
     assert is_ok, "ConvexNMF did not match sklearn NMF performance."
+
+
+def test_sparsity():
+    """Ensure the l1 penalty induce better sparsity score for ConvexNMF 'pgd' solver."""
+    model1 = ConvexNMF(n_components=n_components, max_iter=1000, solver='pgd', l1_penalty=0.0)
+    Z1, D1 = model1.fit(A)
+
+    model2 = ConvexNMF(n_components=n_components, max_iter=1000, solver='pgd', l1_penalty=0.5)
+    Z2, D2 = model2.fit(A)
+
+    s1 = sparsity(Z1)
+    s2 = sparsity(Z2)
+
+    assert s2 > s1, "Stronger penalty should induce better sparsity."

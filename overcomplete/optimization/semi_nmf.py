@@ -14,7 +14,7 @@ from .base import BaseOptimDictionaryLearning
 from .utils import stopping_criterion, _assert_shapes, pos_part, neg_part
 
 
-def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
+def _one_step_snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True):
     """
     One step of the Semi-NMF update rules.
     The Semi-NMF algorithm updates Z and D alternately:
@@ -60,7 +60,8 @@ def _one_step_semi_nmf(A, Z, D, update_Z=True, update_D=True):
     return Z, D
 
 
-def semi_nmf_solver(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5,
+                               **kwargs):
     """
     Semi-NMF optimizer.
 
@@ -96,12 +97,86 @@ def semi_nmf_solver(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-
 
     for _ in range(max_iter):
         Z_old = Z.clone()
-        Z, D = _one_step_semi_nmf(A, Z, D, update_Z, update_D)
+        Z, D = _one_step_snmf_multiplicative_update(A, Z, D, update_Z, update_D)
 
         if update_Z and tol > 0 and stopping_criterion(Z, Z_old, tol):
             break
 
     return Z, D
+
+
+def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, max_iter=500, tol=1e-5,
+                                    l1_penalty=0.0):
+    """
+    Projected gradient descent optimizer for NMF.
+
+    See: Chih-Jen Lin, "Projected Gradient Methods for Nonnegative Matrix Factorization".
+    Neural Computation (2007).
+
+    Parameters
+    ----------
+    A : torch.Tensor
+        Activation tensor, should be (batch_size, n_features).
+    Z : torch.Tensor
+        Codes tensor, should (batch_size, n_components).
+    D : torch.Tensor
+        Dictionary tensor, should be (n_components, n_features).
+    lr : float, optional
+        Learning rate, by default 1e-3.
+    update_Z : bool, optional
+        Whether to update Z, by default True.
+    update_D : bool, optional
+        Whether to update D, by default True.
+
+    Returns
+    -------
+    Z : torch.Tensor
+        Updated codes tensor.
+    D : torch.Tensor
+        Updated dictionary tensor.
+    """
+    _assert_shapes(A, Z, D)
+
+    if update_Z:
+        Z = torch.nn.Parameter(Z)
+    if update_D:
+        D = torch.nn.Parameter(D)
+
+    to_optimize = []
+    if update_Z:
+        to_optimize.append(Z)
+    if update_D:
+        to_optimize.append(D)
+
+    optimizer = torch.optim.Adam(to_optimize, lr=lr, weight_decay=1e-5)
+
+    for iter_i in range(max_iter):
+        optimizer.zero_grad()
+        # @tfel: see if we could pass a custom loss function
+        loss = torch.mean(torch.square(A - (Z @ D))) + l1_penalty * torch.mean(torch.abs(Z))
+
+        if update_Z:
+            Z_old = Z.data.clone()
+
+        loss.backward()
+        optimizer.step()
+
+        with torch.no_grad():
+            if update_Z:
+                Z.clamp_(min=0)
+            # D is normalized if the l1_penalty is not 0
+            if update_D and l1_penalty > 0:
+                D /= torch.norm(D, p=1, dim=1, keepdim=True)
+
+        if update_Z:
+            should_stop = stopping_criterion(Z, Z_old, tol)
+            if should_stop:
+                break
+
+    # return pure torch tensor (not a parameter)
+    Z_return = Z.detach() if update_Z else Z
+    D_return = D.detach() if update_D else D
+    return Z_return, D_return
 
 
 class SemiNMF(BaseOptimDictionaryLearning):
@@ -115,16 +190,31 @@ class SemiNMF(BaseOptimDictionaryLearning):
     ----------
     n_components: int
         Number of components to learn.
+    solver: str, optional
+        Solver to use, by default 'mu'. Possible values are 'mu' (multiplicative update)
+        and 'pgd' (projected gradient descent), 'pgd' allows for sparsity penalty.
     device: str, optional
         Device to use for tensor computations, by default 'cpu'
     tol: float, optional
         Tolerance value for the stopping criterion, by default 1e-4.
+    l1_penalty: float, optional
+        L1 penalty for the sparsity constraint, by default 0.0. Only used with 'pgd' solver.
     """
 
-    def __init__(self, n_components, device='cpu', tol=1e-4, **kwargs):
+    _SOLVERS = {
+        'mu': snmf_multiplicative_update,
+        'pgd': snmf_projected_gradient_descent,
+    }
+
+    def __init__(self, n_components, solver='mu', device='cpu',
+                 tol=1e-4, l1_penalty=0.0, **kwargs):
+        assert solver in self._SOLVERS, f"Solver '{solver}' not found in registry."
+
         super().__init__(n_components, device)
         self.tol = tol
         self.D = None
+        self.solver_fn = self._SOLVERS[solver]
+        self.l1_penalty = l1_penalty
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -150,7 +240,8 @@ class SemiNMF(BaseOptimDictionaryLearning):
 
         Z = self.init_random_z(A)
 
-        Z, _ = semi_nmf_solver(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol)
+        Z, _ = self.solver_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol,
+                              l1_penalty=self.l1_penalty)
 
         return Z
 
@@ -190,7 +281,8 @@ class SemiNMF(BaseOptimDictionaryLearning):
         Z = self.init_random_z(A)
         D = self.init_random_d(A, Z)
 
-        Z, D = semi_nmf_solver(A, Z, D, max_iter=max_iter, tol=self.tol)
+        Z, D = self.solver_fn(A, Z, D, max_iter=max_iter, tol=self.tol,
+                              l1_penalty=self.l1_penalty)
 
         self.D = D
         self._set_fitted()

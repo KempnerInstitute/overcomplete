@@ -50,7 +50,8 @@ def _one_step_multiplicative_update(A, Z, W, update_Z=True, update_W=True,
 
 
 def cnmf_multiplicative_update_solver(
-        A, Z, W, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5, verbose=False):
+        A, Z, W, update_Z=True, update_W=True, strict_convex=False, max_iter=500,
+        tol=1e-5, verbose=False, **kwargs):
     """
     Convex NMF Multiplicative update optimizer.
 
@@ -96,7 +97,8 @@ def cnmf_multiplicative_update_solver(
 
 
 def cnmf_pgd_solver(
-        A, Z, W, lr=1e-2, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5, verbose=False):
+        A, Z, W, lr=1e-2, update_Z=True, update_W=True, strict_convex=False, max_iter=500, tol=1e-5,
+        verbose=False, l1_penalty=0.0):
     """
     Convex NMF PGD optimizer.
 
@@ -124,6 +126,8 @@ def cnmf_pgd_solver(
         Tolerance value for the stopping criterion, by default 1e-5.
     verbose : bool, optional
         Whether to print optimization information, by default False.
+    l1_penalty : float, optional
+        L1 penalty coefficient, by default 0.0.
 
     Returns
     -------
@@ -149,7 +153,7 @@ def cnmf_pgd_solver(
         optimizer.zero_grad()
         # @tfel: add possibility to pass custom loss here
         D = W @ A
-        loss = torch.mean(torch.square(A - (Z @ D)))
+        loss = torch.mean(torch.square(A - (Z @ D))) + l1_penalty * torch.mean(torch.abs(Z))
 
         if update_Z:
             Z_old = Z.data.clone()
@@ -163,7 +167,7 @@ def cnmf_pgd_solver(
             if update_W:
                 W.clamp_(min=0)
             if strict_convex:
-                W /= (torch.sum(W, dim=1, keepdim=True) + 1e-10)
+                W /= (torch.sum(W, dim=1, keepdim=True) + 1e-8)
 
         if update_Z:
             should_stop = stopping_criterion(Z, Z_old, tol)
@@ -199,6 +203,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         by default 'mu'.
     verbose: bool, optional
         Whether to print optimization information, by default False.
+    l1_penalty: float, optional
+        L1 penalty coefficient, by default 0.0. Only used with the 'pgd' solver.
     """
 
     _SOLVERS = {
@@ -207,7 +213,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
     }
 
     def __init__(self, n_components, device='cpu', tol=1e-4, strict_convex=False, solver='pgd',
-                 verbose=False, **kwargs):
+                 verbose=False, l1_penalty=0.0, **kwargs):
         assert solver in self._SOLVERS, f"Unknown solver {solver}."
 
         super().__init__(n_components, device)
@@ -219,6 +225,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         self.solver_fn = self._SOLVERS[solver]
         self.tol = tol
         self.verbose = verbose
+        self.l1_penalty = l1_penalty
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -245,7 +252,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         Z = self.init_random_z(A)
         Z, _ = self.solver_fn(A, Z, self.W, update_Z=True, update_W=False,
                               strict_convex=self.strict_convex, max_iter=max_iter, tol=tol,
-                              verbose=self.verbose)
+                              verbose=self.verbose, l1_penalty=self.l1_penalty)
 
         return Z
 
@@ -289,7 +296,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
 
         Z, W = self.solver_fn(A, Z, W, update_Z=True, update_W=True,
                               strict_convex=self.strict_convex, max_iter=max_iter, tol=self.tol,
-                              verbose=self.verbose)
+                              verbose=self.verbose, l1_penalty=self.l1_penalty)
 
         self.Z = Z
         self.W = W
