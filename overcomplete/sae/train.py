@@ -288,6 +288,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"R2: {avg_error:.4f}, Time: {epoch_duration:.4f} seconds")
+                  f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"Time: {epoch_duration:.4f} seconds")
 
     return logs
