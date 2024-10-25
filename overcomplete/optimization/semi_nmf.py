@@ -164,9 +164,6 @@ def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=Tr
         with torch.no_grad():
             if update_Z:
                 Z.clamp_(min=0)
-            # D is normalized if the l1_penalty is not 0
-            if update_D and l1_penalty > 0:
-                D /= torch.norm(D, p=1, dim=1, keepdim=True)
 
         if update_Z:
             should_stop = stopping_criterion(Z, Z_old, tol)

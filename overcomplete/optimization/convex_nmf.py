@@ -167,7 +167,7 @@ def cnmf_pgd_solver(
             if update_W:
                 W.clamp_(min=0)
             if strict_convex:
-                W /= (torch.sum(W, dim=1, keepdim=True) + 1e-8)
+                W /= (torch.sum(W, dim=1, keepdim=True) + 1e-8).detach()
 
         if update_Z:
             should_stop = stopping_criterion(Z, Z_old, tol)
