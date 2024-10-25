@@ -53,7 +53,7 @@ class DictionaryLayer(nn.Module):
         self.device = device
 
         # weights should not be accessed directly because of possible normalization/projections
-        self._weights = nn.Parameter(torch.randn(nb_components, dimensions)).to(device)
+        self._weights = nn.Parameter(torch.randn(nb_components, dimensions, device=device))
 
         if isinstance(normalize, str):
             self.normalize = self._NORMALIZATIONS[normalize]
