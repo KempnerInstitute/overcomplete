@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE
+from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE
 
 from ..utils import epsilon_equal
 
@@ -103,7 +103,7 @@ def test_dictionary_layer_get_dictionary_normalization():
     assert epsilon_equal(norms, expected_norms)
 
 
-@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE])
+@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE])
 def test_sae_init_dictionary_layer_normalizations(sae_class):
     nb_concepts = 5
     dimensions = 10

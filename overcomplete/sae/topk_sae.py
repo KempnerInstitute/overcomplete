@@ -70,7 +70,7 @@ class TopKSAE(SAE):
         super().__init__(input_shape, nb_concepts, encoder_module, dictionary_normalization,
                          dictionary_initializer, device)
 
-        self.top_k = top_k if top_k is not None else min(nb_concepts // 10, 1)
+        self.top_k = top_k if top_k is not None else max(nb_concepts // 10, 1)
 
     def encode(self, x):
         """

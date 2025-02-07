@@ -8,11 +8,11 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE
+from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE
 
 from ..utils import epsilon_equal
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
 
 
 @pytest.mark.parametrize(
