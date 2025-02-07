@@ -160,6 +160,23 @@ def test_class_sae_dictionary_init(sae_class):
     assert torch.equal(sae.get_dictionary(), seed)
 
 
+@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE])
+def test_class_sae_dictionary_multiplier(sae_class):
+    # ensure every sae class can pass arg to make multiplier of dictionary trainable
+
+    nb_concepts = 10
+    dimensions = 20
+
+    sae = sae_class(input_shape=dimensions, nb_concepts=nb_concepts)
+    # default, multiplier is a buffer
+    assert not sae.dictionary.multiplier.requires_grad
+
+    sae = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
+                    dictionary_params={'use_multiplier': True})
+    # multiplier is a parameter
+    assert sae.dictionary.multiplier.requires_grad
+
+
 def test_dictionary_initialization():
     nb_concepts = 10
     dimensions = 20
@@ -167,3 +184,87 @@ def test_dictionary_initialization():
 
     dictionary = DictionaryLayer(dimensions, nb_concepts, initializer=seed, normalization='identity')
     assert torch.equal(dictionary.get_dictionary(), seed)
+
+
+def test_multiplier_initial_value():
+    """
+    Test that when the multiplier is used, its initial value (0) results in an effective scaling of 1.
+    """
+    nb_concepts = 5
+    dimensions = 10
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2', use_multiplier=True)
+    dictionary = layer.get_dictionary()
+    expected = layer._weights
+    assert epsilon_equal(dictionary, expected)
+
+
+def test_multiplier_effect_on_dictionary():
+    """
+    Test that manually updating the multiplier changes the output dictionary accordingly.
+    """
+    nb_concepts = 5
+    dimensions = 10
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2', use_multiplier=True)
+    new_value = 0.7  # arbitrary new multiplier value
+    with torch.no_grad():
+        layer.multiplier.copy_(torch.tensor(new_value, device=layer.device))
+    dictionary = layer.get_dictionary()
+    expected = layer._weights * torch.exp(torch.tensor(new_value, device=layer.device))
+    assert epsilon_equal(dictionary, expected)
+
+
+def test_multiplier_not_trainable_when_disabled():
+    """
+    Test that when use_multiplier is False, the multiplier is not a trainable parameter.
+    """
+    nb_concepts = 5
+    dimensions = 10
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2', use_multiplier=False)
+    # The multiplier should be registered as a buffer, not a Parameter.
+    assert not isinstance(layer.multiplier, torch.nn.Parameter)
+    assert not layer.multiplier.requires_grad
+
+
+def test_multiplier_gradient_computation():
+    """
+    Test that when use_multiplier is True, the multiplier receives gradients.
+    """
+    nb_concepts = 5
+    dimensions = 10
+    batch_size = 3
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2', use_multiplier=True)
+    # Ensure multiplier is trainable.
+    assert layer.multiplier.requires_grad
+
+    # Create a dummy latent code and compute a simple loss.
+    z = torch.randn(batch_size, nb_concepts)
+    x_hat = layer.forward(z)
+    target = torch.zeros_like(x_hat)
+    loss = ((x_hat - target) ** 2).mean()
+    loss.backward()
+    assert layer.multiplier.grad is not None
+
+
+def test_multiplier_optimizer_step():
+    """
+    Test that an optimizer updates the multiplier during training.
+    """
+    nb_concepts = 5
+    dimensions = 10
+    batch_size = 3
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2', use_multiplier=True)
+    optimizer = torch.optim.SGD(layer.parameters(), lr=0.1)
+
+    # Record the initial multiplier value.
+    init_multiplier = layer.multiplier.clone().detach()
+
+    # Compute a dummy forward/backward pass.
+    z = torch.randn(batch_size, nb_concepts)
+    x_hat = layer.forward(z)
+    target = torch.zeros_like(x_hat)
+    loss = ((x_hat - target) ** 2).mean()
+    loss.backward()
+    optimizer.step()
+
+    # Check that the multiplier has been updated.
+    assert not torch.allclose(init_multiplier, layer.multiplier.detach(), atol=1e-6)

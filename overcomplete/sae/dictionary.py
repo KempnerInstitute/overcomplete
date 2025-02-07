@@ -112,6 +112,9 @@ class DictionaryLayer(nn.Module):
         If a custom normalization is needed, a callable can be passed.
     initializer : torch.Tensor, optional
         Initial dictionary tensor, by default None.
+    multiplier : bool, optional
+        Whether to train a positive scalar to multiply the dictionary after normalization,
+        (e.g. to control the radius of the l2 ball when l2 norm is applied), by default False.
     device : str, optional
         Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
     """
@@ -126,7 +129,8 @@ class DictionaryLayer(nn.Module):
 
     def __init__(
         self, in_dimensions, nb_concepts,
-        normalization="l2", initializer=None, device="cpu"
+        normalization="l2", initializer=None, use_multiplier=False,
+        device="cpu"
     ):
         super().__init__()
         self.in_dimensions = in_dimensions
@@ -148,6 +152,13 @@ class DictionaryLayer(nn.Module):
         else:
             assert initializer.shape == self._weights.shape, "Invalid initializer, must have the same shape as the dictionary."
             self._weights.data = torch.tensor(initializer, device=device)
+
+        # init multiplier
+        if use_multiplier:
+            self.multiplier = nn.Parameter(torch.tensor(0.0, device=device), requires_grad=True)
+        else:
+            # by default, the multiplier will be exp(0) = 1 and not trainable
+            self.register_buffer("multiplier", torch.tensor(0.0, device=device))
 
     def forward(self, z):
         """
@@ -178,4 +189,4 @@ class DictionaryLayer(nn.Module):
         """
         with torch.no_grad():
             self._weights.data = self.normalization(self._weights)
-        return self._weights
+        return self._weights * torch.exp(self.multiplier)

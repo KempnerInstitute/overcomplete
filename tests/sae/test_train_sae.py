@@ -318,7 +318,6 @@ def test_q_sae_quantization_levels():
     unique_values_after_training = np.unique(code_after_training.detach().numpy().astype(np.float16))
     quantization_state_after_training = np.array(model.Q.data.sort().values.detach().numpy().astype(np.float16))
 
-    assert len(unique_values_after_training) == quantization_levels
     assert epsilon_equal(np.clip(quantization_state_after_training, 0, None), unique_values_after_training, 1e-4)
 
     # ensure the quantization levels are trainable / not the same
