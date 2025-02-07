@@ -58,7 +58,7 @@ logs = train_sae(sae, dataloader, criterion, optimizer,
 
 # 🧪 Notebooks
 
-- Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-green?style=flat&logo=jupyter)]([notebooks/starter.ipynb](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link))
+- Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-green?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link)
 - TopK vs JumpReLU vs Vanilla SAE: _Coming soon_
 - Stable Dictionary with Archetypal-SAE: _Coming soon_
 - Advanced metrics to study the solution of SAE: _Coming soon_
