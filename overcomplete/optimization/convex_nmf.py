@@ -249,6 +249,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         if tol is None:
             tol = self.tol
 
+        A = A.to(self.device)
+
         Z = self.init_random_z(A)
         Z, _ = self.solver_fn(A, Z, self.W, update_Z=True, update_W=False,
                               strict_convex=self.strict_convex, max_iter=max_iter, tol=tol,
@@ -272,6 +274,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         """
         self._assert_fitted()
 
+        Z = Z.to(self.device)
+
         D = self.get_dictionary()
         A_hat = Z @ D
 
@@ -288,6 +292,8 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         max_iter : int, optional
             Maximum number of iterations, by default 500.
         """
+        A = A.to(self.device)
+
         # @tfel more costly and require Z Zt inverse (could be impossible in practice)
         # but better init could be done as proposed in the original article
         # Z, W = self.init_semi_nmf(A)
@@ -298,9 +304,9 @@ class ConvexNMF(BaseOptimDictionaryLearning):
                               strict_convex=self.strict_convex, max_iter=max_iter, tol=self.tol,
                               verbose=self.verbose, l1_penalty=self.l1_penalty)
 
-        self.Z = Z
-        self.W = W
-        self.D = W @ A
+        self.register_buffer('W', W)
+        self.register_buffer('D', W @ A)
+
         self._set_fitted()
 
         return Z, self.D

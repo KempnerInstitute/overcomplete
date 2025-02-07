@@ -209,9 +209,9 @@ class SemiNMF(BaseOptimDictionaryLearning):
 
         super().__init__(nb_concepts, device)
         self.tol = tol
-        self.D = None
         self.solver_fn = self._SOLVERS[solver]
         self.l1_penalty = l1_penalty
+        self.register_buffer('D', None)
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -235,6 +235,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         if tol is None:
             tol = self.tol
 
+        A = A.to(self.device)
         Z = self.init_random_z(A)
 
         Z, _ = self.solver_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol,
@@ -258,6 +259,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         """
         self._assert_fitted()
 
+        Z = Z.to(self.device)
         A_hat = Z @ self.D
 
         return A_hat
@@ -273,6 +275,8 @@ class SemiNMF(BaseOptimDictionaryLearning):
         max_iter : int, optional
             Maximum number of iterations, by default 500.
         """
+        A = A.to(self.device)
+
         # @tfel: we could warm start here, or/and use nnsvdvar instead
         # of (non-negative) random
         Z = self.init_random_z(A)
@@ -284,7 +288,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         self.D = D
         self._set_fitted()
 
-        return Z, D
+        return Z, self.D
 
     def get_dictionary(self):
         """

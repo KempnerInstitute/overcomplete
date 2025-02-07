@@ -465,6 +465,8 @@ class NMF(BaseOptimDictionaryLearning):
         self._assert_fitted()
         assert (A >= 0).all(), 'Input tensor must be non-negative'
 
+        A = A.to(self.device)
+
         if tol is None:
             tol = self.tol
 
@@ -489,6 +491,7 @@ class NMF(BaseOptimDictionaryLearning):
         """
         self._assert_fitted()
 
+        Z = Z.to(self.device)
         A_hat = Z @ self.D
 
         return A_hat
@@ -506,6 +509,8 @@ class NMF(BaseOptimDictionaryLearning):
         """
         assert (A >= 0).all(), 'Input tensor must be non-negative'
 
+        A = A.to(self.device)
+
         if self.nb_concepts <= min(A.shape[0], A.shape[1]):
             Z, D = self.init_nndsvda(A)
         else:
@@ -517,7 +522,7 @@ class NMF(BaseOptimDictionaryLearning):
         self.D = D
         self._set_fitted()
 
-        return Z, D
+        return Z, self.D
 
     def get_dictionary(self):
         """
