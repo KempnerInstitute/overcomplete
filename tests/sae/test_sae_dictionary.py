@@ -110,7 +110,7 @@ def test_sae_init_dictionary_layer_normalizations(sae_class):
 
     # Test 'l2' normalization
     sae_l2 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
-                       dictionary_normalization='l2')
+                       dictionary_params={'normalization': 'l2'})
 
     dictionary_l2 = sae_l2.get_dictionary()
     norms_l2 = torch.norm(dictionary_l2, p=2, dim=1)
@@ -119,14 +119,14 @@ def test_sae_init_dictionary_layer_normalizations(sae_class):
 
     # Test 'max_l2' normalization
     sae_max_l2 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
-                           dictionary_normalization='max_l2')
+                           dictionary_params={'normalization': 'max_l2'})
     dictionary_max_l2 = sae_max_l2.get_dictionary()
     norms_max_l2 = torch.norm(dictionary_max_l2, p=2, dim=1)
     assert torch.all(norms_max_l2 <= 1.0 + 1e-4)
 
     # Test 'l1' normalization
     sae_l1 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
-                       dictionary_normalization='l1')
+                       dictionary_params={'normalization': 'l1'})
     dictionary_l1 = sae_l1.get_dictionary()
     norms_l1 = torch.norm(dictionary_l1, p=1, dim=1)
     expected_norms_l1 = torch.ones(nb_concepts)
@@ -134,16 +134,30 @@ def test_sae_init_dictionary_layer_normalizations(sae_class):
 
     # Test 'max_l1' normalization
     sae_max_l1 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
-                           dictionary_normalization='max_l1')
+                           dictionary_params={'normalization': 'max_l1'})
     dictionary_max_l1 = sae_max_l1.get_dictionary()
     norms_max_l1 = torch.norm(dictionary_max_l1, p=1, dim=1)
     assert torch.all(norms_max_l1 <= 1.0 + 1e-4)
 
     # Test 'identity' normalization
     sae = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
-                    dictionary_normalization='identity')
+                    dictionary_params={'normalization': 'identity'})
     dictionary_identity = sae.get_dictionary()
     assert torch.equal(dictionary_identity, sae.dictionary._weights)
+
+
+@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE])
+def test_class_sae_dictionary_init(sae_class):
+    # ensure every sae class can pass an initializer for the dictionary, and check if
+    # the dictionary is correctly initialized
+
+    nb_concepts = 10
+    dimensions = 20
+    seed = torch.randn(nb_concepts, dimensions)
+
+    sae = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
+                    dictionary_params={'initializer': seed, 'normalization': 'identity'})
+    assert torch.equal(sae.get_dictionary(), seed)
 
 
 def test_dictionary_initialization():

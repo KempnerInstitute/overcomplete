@@ -33,19 +33,17 @@ class BatchTopKSAE(SAE):
         Momentum for the running threshold update (default is 0.9).
     encoder_module : nn.Module or str, optional
         Custom encoder module (or its registered name). If None, a default encoder is used.
-    dictionary_normalization : str or callable, optional
-        Method for dictionary normalization (default is 'l2').
-    dictionary_initializer : torch.Tensor, optional
-        Tensor to initialize the dictionary.
+    dictionary_params : dict, optional
+        Parameters that will be passed to the dictionary layer.
+        See DictionaryLayer for more details.
     device : str, optional
         Device on which to run the model (default is 'cpu').
     """
 
     def __init__(self, input_shape, nb_concepts, top_k=None, threshold_momentum=0.9,
-                 encoder_module=None, dictionary_normalization='l2',
-                 dictionary_initializer=None, device='cpu'):
+                 encoder_module=None, dictionary_params=None, device='cpu'):
         super().__init__(input_shape, nb_concepts, encoder_module,
-                         dictionary_normalization, dictionary_initializer, device)
+                         dictionary_params, device)
         self.top_k = top_k if top_k is not None else max(nb_concepts // 10, 1)
         self.threshold_momentum = threshold_momentum
         self.running_threshold = None

@@ -72,12 +72,9 @@ class SAE(BaseDictionaryLearning):
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_normalization : str or callable, optional
-        Whether to normalize the dictionary, by default 'l2' normalization is applied.
-        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
-        If a custom normalization is needed, a callable can be passed.
-    dictionary_initializer : torch.Tensor, optional
-        Initial dictionary tensor, by default None.
+    dictionary_params : dict, optional
+        Parameters that will be passed to the dictionary layer.
+        See DictionaryLayer for more details.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -94,8 +91,8 @@ class SAE(BaseDictionaryLearning):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, nb_concepts, encoder_module=None, dictionary_normalization='l2',
-                 dictionary_initializer=None, device='cpu'):
+    def __init__(self, input_shape, nb_concepts, encoder_module=None,
+                 dictionary_params=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
 
@@ -127,8 +124,7 @@ class SAE(BaseDictionaryLearning):
         else:
             raise ValueError("Input shape must be 1D, 2D or 3D.")
 
-        self.dictionary = DictionaryLayer(in_dim, nb_concepts, dictionary_normalization,
-                                          dictionary_initializer, device)
+        self.dictionary = DictionaryLayer(in_dim, nb_concepts, device=device, **(dictionary_params or {}))
 
     def get_dictionary(self):
         """

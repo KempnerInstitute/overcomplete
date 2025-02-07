@@ -38,12 +38,9 @@ class TopKSAE(SAE):
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_normalization : str or callable, optional
-        Whether to normalize the dictionary, by default 'l2' normalization is applied.
-        Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
-        If a custom normalization is needed, a callable can be passed.
-    dictionary_initializer : torch.Tensor, optional
-        Initial dictionary tensor, by default None.
+    dictionary_params : dict, optional
+        Parameters that will be passed to the dictionary layer.
+        See DictionaryLayer for more details.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -60,15 +57,14 @@ class TopKSAE(SAE):
     """
 
     def __init__(self, input_shape, nb_concepts, top_k=None,
-                 encoder_module=None, dictionary_normalization='l2',
-                 dictionary_initializer=None, device='cpu'):
+                 encoder_module=None, dictionary_params=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         if isinstance(top_k, int):
             assert top_k > 0
 
-        super().__init__(input_shape, nb_concepts, encoder_module, dictionary_normalization,
-                         dictionary_initializer, device)
+        super().__init__(input_shape, nb_concepts, encoder_module,
+                         dictionary_params, device)
 
         self.top_k = top_k if top_k is not None else max(nb_concepts // 10, 1)
 
