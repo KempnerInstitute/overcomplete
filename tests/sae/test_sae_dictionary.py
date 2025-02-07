@@ -144,3 +144,12 @@ def test_sae_init_dictionary_layer_normalizations(sae_class):
                     dictionary_normalization='identity')
     dictionary_identity = sae.get_dictionary()
     assert torch.equal(dictionary_identity, sae.dictionary._weights)
+
+
+def test_dictionary_initialization():
+    nb_concepts = 10
+    dimensions = 20
+    seed = torch.randn(nb_concepts, dimensions)
+
+    dictionary = DictionaryLayer(dimensions, nb_concepts, initializer=seed, normalization='identity')
+    assert torch.equal(dictionary.get_dictionary(), seed)

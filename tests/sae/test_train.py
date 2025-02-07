@@ -44,3 +44,4 @@ def test_train_model():
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs
+    assert "dead_features" in logs

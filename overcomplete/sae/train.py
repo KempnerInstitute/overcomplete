@@ -9,6 +9,7 @@ import torch
 from einops import rearrange
 
 from ..metrics import l2, sparsity, r2_score
+from .trackers import DeadCodeTracker
 
 
 def _compute_reconstruction_error(x, x_hat):
@@ -132,15 +133,23 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         epoch_loss = 0.0
         epoch_error = 0.0
         epoch_sparsity = 0.0
+        batch_count = 0
+
+        dead_tracker = None
 
         for batch in dataloader:
+            batch_count += 1
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
             z_pre, z, x_hat = model(x)
             loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
 
-            # tfel: monitoring of NaNs in loss could be added here
+            # init dead code tracker with first batch
+            if dead_tracker is None:
+                dead_tracker = DeadCodeTracker(z.shape[1], device)
+            dead_tracker.update(z)
+
             loss.backward()
 
             if clip_grad:
@@ -157,18 +166,21 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
                 epoch_sparsity += sparsity(z).mean().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
-        if monitoring:
-            avg_loss = epoch_loss / len(dataloader)
-            avg_error = epoch_error / len(dataloader)
-            avg_sparsity = epoch_sparsity / len(dataloader)
+        if monitoring and batch_count > 0:
+            avg_loss = epoch_loss / batch_count
+            avg_error = epoch_error / batch_count
+            avg_sparsity = epoch_sparsity / batch_count
+            dead_ratio = dead_tracker.get_dead_ratio()
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
             logs['time_epoch'].append(epoch_duration)
             logs['z_sparsity'].append(avg_sparsity)
+            logs['dead_features'].append(dead_ratio)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
                   f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"Dead Features: {dead_ratio*100:.1f}%, "
                   f"Time: {epoch_duration:.4f} seconds")
 
     return logs
@@ -215,7 +227,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
     defaultdict
         Logs of training statistics.
     """
-    scaler = torch.amp.GradScaler(device, enabled=True)
+    scaler = torch.amp.GradScaler(device=device, enabled=True)
     logs = defaultdict(list)
 
     for epoch in range(nb_epochs):
@@ -225,16 +237,25 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
         epoch_loss = 0.0
         epoch_error = 0.0
         epoch_sparsity = 0.0
+        batch_count = 0
+
+        dead_tracker = None
 
         nan_fallback_count = 0
 
         for batch in dataloader:
+            batch_count += 1
             x = batch[0].to(device, non_blocking=True)
             optimizer.zero_grad()
 
-            with torch.amp.autocast(device, enabled=True):
+            with torch.amp.autocast(device_type=device, enabled=True):
                 z_pre, z, x_hat = model(x)
                 loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
+
+            # init dead code tracker with first batch
+            if dead_tracker is None:
+                dead_tracker = DeadCodeTracker(z.shape[1], device)
+            dead_tracker.update(z)
 
             if torch.isnan(loss) or torch.isinf(loss):
                 nan_fallback_count += 1
@@ -242,9 +263,10 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
                     print(f"[Warning] NaN detected in loss at Epoch {epoch+1}, "
                           f"Iteration {len(logs['step_loss'])+1}. Switching to full precision.")
 
-                with torch.amp.autocast(device, enabled=False):
+                with torch.amp.autocast(device_type=device, enabled=False):
                     z_pre, z, x_hat = model(x)
-                    loss = criterion(x, x_hat, z, model.get_dictionary())
+                    loss = criterion(x, x_hat, z_pre, z, model.get_dictionary())
+                    dead_tracker.update(z)
 
                 if torch.isnan(loss) or torch.isinf(loss):
                     if monitoring:
@@ -276,19 +298,22 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
                 epoch_sparsity += sparsity(z).mean().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
-        if monitoring:
-            avg_loss = epoch_loss / len(dataloader)
-            avg_error = epoch_error / len(dataloader)
-            avg_sparsity = epoch_sparsity / len(dataloader)
+        if monitoring and batch_count > 0:
+            avg_loss = epoch_loss / batch_count
+            avg_error = epoch_error / batch_count
+            avg_sparsity = epoch_sparsity / batch_count
+            dead_ratio = dead_tracker.get_dead_ratio()
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
             logs['z_sparsity'].append(avg_sparsity)
             logs['time_epoch'].append(epoch_duration)
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
+            logs['dead_features'].append(dead_ratio)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
                   f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"Dead Features: {dead_ratio*100:.1f}%, "
                   f"Time: {epoch_duration:.4f} seconds")
 
     return logs

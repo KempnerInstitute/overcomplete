@@ -61,8 +61,7 @@ def test_convex_nmf_reconstruction_error(solver):
     initial_W = model.init_random_w(A)
     initial_D = initial_W @ A
     initial_error = torch.norm(A - initial_Z @ initial_D, 'fro')
-    model.fit(A)
-    Z = model.Z
+    Z, _ = model.fit(A)
     D = model.get_dictionary()
     A_hat = Z @ D
     final_error = torch.norm(A - A_hat, 'fro')
