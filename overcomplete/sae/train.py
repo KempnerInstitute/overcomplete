@@ -12,6 +12,21 @@ from ..metrics import l2, sparsity, r2_score
 from .trackers import DeadCodeTracker
 
 
+def extract_input(batch):
+    """
+    Extracts the input data from a batch. Supports different batch types:
+    - If the batch is a tuple or list, returns the first element.
+    - If the batch is a dict, tries to return the value with key 'data' (or 'input').
+    - Otherwise, assumes the batch is the input data.
+    """
+    if isinstance(batch, (tuple, list)):
+        return batch[0]
+    elif isinstance(batch, dict):
+        return batch.get('data')
+    else:
+        return batch
+
+
 def _compute_reconstruction_error(x, x_hat):
     """
     Try to match the shapes of x and x_hat to compute the reconstruction error.
@@ -139,7 +154,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
 
         for batch in dataloader:
             batch_count += 1
-            x = batch[0].to(device, non_blocking=True)
+            x = extract_input(batch).to(device, non_blocking=True)
             optimizer.zero_grad()
 
             z_pre, z, x_hat = model(x)
@@ -245,7 +260,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
 
         for batch in dataloader:
             batch_count += 1
-            x = batch[0].to(device, non_blocking=True)
+            x = extract_input(batch).to(device, non_blocking=True)
             optimizer.zero_grad()
 
             with torch.amp.autocast(device_type=device, enabled=True):

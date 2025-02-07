@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 import torch
 from torch import nn
 from torchvision import transforms
-import timm
 
 
 class BaseModel(ABC, nn.Module):
@@ -132,6 +131,7 @@ class SigLIP(BaseModel):
 
     def __init__(self, use_half=False, device='cpu'):
         super().__init__(use_half, device)
+        import timm  # lazy import to avoid loading timm if not needed
         self.model = timm.create_model('vit_base_patch16_siglip_224', pretrained=True, num_classes=0).eval().to(
             self.device)
         if self.use_half:
@@ -190,6 +190,7 @@ class ViT(BaseModel):
 
     def __init__(self, use_half=False, device='cpu'):
         super().__init__(use_half, device)
+        import timm  # lazy import to avoid loading timm if not needed
         self.model = timm.create_model('vit_base_patch16_224', pretrained=True).eval().to(
             self.device)
         if self.use_half:
@@ -250,6 +251,7 @@ class ResNet(BaseModel):
 
     def __init__(self, use_half=False, device='cpu'):
         super().__init__(use_half, device)
+        import timm  # lazy import to avoid loading timm if not needed
         self.model = timm.create_model('resnetv2_50x1_bit.goog_distilled_in1k', pretrained=True).eval().to(self.device)
         if self.use_half:
             self.model = self.model.half()
@@ -307,6 +309,7 @@ class ConvNeXt(BaseModel):
 
     def __init__(self, use_half=False, device='cpu'):
         super().__init__(use_half, device)
+        import timm  # lazy import to avoid loading timm if not needed
         self.model = timm.create_model('convnext_small.fb_in1k', pretrained=True).eval().to(self.device)
         if self.use_half:
             self.model = self.model.half()
