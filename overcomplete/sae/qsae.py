@@ -18,16 +18,16 @@ class QSAE(SAE):
     during training and are initialize around 0:
         Q0 = [-1, ..., 1], with #|Q| = q.
 
-    @tfel: this is an unpublished work, please cite the Overcomplete library
-    if you use it.
+    @tfel: this is an unpublished work and purely experimental.
 
     Parameters
     ----------
     input_shape : int or tuple of int
         Dimensionality of the input data, do not include batch dimensions.
         It is usually 1d (dim), 2d (seq length, dim) or 3d (dim, height, width).
-    n_components : int
-        Number of components in the dictionary.
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
     q : int, optional
         Number of top quantized steps to keep in the latent representation.
     hard : bool, optional
@@ -37,18 +37,14 @@ class QSAE(SAE):
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_initializer : str, optional
-        Method for initializing the dictionary, e.g 'svd', 'kmeans', 'ica',
-        see dictionary module to see all the possible initialization.
-    data_initializer : torch.Tensor, optional
-        Data used to fit a first approximation and initialize the dictionary, by default None.
+    dictionary_initializer : torch.Tensor, optional
+        Initial dictionary tensor, by default None.
     dictionary_normalization : str or callable, optional
         Whether to normalize the dictionary, by default 'l2' normalization is applied.
         Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
         If a custom normalization is needed, a callable can be passed.
     device : str, optional
         Device to run the model on, by default 'cpu'.
-
 
     Methods
     -------
@@ -62,16 +58,15 @@ class QSAE(SAE):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, n_components, q=4, hard=False,
-                 encoder_module=None, dictionary_initializer=None, data_initializer=None,
-                 dictionary_normalization='l2', device='cpu'):
+    def __init__(self, input_shape, nb_concepts, q=4, hard=False,
+                 encoder_module=None, dictionary_normalization='l2',
+                 dictionary_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         assert q > 1, "You need at least 2 quantization levels."
 
-        super().__init__(input_shape, n_components, encoder_module,
-                         dictionary_initializer, data_initializer,
-                         dictionary_normalization, device)
+        super().__init__(input_shape, nb_concepts, encoder_module,
+                         dictionary_normalization, dictionary_initializer, device)
 
         # initialize linearly around [-1, 1]
         Q = torch.linspace(0.0, 1.0, q, device=device).float()
@@ -90,9 +85,11 @@ class QSAE(SAE):
 
         Returns
         -------
-        torch.Tensor or tuple
-            Latent representation tensor (z) of shape (batch_size, nb_components).
-            If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
+        pre_codes : torch.Tensor
+            Pre-codes tensor of shape (batch_size, n_components), before the relu and quantization
+            operation.
+        codes : torch.Tensor
+            Codes, latent representation tensor (z) of shape (batch_size, n_components
         """
         pre_codes, codes = self.encoder(x)
 

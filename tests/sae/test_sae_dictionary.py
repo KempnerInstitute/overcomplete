@@ -7,173 +7,140 @@ from ..utils import epsilon_equal
 
 
 def test_dictionary_layer_initialization():
-    nb_components = 10
+    nb_concepts = 10
     dimensions = 20
     device = 'cpu'
-    normalize = 'l2'
-    layer = DictionaryLayer(nb_components, dimensions, normalize, device)
+    normalization = 'l2'
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization=normalization, device=device)
 
-    assert layer.nb_components == nb_components
-    assert layer.dimensions == dimensions
+    assert layer.nb_concepts == nb_concepts
+    assert layer.in_dimensions == dimensions
     assert layer.device == device
-    assert callable(layer.normalize)
-    assert layer.get_dictionary().shape == (nb_components, dimensions)
+    assert callable(layer.normalization)
+    assert layer.get_dictionary().shape == (nb_concepts, dimensions)
 
 
 def test_dictionary_layer_custom_normalization():
-    def custom_normalize(x):
+    def custom_normalization(x):
         return x / torch.max(torch.norm(x, p=2, dim=1, keepdim=True), torch.tensor(1.0))
 
-    layer = DictionaryLayer(10, 20, normalize=custom_normalize)
-    assert layer.normalize == custom_normalize
+    layer = DictionaryLayer(10, 20, normalization=custom_normalization)
+    assert layer.normalization == custom_normalization
 
 
 def test_dictionary_layer_forward():
-    nb_components = 5
+    nb_concepts = 5
     dimensions = 10
     batch_size = 3
 
-    layer = DictionaryLayer(nb_components, dimensions)
-    z = torch.randn(batch_size, nb_components)
+    layer = DictionaryLayer(dimensions, nb_concepts)
+    z = torch.randn(batch_size, nb_concepts)
     x_hat = layer.forward(z)
 
     assert x_hat.shape == (batch_size, dimensions)
 
 
 def test_dictionary_layer_get_dictionary():
-    nb_components = 5
+    nb_concepts = 5
     dimensions = 10
 
-    layer = DictionaryLayer(nb_components, dimensions, normalize='l2')
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2')
     dictionary = layer.get_dictionary()
     norms = torch.norm(dictionary, p=2, dim=1)
 
-    expected_norms = torch.ones(nb_components)
+    expected_norms = torch.ones(nb_concepts)
     assert epsilon_equal(norms, expected_norms)
 
 
 def test_dictionary_layer_normalizations():
-    nb_components = 5
+    nb_concepts = 5
     dimensions = 10
 
     # Test 'l2' normalization
-    layer_l2 = DictionaryLayer(nb_components, dimensions, normalize='l2')
+    layer_l2 = DictionaryLayer(dimensions, nb_concepts, normalization='l2')
     dictionary_l2 = layer_l2.get_dictionary()
     norms_l2 = torch.norm(dictionary_l2, p=2, dim=1)
-    expected_norms_l2 = torch.ones(nb_components)
+    expected_norms_l2 = torch.ones(nb_concepts)
     assert epsilon_equal(norms_l2, expected_norms_l2)
 
     # Test 'max_l2' normalization
-    layer_max_l2 = DictionaryLayer(nb_components, dimensions, normalize='max_l2')
+    layer_max_l2 = DictionaryLayer(dimensions, nb_concepts, normalization='max_l2')
     layer_max_l2._weights.data *= 2  # Set norms greater than 1
     dictionary_max_l2 = layer_max_l2.get_dictionary()
     norms_max_l2 = torch.norm(dictionary_max_l2, p=2, dim=1)
     assert torch.all(norms_max_l2 <= 1.0 + 1e-4)
 
     # Test 'l1' normalization
-    layer_l1 = DictionaryLayer(nb_components, dimensions, normalize='l1')
+    layer_l1 = DictionaryLayer(dimensions, nb_concepts, normalization='l1')
     dictionary_l1 = layer_l1.get_dictionary()
     norms_l1 = torch.norm(dictionary_l1, p=1, dim=1)
-    expected_norms_l1 = torch.ones(nb_components)
+    expected_norms_l1 = torch.ones(nb_concepts)
     assert epsilon_equal(norms_l1, expected_norms_l1)
 
     # Test 'max_l1' normalization
-    layer_max_l1 = DictionaryLayer(nb_components, dimensions, normalize='max_l1')
+    layer_max_l1 = DictionaryLayer(dimensions, nb_concepts, normalization='max_l1')
     layer_max_l1._weights.data *= 2  # Set norms greater than 1
     dictionary_max_l1 = layer_max_l1.get_dictionary()
     norms_max_l1 = torch.norm(dictionary_max_l1, p=1, dim=1)
     assert torch.all(norms_max_l1 <= 1.0 + 1e-4)
 
     # Test 'identity' normalization
-    layer_identity = DictionaryLayer(nb_components, dimensions, normalize='identity')
+    layer_identity = DictionaryLayer(dimensions, nb_concepts, normalization='identity')
     dictionary_identity = layer_identity.get_dictionary()
     assert torch.equal(dictionary_identity, layer_identity._weights)
 
 
-def test_dictionary_layer_initialize_dictionary_svd():
-    nb_components = 2
-    dimensions = 3
-    layer = DictionaryLayer(nb_components, dimensions)
-    x = torch.randn(20, dimensions)
-
-    layer.initialize_dictionary(x, method='svd')
-    dictionary = layer.get_dictionary()
-    assert dictionary.shape == (nb_components, dimensions)
-
-
-def test_dictionary_layer_initialize_dictionary_custom_method():
-    class DummyDictionaryLearning:
-        def __init__(self, nb_components):
-            self.nb_components = nb_components
-
-        def fit(self, x):
-            self.dictionary = torch.randn(self.nb_components, x.shape[1])
-
-        def get_dictionary(self):
-            return self.dictionary
-
-    nb_components = 5
-    dimensions = 10
-    layer = DictionaryLayer(nb_components, dimensions)
-    x = torch.randn(100, dimensions)
-    custom_method = DummyDictionaryLearning(nb_components)
-
-    layer.initialize_dictionary(x, method=custom_method)
-    dictionary = layer.get_dictionary()
-    assert dictionary.shape == (nb_components, dimensions)
-
-
 def test_dictionary_layer_get_dictionary_normalization():
-    nb_components = 5
+    nb_concepts = 5
     dimensions = 10
 
     # Manually set weights
-    layer = DictionaryLayer(nb_components, dimensions, normalize='l2')
-    layer._weights.data = torch.randn(nb_components, dimensions)
+    layer = DictionaryLayer(dimensions, nb_concepts, normalization='l2')
+    layer._weights.data = torch.randn(nb_concepts, dimensions)
     dictionary = layer.get_dictionary()
     norms = torch.norm(dictionary, p=2, dim=1)
-    expected_norms = torch.ones(nb_components)
+    expected_norms = torch.ones(nb_concepts)
     assert epsilon_equal(norms, expected_norms)
 
 
 @pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE])
 def test_sae_init_dictionary_layer_normalizations(sae_class):
-    nb_components = 5
+    nb_concepts = 5
     dimensions = 10
 
     # Test 'l2' normalization
-    sae_l2 = sae_class(input_shape=dimensions, n_components=nb_components,
+    sae_l2 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
                        dictionary_normalization='l2')
 
     dictionary_l2 = sae_l2.get_dictionary()
     norms_l2 = torch.norm(dictionary_l2, p=2, dim=1)
-    expected_norms_l2 = torch.ones(nb_components)
+    expected_norms_l2 = torch.ones(nb_concepts)
     assert epsilon_equal(norms_l2, expected_norms_l2)
 
     # Test 'max_l2' normalization
-    sae_max_l2 = sae_class(input_shape=dimensions, n_components=nb_components,
+    sae_max_l2 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
                            dictionary_normalization='max_l2')
     dictionary_max_l2 = sae_max_l2.get_dictionary()
     norms_max_l2 = torch.norm(dictionary_max_l2, p=2, dim=1)
     assert torch.all(norms_max_l2 <= 1.0 + 1e-4)
 
     # Test 'l1' normalization
-    sae_l1 = sae_class(input_shape=dimensions, n_components=nb_components,
+    sae_l1 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
                        dictionary_normalization='l1')
     dictionary_l1 = sae_l1.get_dictionary()
     norms_l1 = torch.norm(dictionary_l1, p=1, dim=1)
-    expected_norms_l1 = torch.ones(nb_components)
+    expected_norms_l1 = torch.ones(nb_concepts)
     assert epsilon_equal(norms_l1, expected_norms_l1)
 
     # Test 'max_l1' normalization
-    sae_max_l1 = sae_class(input_shape=dimensions, n_components=nb_components,
+    sae_max_l1 = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
                            dictionary_normalization='max_l1')
     dictionary_max_l1 = sae_max_l1.get_dictionary()
     norms_max_l1 = torch.norm(dictionary_max_l1, p=1, dim=1)
     assert torch.all(norms_max_l1 <= 1.0 + 1e-4)
 
     # Test 'identity' normalization
-    sae = sae_class(input_shape=dimensions, n_components=nb_components,
+    sae = sae_class(input_shape=dimensions, nb_concepts=nb_concepts,
                     dictionary_normalization='identity')
     dictionary_identity = sae.get_dictionary()
     assert torch.equal(dictionary_identity, sae.dictionary._weights)

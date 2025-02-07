@@ -23,7 +23,7 @@ class BaseOptimDictionaryLearning(BaseDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
@@ -52,13 +52,13 @@ class BaseOptimDictionaryLearning(BaseDictionaryLearning):
 
     def sanitize_np_codes(self, z):
         """
-        Ensure the codes tensor (Z) is a numpy array of shape (batch_size, n_components).
+        Ensure the codes tensor (Z) is a numpy array of shape (batch_size, nb_concepts).
         Convert from pytorch tensor or DataLoader if necessary.
 
         Parameters
         ----------
         z : torch.Tensor
-            Encoded tensor (the codes) of shape (batch_size, n_components).
+            Encoded tensor (the codes) of shape (batch_size, nb_concepts).
 
         Returns
         -------
@@ -68,6 +68,6 @@ class BaseOptimDictionaryLearning(BaseDictionaryLearning):
         if isinstance(z, DataLoader):
             z = unwrap_dataloader(z)
         z = to_npf32(z)
-        assert z.ndim == 2 and z.shape[1] == self.n_components, \
-            'Input tensor must have 2 dimensions and n_components columns'
+        assert z.ndim == 2 and z.shape[1] == self.nb_concepts, \
+            'Input tensor must have 2 dimensions and nb_concepts columns'
         return z

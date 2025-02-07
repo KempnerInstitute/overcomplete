@@ -21,14 +21,14 @@ dataset = TensorDataset(sample_data)
 data_loader = DataLoader(dataset, batch_size=10)
 
 
-def method_encode_decode(model_class, sample_data, n_components, extra_args=None):
+def method_encode_decode(model_class, sample_data, nb_concepts, extra_args=None):
     if extra_args is None:
         extra_args = {}
-    model = model_class(n_components=n_components, **extra_args)
+    model = model_class(nb_concepts=nb_concepts, **extra_args)
     model.fit(sample_data)
 
     encoded = model.encode(sample_data)
-    assert encoded.shape[1] == n_components, "Encoded output should have the correct shape"
+    assert encoded.shape[1] == nb_concepts, "Encoded output should have the correct shape"
     assert isinstance(encoded, torch.Tensor), "Encoded output should be a torch.Tensor"
 
     decoded = model.decode(encoded)
@@ -36,7 +36,7 @@ def method_encode_decode(model_class, sample_data, n_components, extra_args=None
     assert isinstance(decoded, torch.Tensor), "Decoded output should be a torch.Tensor"
 
     dictionary = model.get_dictionary()
-    assert dictionary.shape[0] == n_components, "Dictionary should have the correct shape"
+    assert dictionary.shape[0] == nb_concepts, "Dictionary should have the correct shape"
     assert isinstance(dictionary, torch.Tensor), "Dictionary should be a torch.Tensor"
 
 
@@ -50,8 +50,8 @@ def method_encode_decode(model_class, sample_data, n_components, extra_args=None
     (SkSVD, {}),
 ])
 def test_optim_models_with_tensor(model_class, extra_args):
-    n_components = 2
-    method_encode_decode(model_class, data_loader, n_components, extra_args)
+    nb_concepts = 2
+    method_encode_decode(model_class, data_loader, nb_concepts, extra_args)
 
 
 @pytest.mark.parametrize("model_class, extra_args", [
@@ -64,5 +64,5 @@ def test_optim_models_with_tensor(model_class, extra_args):
     (SkSVD, {}),
 ])
 def test_optim_models_with_dataloader(model_class, extra_args):
-    n_components = 2
-    method_encode_decode(model_class, data_loader, n_components, extra_args)
+    nb_concepts = 2
+    method_encode_decode(model_class, data_loader, nb_concepts, extra_args)

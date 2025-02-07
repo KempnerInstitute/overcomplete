@@ -65,21 +65,19 @@ class SAE(BaseDictionaryLearning):
     input_shape : int or tuple of int
         Dimensionality of the input data, do not include batch dimensions.
         It is usually 1d (dim), 2d (seq length, dim) or 3d (dim, height, width).
-    n_components : int
-        Number of components in the dictionary.
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
     encoder_module : nn.Module or string, optional
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_initializer : str, optional
-        Method for initializing the dictionary, e.g 'svd', 'kmeans', 'ica',
-        see dictionary module to see all the possible initialization.
-    data_initializer : torch.Tensor, optional
-        Data used to fit a first approximation and initialize the dictionary, by default None.
     dictionary_normalization : str or callable, optional
         Whether to normalize the dictionary, by default 'l2' normalization is applied.
         Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
         If a custom normalization is needed, a callable can be passed.
+    dictionary_initializer : torch.Tensor, optional
+        Initial dictionary tensor, by default None.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -88,51 +86,49 @@ class SAE(BaseDictionaryLearning):
     get_dictionary():
         Return the learned dictionary.
     forward(x):
-        Perform a forward pass through the autoencoder.
+        Perform a forward pass through the autoencoder and return a triplet of tensors composed of
+        of pre_codes, codes and reconstructed input tensor.
     encode(x):
         Encode input data to latent representation.
     decode(z):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, n_components, encoder_module=None, dictionary_initializer=None,
-                 data_initializer=None, dictionary_normalization='l2', device='cpu'):
+    def __init__(self, input_shape, nb_concepts, encoder_module=None, dictionary_normalization='l2',
+                 dictionary_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
 
-        super().__init__(n_components=n_components, device=device)
+        super().__init__(nb_concepts=nb_concepts, device=device)
 
-        # initialize the encoder
+        # initialize the encoder,
+        # - either string and we use the fatctory
+        # - directly a module
+        # - or None and we use the default encoder (linear)
         if isinstance(encoder_module, str):
             assert encoder_module in EncoderFactory.list_modules(), f"Encoder '{encoder_module}' not found in registry."
-            self.encoder = EncoderFactory.create_module(encoder_module, input_shape, n_components, device=device)
+            self.encoder = EncoderFactory.create_module(encoder_module, input_shape, nb_concepts, device=device)
         elif encoder_module is not None:
             self.encoder = encoder_module
         else:
-            # default encoder
             assert isinstance(input_shape, int), "Default encoder assumes input_shape is an int."
-            self.encoder = EncoderFactory.create_module("linear", input_shape, n_components, device=device)
+            self.encoder = EncoderFactory.create_module("linear", input_shape, nb_concepts, device=device)
 
         # initialize the dictionary, but first find the channel dimension
         # tfel: do we really need this parameter if an encoder module is passed?
         if isinstance(input_shape, int):
-            dim = input_shape
+            in_dim = input_shape
         elif len(input_shape) == 2:
             # attention model case with shape (T C)
-            dim = input_shape[1]
+            in_dim = input_shape[1]
         elif len(input_shape) == 3:
             # convolutional model case with shape (C H W)
-            dim = input_shape[0]
+            in_dim = input_shape[0]
         else:
             raise ValueError("Input shape must be 1D, 2D or 3D.")
 
-        self.dictionary = DictionaryLayer(n_components, dim, dictionary_normalization, device)
-        # if needed, initialize the dictionary layer (e.g with SVD)
-        if dictionary_initializer is not None:
-            if data_initializer is None:
-                raise ValueError("You must provide data_initializer if you want to initialize\
-                                 the dictionary.")
-            self.dictionary.initialize_dictionary(data_initializer, dictionary_initializer)
+        self.dictionary = DictionaryLayer(in_dim, nb_concepts, dictionary_normalization,
+                                          dictionary_initializer, device)
 
     def get_dictionary(self):
         """
@@ -176,9 +172,10 @@ class SAE(BaseDictionaryLearning):
 
         Returns
         -------
-        tuple (pre_codes, codes)
-            Latent representation tensor before (z_pre) and after (z) activation function.
-            The shape are the same (batch_size, nb_components).
+        pre_codes : torch.Tensor
+            Pre-codes tensor of shape (batch_size, nb_components), before the activation function.
+        codes : torch.Tensor
+            Codes, latent representation tensor (z) of shape (batch_size, nb_components).
         """
         return self.encoder(x)
 

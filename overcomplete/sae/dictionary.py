@@ -4,9 +4,95 @@ Module dedicated to everything around the Dictionary Layer of SAE.
 
 import torch
 from torch import nn
-from ..base import BaseDictionaryLearning
-from ..optimization import (SkPCA, SkICA, SkNMF, SkKMeans,
-                            SkDictionaryLearning, SkSparsePCA, SkSVD)
+
+
+def normalize_l2(x):
+    """
+    Project each concept in the dictionary "on" the l2 ball.
+
+    Parameters
+    ----------
+    d : torch.Tensor
+        Dictionary tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor along the concept dimension, such that
+        each concept has l2 norm of 1.
+    """
+    return x / (torch.norm(x, p=2, dim=1, keepdim=True) + 1e-8)
+
+
+def normalize_max_l2(x):
+    """
+    Project each concept in the dictionary "in" the l2 ball.
+
+    Parameters
+    ----------
+    d : torch.Tensor
+        Dictionary tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor along the concept dimension, such that
+        the l2 norm of the concepts is 1 or less.
+    """
+    return x / torch.amax(torch.norm(x, p=2, dim=1, keepdim=True), dim=0, keepdim=True)
+
+
+def normalize_l1(x):
+    """
+    Project each concept in the dictionary "on" the l1 ball.
+
+    Parameters
+    ----------
+    d : torch.Tensor
+        Dictionary tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor along the concept dimension, such that
+        the l1 norm of the concepts is 1.
+    """
+    return x / (torch.norm(x, p=1, dim=1, keepdim=True) + 1e-8)
+
+
+def normalize_max_l1(x):
+    """
+    Project each concept in the dictionary "in" the l1 ball.
+
+    Parameters
+    ----------
+    d : torch.Tensor
+        Dictionary tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor along the concept dimension, such that
+        the l1 norm of the concepts is 1 or less.
+    """
+    return x / torch.amax(torch.norm(x, p=1, dim=1, keepdim=True), dim=0, keepdim=True)
+
+
+def normalize_identity(x):
+    """
+    Identity "normalization".
+
+    Parameters
+    ----------
+    d : torch.Tensor
+        Dictionary tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        The input tensor.
+    """
+    return x
 
 
 class DictionaryLayer(nn.Module):
@@ -15,52 +101,53 @@ class DictionaryLayer(nn.Module):
 
     Parameters
     ----------
-    nb_components : int
-        Number of components in the dictionary.
-    dimensions : int
-        Dimensionality of the input data.
-    device : str, optional
-        Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
-    normalize : str or callable, optional
+    in_dimensions : int
+        Dimensionality of the input data (e.g number of channels).
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
+    normalization : str or callable, optional
         Whether to normalize the dictionary, by default 'l2' normalization is applied.
         Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
         If a custom normalization is needed, a callable can be passed.
-
-    Methods
-    -------
-    forward(z):
-        Perform a forward pass to reconstruct input data from latent representation.
-    initialize_dictionary(x, method='svd'):
-        Initialize the dictionary using a specified method.
+    initializer : torch.Tensor, optional
+        Initial dictionary tensor, by default None.
+    device : str, optional
+        Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
     """
-    _NORMALIZATIONS = {
-        # project each concept in the dictionary "on" the l2 ball
-        'l2': lambda x: x / (torch.norm(x, p=2, dim=1, keepdim=True) + 1e-8),
-        # re-project (if necessary) each concept of the dictionary "inside" the l2 ball
-        'max_l2': lambda x: x / torch.amax(torch.norm(x, p=2, dim=1, keepdim=True), 1, keepdim=True),
-        # project each concept in the dictionary "on" the l1 ball
-        'l1': lambda x: x / (torch.norm(x, p=1, dim=1, keepdim=True) + 1e-8),
-        # re-project (if necessary) each concept in the dictionary "inside" the l1 ball
-        'max_l1': lambda x: x / torch.amax(torch.norm(x, p=1, dim=1, keepdim=True), 1, keepdim=True),
-        # no projection
-        'identity': lambda x: x
+
+    NORMALIZATIONS = {
+        "l2": normalize_l2,
+        "max_l2": normalize_max_l2,
+        "l1": normalize_l1,
+        "max_l1": normalize_max_l1,
+        "identity": normalize_identity,
     }
 
-    def __init__(self, nb_components, dimensions, normalize='l2', device='cpu'):
+    def __init__(
+        self, in_dimensions, nb_concepts,
+        normalization="l2", initializer=None, device="cpu"
+    ):
         super().__init__()
-        self.nb_components = nb_components
-        self.dimensions = dimensions
+        self.in_dimensions = in_dimensions
+        self.nb_concepts = nb_concepts
         self.device = device
 
-        # weights should not be accessed directly because of possible normalization/projections
-        self._weights = nn.Parameter(torch.randn(nb_components, dimensions, device=device))
-
-        if isinstance(normalize, str):
-            self.normalize = self._NORMALIZATIONS[normalize]
-        elif callable(normalize):
-            self.normalize = normalize
+        # prepare normalization function
+        if isinstance(normalization, str):
+            self.normalization = self.NORMALIZATIONS[normalization]
+        elif callable(normalization):
+            self.normalization = normalization
         else:
             raise ValueError("Invalid normalization function")
+
+        # init weights
+        self._weights = nn.Parameter(torch.empty(nb_concepts, in_dimensions, device=device))
+        if initializer is None:
+            nn.init.xavier_uniform_(self._weights)
+        else:
+            assert initializer.shape == self._weights.shape, "Invalid initializer, must have the same shape as the dictionary."
+            self._weights.data = torch.tensor(initializer, device=device)
 
     def forward(self, z):
         """
@@ -89,39 +176,6 @@ class DictionaryLayer(nn.Module):
         torch.Tensor
             The dictionary tensor of shape (nb_components, dimensions).
         """
-        return self.normalize(self._weights)
-
-    def initialize_dictionary(self, x, method='svd'):
-        """
-        Initialize the dictionary using a specified method.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input tensor of shape (batch_size, dimensions).
-        method : str or BaseDictionaryLearning, optional
-            Method for initializing the dictionary, by default 'svd'.
-        """
-        if method == 'kmeans':
-            init = SkKMeans(self.nb_components)
-        elif method == 'pca':
-            init = SkPCA(self.nb_components)
-        elif method == 'ica':
-            init = SkICA(self.nb_components)
-        elif method == 'nmf':
-            init = SkNMF(self.nb_components)
-        elif method == 'sparse_pca':
-            init = SkSparsePCA(self.nb_components)
-        elif method == 'svd':
-            init = SkSVD(self.nb_components)
-        elif method == 'dictionary_learning':
-            init = SkDictionaryLearning(self.nb_components)
-        elif isinstance(method, BaseDictionaryLearning):
-            init = method
-        else:
-            # if we can call .fit(x) on the method, we consider it valid
-            assert hasattr(method, 'fit'), "Invalid initialization object, must have a .fit() method"
-            init = method
-
-        init.fit(x)
-        self._weights.data = init.get_dictionary().to(self.device)
+        with torch.no_grad():
+            self._weights.data = self.normalization(self._weights)
+        return self._weights

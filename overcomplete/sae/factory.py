@@ -15,6 +15,7 @@ you can also pass additional arguments to the module creation function:
 model = EncoderFactory.create_module("mlp_ln_1", hidden_dim=128)
 model = EncoderFactory.create_module("attention_1b", attention_heads=2)
 """
+# ruff: noqa: D103
 
 from torch import nn
 

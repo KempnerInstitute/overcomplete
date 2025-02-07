@@ -83,9 +83,9 @@ def _assert_shapes(A, Z, D):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     """
     assert A.ndim == Z.ndim == D.ndim == 2, "All tensors must be 2D tensors"
     assert A.shape[1] == D.shape[1], "A and D must have the same number of features"

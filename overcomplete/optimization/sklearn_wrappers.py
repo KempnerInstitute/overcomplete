@@ -19,15 +19,15 @@ class SkPCA(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
     """
 
-    def __init__(self, n_components, device='cpu', **kwargs):
-        super().__init__(n_components, device)
-        self.model = PCA(n_components=n_components, **kwargs)
+    def __init__(self, nb_concepts, device='cpu', **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = PCA(n_components=nb_concepts, **kwargs)
 
     def encode(self, x):
         """
@@ -109,15 +109,15 @@ class SkICA(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
     """
 
-    def __init__(self, n_components, device='cpu', **kwargs):
-        super().__init__(n_components, device)
-        self.model = FastICA(n_components=n_components, **kwargs)
+    def __init__(self, nb_concepts, device='cpu', **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = FastICA(n_components=nb_concepts, **kwargs)
 
     def encode(self, x):
         """
@@ -199,15 +199,15 @@ class SkNMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
     """
 
-    def __init__(self, n_components, device='cpu', **kwargs):
-        super().__init__(n_components, device)
-        self.model = NMF(n_components=n_components, **kwargs)
+    def __init__(self, nb_concepts, device='cpu', **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = NMF(n_components=nb_concepts, **kwargs)
 
     def encode(self, x):
         """
@@ -287,19 +287,19 @@ class SkKMeans(BaseOptimDictionaryLearning):
     KMeans-based Dictionary Learning model.
 
     Solve the following optimization problem:
-    min ||X - ZD||_F^2. s.t Z ∈ {0, 1}^{n_samples x n_components}.
+    min ||X - ZD||_F^2. s.t Z ∈ {0, 1}^{n_samples x nb_concepts}.
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of clusters to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
     """
 
-    def __init__(self, n_components, device='cpu', **kwargs):
-        super().__init__(n_components, device)
-        self.model = KMeans(n_clusters=n_components, **kwargs)
+    def __init__(self, nb_concepts, device='cpu', **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = KMeans(n_clusters=nb_concepts, **kwargs)
 
     def encode(self, x):
         """
@@ -382,7 +382,7 @@ class SkDictionaryLearning(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
@@ -397,10 +397,10 @@ class SkDictionaryLearning(BaseOptimDictionaryLearning):
     """
 
     def __init__(
-            self, n_components, device='cpu', sparsity=1.0, fit_algorithm="cd", transform_algorithm="lasso_cd",
+            self, nb_concepts, device='cpu', sparsity=1.0, fit_algorithm="cd", transform_algorithm="lasso_cd",
             tolerance=1e-3, **kwargs):
-        super().__init__(n_components, device)
-        self.model = DictionaryLearning(n_components=n_components,
+        super().__init__(nb_concepts, device)
+        self.model = DictionaryLearning(n_components=nb_concepts,
                                         alpha=sparsity,
                                         positive_code=True,
                                         fit_algorithm=fit_algorithm,
@@ -487,7 +487,7 @@ class SkSparsePCA(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
@@ -499,9 +499,9 @@ class SkSparsePCA(BaseOptimDictionaryLearning):
         Tolerance for sklearn optimization algorithm, by default 1e-3
     """
 
-    def __init__(self, n_components, device='cpu', sparsity=1.0, fit_method="cd", tolerance=1e-3, **kwargs):
-        super().__init__(n_components, device)
-        self.model = SparsePCA(n_components=n_components,
+    def __init__(self, nb_concepts, device='cpu', sparsity=1.0, fit_method="cd", tolerance=1e-3, **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = SparsePCA(n_components=nb_concepts,
                                alpha=sparsity,
                                method=fit_method,
                                tol=tolerance,
@@ -587,15 +587,15 @@ class SkSVD(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components : int
+    nb_concepts : int
         Number of components to learn.
     device : str, optional
         Device to use for tensor computations, by default 'cpu'
     """
 
-    def __init__(self, n_components, device='cpu', **kwargs):
-        super().__init__(n_components, device)
-        self.model = TruncatedSVD(n_components=n_components, **kwargs)
+    def __init__(self, nb_concepts, device='cpu', **kwargs):
+        super().__init__(nb_concepts, device)
+        self.model = TruncatedSVD(n_components=nb_concepts, **kwargs)
 
     def encode(self, x):
         """

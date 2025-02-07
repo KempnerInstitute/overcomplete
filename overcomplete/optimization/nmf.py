@@ -3,8 +3,8 @@ NMF module for PyTorch.
 
 For sake of simplicity, we will use the following notation:
 - A: pattern of activations of a neural net, tensor of shape (batch_size, n_features)
-- Z: codes in the concepts (overcomplete) basis, tensor of shape (batch_size, n_components)
-- D: dictionary of concepts, tensor of shape (n_components, n_features)
+- Z: codes in the concepts (overcomplete) basis, tensor of shape (batch_size, nb_concepts)
+- D: dictionary of concepts, tensor of shape (nb_concepts, n_features)
 """
 
 
@@ -41,9 +41,9 @@ def _one_step_hals(A, Z, D, update_Z=True, update_D=True):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should be (batch_size, n_components).
+        Codes tensor, should be (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -84,9 +84,9 @@ def _one_step_multiplicative_rule(A, Z, D, update_Z=True, update_D=True):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should be (batch_size, n_components).
+        Codes tensor, should be (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -117,9 +117,9 @@ def _one_step_nnls_scipy(A, Z, D, update_Z=True, update_D=True):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -169,9 +169,9 @@ def _one_step_nnls(A, Z, D, update_Z=True, update_D=True):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should be (batch_size, n_components).
+        Codes tensor, should be (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -209,9 +209,9 @@ def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, t
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -253,9 +253,9 @@ def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -294,9 +294,9 @@ def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, m
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     lr : float, optional
         Learning rate, by default 1e-3.
     update_Z : bool, optional
@@ -370,9 +370,9 @@ def hierarchical_als(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -412,7 +412,7 @@ class NMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components: int
+    nb_concepts: int
         Number of components to learn.
     device: str, optional
         Device to use for tensor computations, by default 'cpu'
@@ -433,8 +433,8 @@ class NMF(BaseOptimDictionaryLearning):
         'anls': alternating_nnls
     }
 
-    def __init__(self, n_components, device='cpu', solver='hals', tol=1e-4, **kwargs):
-        super().__init__(n_components, device)
+    def __init__(self, nb_concepts, device='cpu', solver='hals', tol=1e-4, **kwargs):
+        super().__init__(nb_concepts, device)
 
         assert solver in self._SOLVERS, f'Unknown solver {solver}'
 
@@ -480,7 +480,7 @@ class NMF(BaseOptimDictionaryLearning):
         Parameters
         ----------
         Z : torch.Tensor
-            Encoded tensor (the codes) of shape (batch_size, n_components).
+            Encoded tensor (the codes) of shape (batch_size, nb_concepts).
 
         Returns
         -------
@@ -506,7 +506,7 @@ class NMF(BaseOptimDictionaryLearning):
         """
         assert (A >= 0).all(), 'Input tensor must be non-negative'
 
-        if self.n_components <= min(A.shape[0], A.shape[1]):
+        if self.nb_concepts <= min(A.shape[0], A.shape[1]):
             Z, D = self.init_nndsvda(A)
         else:
             Z = self.init_random_z(A)
@@ -545,9 +545,9 @@ class NMF(BaseOptimDictionaryLearning):
         D : torch.Tensor
             Initialized dictionary tensor.
         """
-        mu = torch.sqrt(torch.mean(A) / self.n_components)
+        mu = torch.sqrt(torch.mean(A) / self.nb_concepts)
 
-        D = torch.randn(self.n_components, A.shape[1], device=self.device) * mu
+        D = torch.randn(self.nb_concepts, A.shape[1], device=self.device) * mu
         D = torch.abs(D)
 
         return D
@@ -566,9 +566,9 @@ class NMF(BaseOptimDictionaryLearning):
         Z : torch.Tensor
             Initialized codes tensor.
         """
-        mu = torch.sqrt(torch.mean(A) / self.n_components)
+        mu = torch.sqrt(torch.mean(A) / self.nb_concepts)
 
-        Z = torch.randn(A.shape[0], self.n_components, device=self.device) * mu
+        Z = torch.randn(A.shape[0], self.nb_concepts, device=self.device) * mu
         Z = torch.abs(Z)
 
         return Z
@@ -589,7 +589,7 @@ class NMF(BaseOptimDictionaryLearning):
         D : torch.Tensor
             Initialized dictionary tensor.
         """
-        Z, D = _initialize_nmf(A.detach().cpu().numpy(), self.n_components, init='nndsvda')
+        Z, D = _initialize_nmf(A.detach().cpu().numpy(), self.nb_concepts, init='nndsvda')
 
         Z = torch.tensor(Z, device=self.device)
         D = torch.tensor(D, device=self.device)

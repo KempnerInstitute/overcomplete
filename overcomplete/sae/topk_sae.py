@@ -28,8 +28,9 @@ class TopKSAE(SAE):
     input_shape : int or tuple of int
         Dimensionality of the input data, do not include batch dimensions.
         It is usually 1d (dim), 2d (seq length, dim) or 3d (dim, height, width).
-    n_components : int
-        Number of components in the dictionary.
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
     top_k : int, optional
         Number of top activations to keep in the latent representation,
         by default n_components // 10 (sparsity of 90%).
@@ -37,18 +38,14 @@ class TopKSAE(SAE):
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_initializer : str, optional
-        Method for initializing the dictionary, e.g 'svd', 'kmeans', 'ica',
-        see dictionary module to see all the possible initialization.
-    data_initializer : torch.Tensor, optional
-        Data used to fit a first approximation and initialize the dictionary, by default None.
     dictionary_normalization : str or callable, optional
         Whether to normalize the dictionary, by default 'l2' normalization is applied.
         Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
         If a custom normalization is needed, a callable can be passed.
+    dictionary_initializer : torch.Tensor, optional
+        Initial dictionary tensor, by default None.
     device : str, optional
         Device to run the model on, by default 'cpu'.
-
 
     Methods
     -------
@@ -62,19 +59,18 @@ class TopKSAE(SAE):
         Decode latent representation to reconstruct input data.
     """
 
-    def __init__(self, input_shape, n_components, top_k=None,
-                 encoder_module=None, dictionary_initializer=None, data_initializer=None,
-                 dictionary_normalization='l2', device='cpu'):
+    def __init__(self, input_shape, nb_concepts, top_k=None,
+                 encoder_module=None, dictionary_normalization='l2',
+                 dictionary_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         if isinstance(top_k, int):
             assert top_k > 0
 
-        super().__init__(input_shape, n_components, encoder_module,
-                         dictionary_initializer, data_initializer,
-                         dictionary_normalization, device)
+        super().__init__(input_shape, nb_concepts, encoder_module, dictionary_normalization,
+                         dictionary_initializer, device)
 
-        self.top_k = top_k if top_k is not None else min(n_components // 10, 1)
+        self.top_k = top_k if top_k is not None else min(nb_concepts // 10, 1)
 
     def encode(self, x):
         """
@@ -87,9 +83,10 @@ class TopKSAE(SAE):
 
         Returns
         -------
-        torch.Tensor or tuple
-            Latent representation tensor (z) of shape (batch_size, nb_components).
-            If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
+        pre_codes : torch.Tensor
+            Pre-codes tensor of shape (batch_size, nb_components) before the relu and top-k operation.
+        z : torch.Tensor
+            Codes, latent representation tensor (z) of shape (batch_size, nb_components).
         """
         pre_codes, codes = self.encoder(x)
 

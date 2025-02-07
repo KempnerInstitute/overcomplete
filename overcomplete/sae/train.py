@@ -111,9 +111,9 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
         Gradient clipping value, by default 1.0.
     monitoring : int, optional
         Whether to monitor and log training statistics, the options are:
+         (0) silent.
          (1) monitor and log training losses.
          (2) monitor and log training losses and statistics about gradients norms and z statistics.
-         (0) silent.
         By default 1.
     device : str, optional
         Device to run the training on, by default 'cpu'.
@@ -201,9 +201,9 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
         Gradient clipping value, by default 1.0.
     monitoring : int, optional
         Whether to monitor and log training statistics, the options are:
+         (0) silent.
          (1) monitor and log training losses.
          (2) monitor and log training losses and statistics about gradients norms and z statistics.
-         (0) silent.
         By default 1.
     device : str, optional
         Device to run the training on, by default 'cuda'.

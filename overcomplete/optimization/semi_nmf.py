@@ -3,8 +3,8 @@ Semi-NMF module for PyTorch.
 
 For sake of simplicity, we will use the following notation:
 - A: pattern of activations of a neural net, tensor of shape (batch_size, n_features)
-- Z: codes in the concepts (overcomplete) basis, tensor of shape (batch_size, n_components)
-- D: dictionary of concepts, tensor of shape (n_components, n_features)
+- Z: codes in the concepts (overcomplete) basis, tensor of shape (batch_size, nb_concepts)
+- D: dictionary of concepts, tensor of shape (nb_concepts, n_features)
 """
 
 import torch
@@ -28,9 +28,9 @@ def _one_step_snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True):
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should be (batch_size, n_components).
+        Codes tensor, should be (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -74,9 +74,9 @@ def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=5
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_D : bool, optional
@@ -118,9 +118,9 @@ def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=Tr
     A : torch.Tensor
         Activation tensor, should be (batch_size, n_features).
     Z : torch.Tensor
-        Codes tensor, should (batch_size, n_components).
+        Codes tensor, should (batch_size, nb_concepts).
     D : torch.Tensor
-        Dictionary tensor, should be (n_components, n_features).
+        Dictionary tensor, should be (nb_concepts, n_features).
     lr : float, optional
         Learning rate, by default 1e-3.
     update_Z : bool, optional
@@ -185,7 +185,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components: int
+    nb_concepts: int
         Number of components to learn.
     solver: str, optional
         Solver to use, by default 'mu'. Possible values are 'mu' (multiplicative update)
@@ -203,11 +203,11 @@ class SemiNMF(BaseOptimDictionaryLearning):
         'pgd': snmf_projected_gradient_descent,
     }
 
-    def __init__(self, n_components, solver='mu', device='cpu',
+    def __init__(self, nb_concepts, solver='mu', device='cpu',
                  tol=1e-4, l1_penalty=0.0, **kwargs):
         assert solver in self._SOLVERS, f"Solver '{solver}' not found in registry."
 
-        super().__init__(n_components, device)
+        super().__init__(nb_concepts, device)
         self.tol = tol
         self.D = None
         self.solver_fn = self._SOLVERS[solver]
@@ -249,7 +249,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         Parameters
         ----------
         Z : torch.Tensor
-            Encoded tensor (the codes) of shape (batch_size, n_components).
+            Encoded tensor (the codes) of shape (batch_size, nb_concepts).
 
         Returns
         -------
@@ -307,7 +307,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         A : torch.Tensor
             Input tensor of shape (batch_size, n_features).
         Z : torch.Tensor
-            Codes tensor of shape (batch_size, n_components).
+            Codes tensor of shape (batch_size, nb_concepts).
 
         Returns
         -------
@@ -334,9 +334,9 @@ class SemiNMF(BaseOptimDictionaryLearning):
             Initialized codes tensor.
         """
         # for semi-nmf, mean of A could be negative
-        mu = torch.sqrt(torch.mean(torch.abs(A) / self.n_components))
+        mu = torch.sqrt(torch.mean(torch.abs(A) / self.nb_concepts))
 
-        Z = torch.randn(A.shape[0], self.n_components, device=self.device) * mu
+        Z = torch.randn(A.shape[0], self.nb_concepts, device=self.device) * mu
         Z = torch.abs(Z)
 
         return Z

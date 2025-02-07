@@ -3,8 +3,8 @@ Convex NMF module for PyTorch.
 
 We use the following notation:
 - A: data matrix, tensor of shape (n_samples, n_features)
-- Z: codes matrix, tensor of shape (n_samples, n_components)
-- W: coefficient matrix, tensor of shape (n_components, n_samples)
+- Z: codes matrix, tensor of shape (n_samples, nb_concepts)
+- W: coefficient matrix, tensor of shape (nb_concepts, n_samples)
 - D: dictionary matrix, computed as D = W A
 
 In Convex NMF, we aim to factorize A ≈ Z D = Z A W.
@@ -62,9 +62,9 @@ def cnmf_multiplicative_update_solver(
     A : torch.Tensor
         Data tensor, shape (n_samples, n_features).
     Z : torch.Tensor
-        Codes tensor, shape (n_samples, n_components).
+        Codes tensor, shape (n_samples, nb_concepts).
     W : torch.Tensor
-        Coefficient tensor, shape (n_features, n_components).
+        Coefficient tensor, shape (n_features, nb_concepts).
     update_Z : bool, optional
         Whether to update Z, by default True.
     update_W : bool, optional
@@ -109,9 +109,9 @@ def cnmf_pgd_solver(
     A : torch.Tensor
         Data tensor, shape (n_samples, n_features).
     Z : torch.Tensor
-        Codes tensor, shape (n_samples, n_components).
+        Codes tensor, shape (n_samples, nb_concepts).
     W : torch.Tensor
-        Coefficient tensor, shape (n_features, n_components).
+        Coefficient tensor, shape (n_features, nb_concepts).
     lr : float, optional
         Learning rate, by default 1e-1.
     update_Z : bool, optional
@@ -190,7 +190,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    n_components: int
+    nb_concepts: int
         Number of components to learn.
     device: str, optional
         Device to use for tensor computations, by default 'cpu'.
@@ -212,11 +212,11 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         'pgd': cnmf_pgd_solver,
     }
 
-    def __init__(self, n_components, device='cpu', tol=1e-4, strict_convex=False, solver='pgd',
+    def __init__(self, nb_concepts, device='cpu', tol=1e-4, strict_convex=False, solver='pgd',
                  verbose=False, l1_penalty=0.0, **kwargs):
         assert solver in self._SOLVERS, f"Unknown solver {solver}."
 
-        super().__init__(n_components, device)
+        super().__init__(nb_concepts, device)
 
         self.tol = tol
         self.strict_convex = strict_convex
@@ -263,7 +263,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         Parameters
         ----------
         Z : torch.Tensor
-            Codes tensor of shape (n_samples, n_components).
+            Codes tensor of shape (n_samples, nb_concepts).
 
         Returns
         -------
@@ -339,7 +339,7 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         D : torch.Tensor
             Initialized dictionary tensor.
         """
-        snmf = SemiNMF(n_components=self.n_components, device=self.device)
+        snmf = SemiNMF(nb_concepts=self.nb_concepts, device=self.device)
         Z, _ = snmf.fit(A, max_iter=max_snmf_iters)
 
         Z = Z + 0.2  # see P.12, method B.B
@@ -368,9 +368,9 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         Z : torch.Tensor
             Initialized codes tensor.
         """
-        mu = torch.sqrt(torch.mean(torch.abs(A)) / self.n_components)
+        mu = torch.sqrt(torch.mean(torch.abs(A)) / self.nb_concepts)
 
-        Z = torch.randn(A.shape[0], self.n_components, device=self.device) * mu
+        Z = torch.randn(A.shape[0], self.nb_concepts, device=self.device) * mu
         Z = torch.abs(Z)
 
         return Z
@@ -389,9 +389,9 @@ class ConvexNMF(BaseOptimDictionaryLearning):
         W : torch.Tensor
             Initialized coefficient tensor.
         """
-        mu = torch.sqrt(torch.mean(torch.abs(A)) / self.n_components)
+        mu = torch.sqrt(torch.mean(torch.abs(A)) / self.nb_concepts)
 
-        W = torch.randn(self.n_components, A.shape[0], device=self.device) * mu
+        W = torch.randn(self.nb_concepts, A.shape[0], device=self.device) * mu
         W = torch.abs(W)
 
         if self.strict_convex:

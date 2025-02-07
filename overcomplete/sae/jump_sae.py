@@ -191,8 +191,8 @@ class JumpSAE(SAE):
     is to use a pseudo-gradient to approximate the gradient at the threshold.
 
     @tfel: JumpSAE hyperparameters are sensitive to the data distribution.
-           I strongly to standardize (mean=0, std=1) the input data before
-           training the model.
+           I strongly encourage you to standardize (mean=0, std=1) the input data
+           before training the model.
 
     For more information, see:
         - "Jumping Ahead: Improving Reconstruction Fidelity with JumpReLU Sparse Autoencoders"
@@ -208,8 +208,9 @@ class JumpSAE(SAE):
     input_shape : int or tuple of int
         Dimensionality of the input data, do not include batch dimensions.
         It is usually 1d (dim), 2d (seq length, dim) or 3d (dim, height, width).
-    n_components : int
-        Number of components in the dictionary.
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
     kernel : str, optional
         Kernel function to use in the JumpReLU activation, by default 'silverman'.
         Current options are :
@@ -227,15 +228,12 @@ class JumpSAE(SAE):
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
         If string, the name of the registered encoder module.
-    dictionary_initializer : str, optional
-        Method for initializing the dictionary, e.g 'svd', 'kmeans', 'ica',
-        see dictionary module to see all the possible initialization.
-    data_initializer : torch.Tensor, optional
-        Data used to fit a first approximation and initialize the dictionary, by default None.
     dictionary_normalization : str or callable, optional
         Whether to normalize the dictionary, by default 'l2' normalization is applied.
         Current options are 'l2', 'max_l2', 'l1', 'max_l1', 'identity'.
         If a custom normalization is needed, a callable can be passed.
+    dictionary_initializer : torch.Tensor, optional
+        Initial dictionary tensor, by default None.
     device : str, optional
         Device to run the model on, by default 'cpu'.
 
@@ -262,21 +260,20 @@ class JumpSAE(SAE):
         'cauchy': cauchy_kernel
     }
 
-    def __init__(self, input_shape, n_components, kernel='silverman', bandwith=1e-3,
-                 encoder_module=None, dictionary_initializer=None, data_initializer=None,
-                 dictionary_normalization='l2', device='cpu'):
+    def __init__(self, input_shape, nb_concepts, kernel='silverman', bandwith=1e-3,
+                 encoder_module=None, dictionary_normalization='l2',
+                 dictionary_initializer=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
         assert kernel in self._KERNELS, f"Kernel '{kernel}' not found in the registry."
 
-        super().__init__(input_shape, n_components, encoder_module,
-                         dictionary_initializer, data_initializer,
-                         dictionary_normalization, device)
+        super().__init__(input_shape, nb_concepts, encoder_module, dictionary_normalization,
+                         dictionary_initializer, device)
 
         self.kernel_fn = self._KERNELS[kernel]
         self.bandwith = torch.tensor(bandwith, device=device)
 
-        self.thresholds = nn.Parameter(torch.zeros(n_components, device=device), requires_grad=True)
+        self.thresholds = nn.Parameter(torch.zeros(nb_concepts, device=device), requires_grad=True)
 
     def encode(self, x):
         """
@@ -289,9 +286,10 @@ class JumpSAE(SAE):
 
         Returns
         -------
-        torch.Tensor or tuple
-            Latent representation tensor (z) of shape (batch_size, nb_components).
-            If the encoder returns the pre-codes, it returns a tuple (pre_z, z).
+        pre_codes : torch.Tensor
+            Pre-codes tensor of shape (batch_size, nb_components) before the jump operation.
+        codes : torch.Tensor
+            Codes, latent representation tensor (z) of shape (batch_size, nb_components).
         """
         pre_codes, _ = self.encoder(x)
 

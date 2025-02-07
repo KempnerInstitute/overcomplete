@@ -13,8 +13,9 @@ class BaseDictionaryLearning(ABC, nn.Module):
 
     Parameters
     ----------
-    n_components : int
-        Number of components to learn.
+    nb_concepts : int
+        Number of components/concepts in the dictionary. The dictionary is overcomplete if
+        the number of concepts > in_dimensions.
     device : str, optional
         Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.
 
@@ -30,9 +31,9 @@ class BaseDictionaryLearning(ABC, nn.Module):
         Return the learned dictionary components.
     """
 
-    def __init__(self, n_components, device='cpu'):
+    def __init__(self, nb_concepts, device='cpu'):
         super().__init__()
-        self.n_components = n_components
+        self.nb_concepts = nb_concepts
         self.device = device
         self.fitted = False
         self._fitted_info = {}
@@ -62,7 +63,7 @@ class BaseDictionaryLearning(ABC, nn.Module):
         Parameters
         ----------
         z : torch.Tensor
-            Encoded tensor of shape (batch_size, n_components).
+            Encoded tensor of shape (batch_size, nb_concepts).
 
         Returns
         -------
