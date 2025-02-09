@@ -185,16 +185,16 @@ class SemiNMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    nb_concepts: int
+    nb_concepts : int
         Number of components to learn.
-    solver: str, optional
+    solver : str, optional
         Solver to use, by default 'mu'. Possible values are 'mu' (multiplicative update)
         and 'pgd' (projected gradient descent), 'pgd' allows for sparsity penalty.
-    device: str, optional
+    device : str, optional
         Device to use for tensor computations, by default 'cpu'
-    tol: float, optional
+    tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-4.
-    l1_penalty: float, optional
+    l1_penalty : float, optional
         L1 penalty for the sparsity constraint, by default 0.0. Only used with 'pgd' solver.
     """
 

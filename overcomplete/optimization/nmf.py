@@ -412,17 +412,17 @@ class NMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    nb_concepts: int
+    nb_concepts : int
         Number of components to learn.
-    device: str, optional
+    device : str, optional
         Device to use for tensor computations, by default 'cpu'
-    solver: str, optional
+    solver : str, optional
         Optimization algorithm to use, by default 'hals'. Can be one of:
         - 'hals': Hierarchical Alternating Least Squares
         - 'mu': Multiplicative update rules
         - 'pgd': Projected Gradient Descent
         - 'anls': Alternating Non-negative Least Squares
-    tol: float, optional
+    tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-4.
     """
 

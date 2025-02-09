@@ -1,0 +1,229 @@
+:root {
+    --primary: #fa0;
+    --dark: #313131;
+
+    /* mainly for code highlighting */
+    --synthax-blue: #3b78e7;
+    --synthax-red: #ec407a;
+    font-size: 120%;
+}
+
+/* light theme */
+[data-md-color-scheme="default"] {
+    --primary: #00BCD4;
+
+    --md-typeset-a-color: var(--primary) !important;
+    --md-primary-fg-color: var(--dark) !important;
+    --md-primary-fg-color--light: var(--primary) !important;
+    --md-primary-fg-color--dark: var(--primary) !important;
+    --md-accent-fg-color: var(--primary) !important;
+    --md-footer-fg-color: var(--primary) !important;
+}
+
+/* dark theme */
+[data-md-color-scheme="slate"] {
+    --primary: #00BCD4;
+
+    --md-typeset-a-color: var(--primary) !important;
+    --md-primary-fg-color: var(--dark) !important;
+    --md-primary-fg-color--light: var(--primary) !important;
+    --md-primary-fg-color--dark: var(--primary) !important;
+    --md-accent-fg-color: var(--primary) !important;
+    --md-footer-fg-color: var(--primary) !important;
+}
+
+/* both themes have black as primary */
+[data-md-color-primary=black] {
+    --md-typeset-a-color: var(--primary) !important;
+}
+
+.md-typeset h1 {
+    color: var(--md-typeset-color) !important;
+}
+
+.md-typeset ul li p {
+    margin: 0;
+}
+
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+    line-height: 1.83;
+}
+
+li {
+    margin-bottom: 0 !important;
+}
+
+.autodoc-signature>em:first-of-type {
+    font-style: normal;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+h2 code {
+    color: var(--synthax-red) !important;
+}
+
+h4 code {
+    color: var(--synthax-blue) !important;
+    font-weight: bold !important;
+    background-color: rgba(31, 31, 31, 0.05) !important;
+    padding: 5px !important;
+    border-radius: 2px !important;
+    cursor: pointer !important;
+    font-size: 95% !important;
+}
+
+p {
+    text-align: justify
+}
+
+.central {
+    text-align: center
+}
+
+[data-md-color-scheme="slate"] h4 code {
+    background-color: rgba(240, 240, 240, 0.05) !important;
+}
+
+.admonition {
+    font-size: 95% !important;
+}
+
+img[alt*="Colab"] {
+    transform: translateY(3px);
+    padding-left: 5px;
+    width: 150px;
+}
+
+.md-typeset img,
+.md-typeset svg {
+    max-width: none;
+}
+
+.md-typeset .task-list-control [type=checkbox]:checked+.task-list-indicator::before {
+    background: var(--primary) !important;
+}
+
+.md-typeset ul li,
+.md-typeset ol li {
+    margin-bottom: .4em !important;
+}
+
+h4.numkdoc~ul:not(.footnote) {
+    list-style: none !important;
+    margin-left: 0 !important;
+}
+
+h4.numkdoc~ul li {
+    margin-left: 0 !important;
+    border-radius: 5px;
+    opacity: 0.8;
+    transition: all 0.25s ease;
+}
+
+h4.numkdoc~ul > li  {
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 5px;
+}
+
+h4.numkdoc~ul li:hover {
+    opacity: 1.0;
+}
+
+h4.numkdoc~ul li ul {
+    list-style: none !important;
+}
+
+h4.numkdoc~p:not(.footnote),
+h4.numkdoc~ul:not(.footnote),
+h4.numkdoc~ul li ul:not(.footnote),
+h4.numkdoc~ul li:not(.footnote) {
+    --margin: 0.06em;
+    margin-bottom: var(--margin) !important;
+    margin-top: var(--margin) !important;
+}
+
+h4.numkdoc {
+    --border-color: rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    font-size: .9rem;
+    border-top: 3px solid var(--border-color);
+}
+
+[data-md-color-scheme="slate"] h4.numkdoc {
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+table {
+    border: solid 2px rgba(255, 255, 255, 0.1);
+}
+
+.md-typeset table:not([class]) th {
+    background-color: var(--dark);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+    color: var(--dark);
+    background-color: white;
+}
+
+.md-typeset__table {
+    width: 100%;
+}
+
+.md-typeset table:not([class]) {
+    display: table;
+}
+
+.md-typeset thead:not([class]) {
+    color: white;
+}
+
+table th a {
+    color: var(--synthax-red) !important;
+    word-break: break-word !important;
+}
+
+span.parameter-name {
+    color: var(--synthax-blue);
+}
+
+li .parameter-type {
+    font-weight: bold;
+}
+
+span.parameter-type {
+    font-size: 85%;
+}
+
+[data-md-color-scheme="slate"] .parameter-type {
+    color: var(--synthax-red);
+}
+
+.parameter-self {
+    color: var(--synthax-red);
+}
+
+.md-typeset table:not([class]) {
+    font-size: 0.8rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+    width: 2.0rem !important;
+    height: auto !important;
+}
+
+.md-clipboard {
+    transition: all 0.25s ease;
+    color: var(--primary) !important;
+    opacity: 0.25;
+}
+
+.md-clipboard:focus,
+.md-clipboard:hover {
+    opacity: 1.0;
+}
+

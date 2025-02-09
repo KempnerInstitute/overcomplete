@@ -607,11 +607,9 @@ def codes_correlation_matrix(codes):
 def energy_of_codes(codes, dictionary):
     """
     Compute the energy of codes given a dictionary.
-
-     for example, with X input sample, Z the codes and D the dictionary:
-     X = ZD, Energy(Z) = || E[Z]D ||^2
-
-     and correspond to the average energy the codes bring to the reconstruction.
+    for example, with X input sample, Z the codes and D the dictionary:
+    X = ZD, Energy(Z) = || E[Z]D ||^2
+    and correspond to the average energy the codes bring to the reconstruction.
 
     Parameters
     ----------

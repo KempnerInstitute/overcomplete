@@ -1,0 +1,85 @@
+site_name: Overcomplete
+site_description: Overcomplete library documentation.
+site_author: Thomas Fel
+
+repo_name: "Kempner/Overcomplete"
+repo_url: https://github.com/KempnerInstitute/Overcomplete
+
+theme:
+  name: material
+  color_mode: auto
+  user_color_mode_toggle: true
+  locale: en
+  highlightjs: true
+  logo: assets/logo.png
+  favicon: assets/logo.ico
+  features:
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+
+nav:
+  - Home: index.md
+  - Saes:
+    - Vanilla: saes/vanilla.md
+    - TopK: saes/topk.md
+    - JumpReLU: saes/jumprelu.md
+    - BatchTopK: saes/batchtopk.md
+  - Optimization:
+    - NMF: optimization/nmf.md
+    - Semi-NMF: optimization/seminmf.md
+    - ConvexNMF: optimization/convexnmf.md
+  - Visualization: visualization.md
+  - Metrics: metrics.md
+
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - footnotes
+  - extra
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+  - codehilite
+  - toc:
+      permalink: true
+      toc_depth: 1-10
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+copyright: Copyright &copy; 2025 <a style='color var(--primary)' href="https://twitter.com/napoolar">Thomas Fel</a>, supported by the <a href="https://kempnerinstitute.harvard.edu/">Kempner Institute</a> at Harvard University.
+
+plugins:
+  - search
+  - numkdoc
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/KempnerInstitute/Overcomplete
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/napoolar

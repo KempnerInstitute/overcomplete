@@ -190,20 +190,20 @@ class ConvexNMF(BaseOptimDictionaryLearning):
 
     Parameters
     ----------
-    nb_concepts: int
+    nb_concepts : int
         Number of components to learn.
-    device: str, optional
+    device : str, optional
         Device to use for tensor computations, by default 'cpu'.
-    tol: float, optional
+    tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-4.
-    strict_convex: bool, optional
+    strict_convex : bool, optional
         Whether to enforce the convexity constraint, by default False.
-    solver: str, optional
+    solver : str, optional
         Optimization solver to use, either 'mu' (Multiplicative Update) or 'pgd' like method,
         by default 'mu'.
-    verbose: bool, optional
+    verbose : bool, optional
         Whether to print optimization information, by default False.
-    l1_penalty: float, optional
+    l1_penalty : float, optional
         L1 penalty coefficient, by default 0.0. Only used with the 'pgd' solver.
     """
 

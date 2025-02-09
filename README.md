@@ -1,6 +1,8 @@
 <div align="center">
-    <img src="assets/banner.png" width="50%" alt="Overcomplete logo" align="center" />
+    <img src="docs/assets/banner.png" width="50%" alt="Overcomplete logo" align="center" />
 </div>
+
+<br>
 
 <div align="center">
     <a href="#">
@@ -15,6 +17,9 @@
     <a href="https://github.com/fel-thomas/Overcomplete/actions/workflows/publish.yml/badge.svg">
         <img alt="Pypi" src="https://github.com/fel-thomas/Overcomplete/actions/workflows/publish.yml/badge.svg">
     </a>
+    <a href="https://kempnerinstitute.github.io/Overcomplete/">
+        <img src="https://img.shields.io/badge/Documentation-Online-00BCD4">
+    </a>
     <a href="https://pepy.tech/project/overcomplete">
         <img alt="Pepy" src="https://static.pepy.tech/badge/overcomplete">
     </a>
@@ -22,6 +27,7 @@
         <img src="https://img.shields.io/badge/License-MIT-efefef">
     </a>
 </div>
+
 
 **Overcomplete** is a compact research library in Pytorch designed to study (Overcomplete)-Dictionary learning methods to extract concepts from large **Vision models**. In addition, this repository also introduces various visualization methods, attribution and metrics. However, Overcomplete emphasizes **experimentation**.
 
@@ -58,7 +64,7 @@ logs = train_sae(sae, dataloader, criterion, optimizer,
 
 # 🧪 Notebooks
 
-- Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-green?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link)
+- Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link)
 - TopK vs JumpReLU vs Vanilla SAE: _Coming soon_
 - Stable Dictionary with Archetypal-SAE: _Coming soon_
 - Advanced metrics to study the solution of SAE: _Coming soon_

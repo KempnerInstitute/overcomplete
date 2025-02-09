@@ -52,10 +52,6 @@ def overlay_top_heatmaps(images, heatmaps, concept_id, cmap=None, alpha=0.35):
         Colormap for the heatmap, by default 'jet'.
     alpha : float, optional
         Transparency of the heatmap overlay, by default 0.35.
-
-    Returns
-    -------
-    None
     """
     assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
@@ -99,10 +95,6 @@ def evidence_top_images(images, heatmaps, concept_id, percentiles=None):
         Index of the concept to visualize.
     percentiles : list of int, optional
         List of percentiles to highlight, by default None.
-
-    Returns
-    -------
-    None
     """
     assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
@@ -150,10 +142,6 @@ def zoom_top_images(images, heatmaps, concept_id, zoom_size=100):
         Index of the concept to visualize.
     zoom_size : int, optional
         Size of the zoomed area around the hottest point, by default 100.
-
-    Returns
-    -------
-    None
     """
     assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id
@@ -200,10 +188,6 @@ def contour_top_image(images, heatmaps, concept_id, percentiles=None, cmap="viri
         Colormap for the contours, by default "viridis".
     linewidth : float, optional
         Width of the contour lines, by default 1.0.
-
-    Returns
-    -------
-    None
     """
     assert len(images) == len(heatmaps)
     assert heatmaps.shape[-1] > concept_id

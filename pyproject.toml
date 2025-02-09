@@ -27,6 +27,8 @@ pytest = "*"
 pytest-cov = "*"
 pylint = "*"
 bumpversion = "*"
+mkdocs = "*"
+mkdocs-material = "*"
 
 # versioning
 [tool.bumpversion]
