@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" class="overcomplete_logo" style="position: relative">
     <img src="assets/banner.png" width="50%" alt="Overcomplete logo" align="center" />
 </div>
 
@@ -62,11 +62,11 @@ logs = train_sae(sae, dataloader, criterion, optimizer,
 # 🧪 Notebooks
 
 - Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link)
-- TopK vs JumpReLU vs Vanilla SAE: _Coming soon_
+- TopK, BatchTopK, JumpReLU, Vanilla SAE: [![Open](https://img.shields.io/badge/TopK_JumpReLU-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1LeLPF_q0Jlm9qygFtZy4KyJq5UB6E71z?usp=drive_link)
 - Stable Dictionary with Archetypal-SAE: _Coming soon_
-- Advanced metrics to study the solution of SAE: _Coming soon_
-- The visualization module: _Coming soon_
-- NMF, ConvexNMF and Semi-NMF: _Coming soon_
+- Advanced metrics to study the solution of SAE: [![Open](https://img.shields.io/badge/Metrics-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1hGZst7AfuxreXAOxLgJS5BtbXsdNGH09?usp=drive_link)
+- The visualization module: [![Open](https://img.shields.io/badge/Visualization-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1VWwOxyW8SVDX1_jM9AoDAjw91le_JPla?usp=sharing)
+- NMF, ConvexNMF and Semi-NMF: [![Open](https://img.shields.io/badge/X_NMF-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1psE4HOAwdJ74fle_KfNtoXOAPWG533yp?usp=drive_link)
 - Modern Feature visualization to visualize concepts: _Coming soon_
 
 
@@ -82,7 +82,7 @@ This work has been made possible in part by the generous support provided by the
 
 # Additional Resources
 
-For a complete LLM implementation of the SAE, we strongly recommend exploring the following resources. The Sparsify library by EleutherAI (https://github.com/EleutherAI/sparsify) provides a comprehensive toolset for implementing the SAE. The original TopK implementation is available through OpenAI's Sparse Autoencoder (https://github.com/openai/sparse_autoencoder). Additionally, SAE Lens by jbloomAus (https://github.com/jbloomAus/SAELens) is an excellent resource, especially if you are interested in using the SAE-vis associated tools found at (https://github.com/callummcdougall/sae_vis).
+For a complete LLM implementation of the SAE, we strongly recommend exploring the following resources. The Sparsify library by EleutherAI (https://github.com/EleutherAI/sparsify) provides a comprehensive toolset for implementing the SAE. The original TopK implementation is available through OpenAI's Sparse Autoencoder (https://github.com/openai/sparse_autoencoder). Additionally, SAE Lens (https://github.com/jbloomAus/SAELens) is an excellent resource, especially if you are interested in using the SAE-vis associated tools found at (https://github.com/callummcdougall/sae_vis).
 
 # Citation
 

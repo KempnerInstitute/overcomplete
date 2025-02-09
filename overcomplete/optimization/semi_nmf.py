@@ -61,7 +61,7 @@ def _one_step_snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True):
 
 
 def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5,
-                               **kwargs):
+                               verbose=False, **kwargs):
     """
     Semi-NMF optimizer.
 
@@ -85,6 +85,8 @@ def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=5
         Maximum number of iterations, by default 500.
     tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-5.
+    verbose : bool, optional
+        Whether to print the loss at each iteration, by default False.
 
     Returns
     -------
@@ -95,7 +97,7 @@ def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=5
     """
     _assert_shapes(A, Z, D)
 
-    for _ in range(max_iter):
+    for _ in tqdm(range(max_iter), disable=not verbose):
         Z_old = Z.clone()
         Z, D = _one_step_snmf_multiplicative_update(A, Z, D, update_Z, update_D)
 
@@ -106,7 +108,7 @@ def snmf_multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=5
 
 
 def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, max_iter=500, tol=1e-5,
-                                    l1_penalty=0.0):
+                                    l1_penalty=0.0, verbose=False, **kwargs):
     """
     Projected gradient descent optimizer for NMF.
 
@@ -127,6 +129,14 @@ def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=Tr
         Whether to update Z, by default True.
     update_D : bool, optional
         Whether to update D, by default True.
+    max_iter : int, optional
+        Maximum number of iterations, by default 500.
+    tol : float, optional
+        Tolerance value for the stopping criterion, by default 1e-5.
+    l1_penalty : float, optional
+        L1 penalty for the sparsity constraint, by default 0.0.
+    verbose : bool, optional
+        Whether to print the loss at each iteration, by default False.
 
     Returns
     -------
@@ -150,7 +160,7 @@ def snmf_projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=Tr
 
     optimizer = torch.optim.Adam(to_optimize, lr=lr, weight_decay=1e-5)
 
-    for iter_i in range(max_iter):
+    for iter_i in tqdm(range(max_iter), disable=not verbose):
         optimizer.zero_grad()
         # @tfel: see if we could pass a custom loss function
         loss = torch.mean(torch.square(A - (Z @ D))) + l1_penalty * torch.mean(torch.abs(Z))
@@ -196,6 +206,8 @@ class SemiNMF(BaseOptimDictionaryLearning):
         Tolerance value for the stopping criterion, by default 1e-4.
     l1_penalty : float, optional
         L1 penalty for the sparsity constraint, by default 0.0. Only used with 'pgd' solver.
+    verbose : bool, optional
+        Whether to print the status of the optimization, by default False.
     """
 
     _SOLVERS = {
@@ -204,7 +216,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
     }
 
     def __init__(self, nb_concepts, solver='mu', device='cpu',
-                 tol=1e-4, l1_penalty=0.0, **kwargs):
+                 tol=1e-4, l1_penalty=0.0, verbose=False, **kwargs):
         assert solver in self._SOLVERS, f"Solver '{solver}' not found in registry."
 
         super().__init__(nb_concepts, device)
@@ -212,6 +224,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         self.solver_fn = self._SOLVERS[solver]
         self.l1_penalty = l1_penalty
         self.register_buffer('D', None)
+        self.verbose = verbose
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -283,7 +296,7 @@ class SemiNMF(BaseOptimDictionaryLearning):
         D = self.init_random_d(A, Z)
 
         Z, D = self.solver_fn(A, Z, D, max_iter=max_iter, tol=self.tol,
-                              l1_penalty=self.l1_penalty)
+                              l1_penalty=self.l1_penalty, verbose=self.verbose)
 
         self.D = D
         self._set_fitted()

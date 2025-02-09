@@ -227,3 +227,57 @@ span.parameter-type {
     opacity: 1.0;
 }
 
+
+.overcomplete_logo {
+    background-repeat: no-repeat;
+    background-image: url("https://kempnerinstitute.github.io/Overcomplete/assets/banner.png");
+    background-size: contain;
+    background-position: center;
+}
+
+.overcomplete_logo img {
+    backdrop-filter: blur(5px) saturate(2);
+}
+
+.md-header__button.md-logo::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    --min-scale: 0.5;
+    --max-scale: 0.6;
+    --blur-force: 10px;
+    transform: scale(var(--max-scale)) ;
+    border-radius: 50%;
+    -webkit-filter: blur(5vw);
+    -moz-filter: blur(5vw);
+    -ms-filter: blur(5vw);
+    filter: blur(var(--blur-force));
+    background: linear-gradient(270deg, #fa0, var(--primary));
+    background-size: 200% 200%;
+    animation: animateGlow 10s ease infinite;
+}
+
+.md-header__button.md-logo::after {
+    --blur-force: 10px !important;
+}
+
+@keyframes animateGlow {
+    0% {
+        background-position: 0% 50%;
+        transform: scale(var(--max-scale)) ;
+    }
+    50% {
+        background-position: 100% 50%;
+        transform: scale(var(--min-scale));
+    }
+    100% {
+        background-position: 0% 50%;
+        transform: scale(var(--max-scale));
+    }
+  }

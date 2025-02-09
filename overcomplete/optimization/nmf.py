@@ -7,7 +7,7 @@ For sake of simplicity, we will use the following notation:
 - D: dictionary of concepts, tensor of shape (nb_concepts, n_features)
 """
 
-
+import tqdm
 import torch
 from scipy.optimize import nnls as scipy_nnls
 from sklearn.decomposition._nmf import _initialize_nmf
@@ -190,7 +190,7 @@ def _one_step_nnls(A, Z, D, update_Z=True, update_D=True):
     return Z, D
 
 
-def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5, verbose=False):
     """
     Multiplicative update rules optimizer for NMF.
 
@@ -216,6 +216,12 @@ def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, t
         Whether to update Z, by default True.
     update_D : bool, optional
         Whether to update D, by default True.
+    max_iter : int, optional
+        Maximum number of iterations, by default 1000.
+    tol : float, optional
+        Tolerance value, by default 1e-5.
+    verbose : bool, optional
+        Whether to display a progress bar, by default False.
 
     Returns
     -------
@@ -226,7 +232,7 @@ def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, t
     """
     _assert_shapes(A, Z, D)
 
-    for _ in range(max_iter):
+    for _ in tqdm(range(max_iter), disable=not verbose):
         Z_old = Z.clone()
         Z, D = _one_step_multiplicative_rule(A, Z, D, update_Z, update_D)
 
@@ -238,7 +244,7 @@ def multiplicative_update(A, Z, D, update_Z=True, update_D=True, max_iter=500, t
     return Z, D
 
 
-def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5, verbose=False):
     """
     Alternating non-negative least squares (ANLS) optimizer for NMF.
 
@@ -260,6 +266,12 @@ def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
         Whether to update Z, by default True.
     update_D : bool, optional
         Whether to update D, by default True.
+    max_iter : int, optional
+        Maximum number of iterations, by default 1000.
+    tol : float, optional
+        Tolerance value, by default 1e-5.
+    verbose : bool, optional
+        Whether to display a progress bar, by default False.
 
     Returns
     -------
@@ -270,7 +282,7 @@ def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     """
     _assert_shapes(A, Z, D)
 
-    for _ in range(max_iter):
+    for _ in tqdm(range(max_iter), disable=not verbose):
         Z_old = Z.clone()
         Z, D = _one_step_nnls(A, Z, D, update_Z, update_D)
 
@@ -282,7 +294,8 @@ def alternating_nnls(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     return Z, D
 
 
-def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True,
+                               max_iter=500, tol=1e-5, verbose=False):
     """
     Projected gradient descent optimizer for NMF.
 
@@ -303,6 +316,12 @@ def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, m
         Whether to update Z, by default True.
     update_D : bool, optional
         Whether to update D, by default True.
+    max_iter : int, optional
+        Maximum number of iterations, by default 1000.
+    tol : float, optional
+        Tolerance value, by default 1e-5.
+    verbose : bool, optional
+        Whether to display a progress bar, by default False.
 
     Returns
     -------
@@ -326,7 +345,7 @@ def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, m
 
     optimizer = torch.optim.Adam(to_optimize, lr=lr, weight_decay=1e-5)
 
-    for iter_i in range(max_iter):
+    for iter_i in tqdm(range(max_iter), disable=not verbose):
         optimizer.zero_grad()
         # @tfel: see if we could pass a custom loss function
         loss = torch.mean(torch.square(A - (Z @ D)))
@@ -354,7 +373,7 @@ def projected_gradient_descent(A, Z, D, lr=5e-2, update_Z=True, update_D=True, m
     return Z_return, D_return
 
 
-def hierarchical_als(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5):
+def hierarchical_als(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e-5, verbose=False):
     """
     Hierarchical Alternating Least Squares optimizer for NMF.
 
@@ -381,6 +400,8 @@ def hierarchical_als(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
         Maximum number of iterations, by default 1000.
     tol : float, optional
         Tolerance value, by default 1e-5.
+    verbose : bool, optional
+        Whether to display a progress bar, by default False.
 
     Returns
     -------
@@ -391,7 +412,7 @@ def hierarchical_als(A, Z, D, update_Z=True, update_D=True, max_iter=500, tol=1e
     """
     _assert_shapes(A, Z, D)
 
-    for _ in range(max_iter):
+    for _ in tqdm(range(max_iter), disable=not verbose):
         Z_old = Z.clone()
         Z, D = _one_step_hals(A, Z, D, update_Z, update_D)
 
@@ -424,6 +445,8 @@ class NMF(BaseOptimDictionaryLearning):
         - 'anls': Alternating Non-negative Least Squares
     tol : float, optional
         Tolerance value for the stopping criterion, by default 1e-4.
+    verbose : bool, optional
+        Whether to display a progress bar, by default False.
     """
 
     _SOLVERS = {
@@ -433,7 +456,7 @@ class NMF(BaseOptimDictionaryLearning):
         'anls': alternating_nnls
     }
 
-    def __init__(self, nb_concepts, device='cpu', solver='hals', tol=1e-4, **kwargs):
+    def __init__(self, nb_concepts, device='cpu', solver='hals', tol=1e-4, verbose=False, **kwargs):
         super().__init__(nb_concepts, device)
 
         assert solver in self._SOLVERS, f'Unknown solver {solver}'
@@ -441,8 +464,9 @@ class NMF(BaseOptimDictionaryLearning):
         self.solver = solver
         self.solver_fn = self._SOLVERS[solver]
         self.tol = tol
+        self.verbose = verbose
 
-        self.D = None
+        self.register_buffer('D', None)
 
     def encode(self, A, max_iter=300, tol=None):
         """
@@ -471,7 +495,8 @@ class NMF(BaseOptimDictionaryLearning):
             tol = self.tol
 
         Z = self.init_random_z(A)
-        Z, _ = self.solver_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol)
+        Z, _ = self.solver_fn(A, Z, self.D, update_Z=True, update_D=False, max_iter=max_iter, tol=tol,
+                              verbose=self.verbose)
 
         return Z
 
