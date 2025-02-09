@@ -563,9 +563,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fit" class="md-nav__link">
+  <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
-      fit
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_random_z" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_random_z
     </span>
   </a>
   
@@ -590,27 +599,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#init_random_z" class="md-nav__link">
+  <a href="#init_random_w" class="md-nav__link">
     <span class="md-ellipsis">
-      init_random_z
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#init_semi_nmf" class="md-nav__link">
-    <span class="md-ellipsis">
-      init_semi_nmf
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_dictionary
+      init_random_w
     </span>
   </a>
   
@@ -626,18 +617,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#init_random_w" class="md-nav__link">
+  <a href="#fit" class="md-nav__link">
     <span class="md-ellipsis">
-      init_random_w
+      fit
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      decode
+      get_dictionary
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_semi_nmf" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_semi_nmf
     </span>
   </a>
   
@@ -768,9 +768,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fit" class="md-nav__link">
+  <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
-      fit
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_random_z" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_random_z
     </span>
   </a>
   
@@ -795,27 +804,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#init_random_z" class="md-nav__link">
+  <a href="#init_random_w" class="md-nav__link">
     <span class="md-ellipsis">
-      init_random_z
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#init_semi_nmf" class="md-nav__link">
-    <span class="md-ellipsis">
-      init_semi_nmf
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_dictionary
+      init_random_w
     </span>
   </a>
   
@@ -831,18 +822,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#init_random_w" class="md-nav__link">
+  <a href="#fit" class="md-nav__link">
     <span class="md-ellipsis">
-      init_random_w
+      fit
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      decode
+      get_dictionary
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_semi_nmf" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_semi_nmf
     </span>
   </a>
   
@@ -948,21 +948,46 @@
 </ul>
 </li>
 </ul>
-<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
-<p>Fit the Convex NMF model to the input data.
+<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
+<p>Decode the input tensor (the codes) using Convex NMF.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Codes tensor of shape (n_samples, nb_concepts).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Decoded output (the approximation of A).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="init_random_z"><code>init_random_z(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A)</code><a class="headerlink" href="#init_random_z" title="Permanent link">&para;</a></h4>
+<p>Initialize the codes Z using non negative random values.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Input tensor of shape (n_samples, n_features).</p> </li>
+<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
 </ul>
 </li>
-<li>
-<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+</ul>
+<p><strong>Return</strong></p>
 <ul>
-<li><p> Maximum number of iterations, by default 500.</p> </li>
+<li>
+<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Initialized codes tensor.</p> </li>
 </ul>
 </li>
 </ul>
@@ -1024,24 +1049,79 @@ Convert from pytorch tensor or DataLoader if necessary.
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="init_random_z"><code>init_random_z(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A)</code><a class="headerlink" href="#init_random_z" title="Permanent link">&para;</a></h4>
-<p>Initialize the codes Z using non negative random values.
+<h4 class="numkdoc" id="init_random_w"><code>init_random_w(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A)</code><a class="headerlink" href="#init_random_w" title="Permanent link">&para;</a></h4>
+<p>Initialize the coefficient matrix W with non-negative random values.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
+<li><p> Input tensor of shape (n_samples, n_features).</p> </li>
 </ul>
 </li>
 </ul>
 <p><strong>Return</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<p><strong><span class='parameter-name'>W</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Initialized codes tensor.</p> </li>
+<li><p> Initialized coefficient tensor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="sanitize_np_input"><code>sanitize_np_input(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#sanitize_np_input" title="Permanent link">&para;</a></h4>
+<p>Ensure the input tensor is a numpy array of shape (batch_size, dims).
+Convert from pytorch tensor or DataLoader if necessary.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<ul>
+<li><p> Input tensor of shape (batch_size, dims).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Sanitized input tensor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
+<p>Fit the Convex NMF model to the input data.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Input tensor of shape (n_samples, n_features).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+<ul>
+<li><p> Maximum number of iterations, by default 500.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
+<p>Return the learned dictionary components from Convex NMF.
+<br></p>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Dictionary components D = A W.</p> </li>
 </ul>
 </li>
 </ul>
@@ -1076,86 +1156,6 @@ Convert from pytorch tensor or DataLoader if necessary.
 <p><strong><span class='parameter-name'>D</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
 <li><p> Initialized dictionary tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Return the learned dictionary components from Convex NMF.
-<br></p>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Dictionary components D = A W.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="sanitize_np_input"><code>sanitize_np_input(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#sanitize_np_input" title="Permanent link">&para;</a></h4>
-<p>Ensure the input tensor is a numpy array of shape (batch_size, dims).
-Convert from pytorch tensor or DataLoader if necessary.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, dims).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Sanitized input tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="init_random_w"><code>init_random_w(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A)</code><a class="headerlink" href="#init_random_w" title="Permanent link">&para;</a></h4>
-<p>Initialize the coefficient matrix W with non-negative random values.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor of shape (n_samples, n_features).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>W</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Initialized coefficient tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
-<p>Decode the input tensor (the codes) using Convex NMF.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Codes tensor of shape (n_samples, nb_concepts).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Decoded output (the approximation of A).</p> </li>
 </ul>
 </li>
 </ul>
