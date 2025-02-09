@@ -458,6 +458,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
       decode
@@ -470,15 +479,6 @@
   <a href="#forward" class="md-nav__link">
     <span class="md-ellipsis">
       forward
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
-    <span class="md-ellipsis">
-      encode
     </span>
   </a>
   
@@ -714,6 +714,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
       decode
@@ -726,15 +735,6 @@
   <a href="#forward" class="md-nav__link">
     <span class="md-ellipsis">
       forward
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
-    <span class="md-ellipsis">
-      encode
     </span>
   </a>
   
@@ -850,6 +850,34 @@
 </li>
 </ul>
 <p><br></p>
+<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
+<p>Encode input data and apply global top-k thresholding.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>pre_codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> The raw outputs from the encoder.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> The sparse latent representation after thresholding.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
 <h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
 <p>Decode latent representation to reconstruct input data.
 <br></p>
@@ -890,34 +918,6 @@
 <p><strong><span class='parameter-name'>SAEOuput</span></strong>            </p>
 <ul>
 <li><p> Return the pre_codes (z_pre), codes (z) and reconstructed input tensor (x_hat).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
-<p>Encode input data and apply global top-k thresholding.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>pre_codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> The raw outputs from the encoder.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> The sparse latent representation after thresholding.</p> </li>
 </ul>
 </li>
 </ul>

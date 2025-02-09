@@ -542,6 +542,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
       decode
@@ -569,27 +578,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_codes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_input" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_input
+      get_dictionary
     </span>
   </a>
   
@@ -605,9 +596,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#sanitize_np_input" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      sanitize_np_input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_np_codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      sanitize_np_codes
     </span>
   </a>
   
@@ -759,6 +759,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
       decode
@@ -786,27 +795,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_codes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_input" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_input
+      get_dictionary
     </span>
   </a>
   
@@ -822,9 +813,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#sanitize_np_input" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      sanitize_np_input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_np_codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      sanitize_np_codes
     </span>
   </a>
   
@@ -883,7 +883,7 @@
 <h2 class="numkdoc" id="SemiNMF"><code>SemiNMF</code><a class="headerlink" href="#SemiNMF" title="Permanent link">&para;</a></h2>
 <p>Torch Semi-NMF-based Dictionary Learning model.
 <br></p>
-<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; solver='mu',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=0.0001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; l1_penalty=0.0,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **kwargs)</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
+<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; solver='mu',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=0.0001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; l1_penalty=0.0,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; verbose=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **kwargs)</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
@@ -916,7 +916,47 @@
 <li><p> L1 penalty for the sparsity constraint, by default 0.0. Only used with 'pgd' solver.</p> </li>
 </ul>
 </li>
+<li>
+<p><strong><span class='parameter-name'>verbose</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to print the status of the optimization, by default False.</p> </li>
 </ul>
+</li>
+</ul>
+<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_iter=300,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=None)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
+<p>Encode the input tensor (the activations) using Semi-NMF.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<ul>
+<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+<ul>
+<li><p> Maximum number of iterations, by default 300.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>tol</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<ul>
+<li><p> Tolerance value for the stopping criterion, by default the value set in the constructor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Encoded features (the codes).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
 <h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
 <p>Decode the input tensor (the codes) using Semi-NMF.
 <br></p>
@@ -989,8 +1029,21 @@
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_iter=300,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=None)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
-<p>Encode the input tensor (the activations) using Semi-NMF.
+<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
+<p>Return the learned dictionary components from Semi-NMF.
+<br></p>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Dictionary components.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
+<p>Fit the Semi-NMF model to the input data.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -1003,45 +1056,7 @@
 <li>
 <p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
 <ul>
-<li><p> Maximum number of iterations, by default 300.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>tol</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Tolerance value for the stopping criterion, by default the value set in the constructor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Encoded features (the codes).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="sanitize_np_codes"><code>sanitize_np_codes(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#sanitize_np_codes" title="Permanent link">&para;</a></h4>
-<p>Ensure the codes tensor (Z) is a numpy array of shape (batch_size, nb_concepts).
-Convert from pytorch tensor or DataLoader if necessary.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Sanitized codes tensor.</p> </li>
+<li><p> Maximum number of iterations, by default 500.</p> </li>
 </ul>
 </li>
 </ul>
@@ -1069,34 +1084,25 @@ Convert from pytorch tensor or DataLoader if necessary.
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
-<p>Fit the Semi-NMF model to the input data.
+<h4 class="numkdoc" id="sanitize_np_codes"><code>sanitize_np_codes(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#sanitize_np_codes" title="Permanent link">&para;</a></h4>
+<p>Ensure the codes tensor (Z) is a numpy array of shape (batch_size, nb_concepts).
+Convert from pytorch tensor or DataLoader if necessary.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
-<ul>
-<li><p> Maximum number of iterations, by default 500.</p> </li>
+<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
 </ul>
 </li>
 </ul>
-<p><br></p>
-<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Return the learned dictionary components from Semi-NMF.
-<br></p>
 <p><strong>Return</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> Dictionary components.</p> </li>
+<li><p> Sanitized codes tensor.</p> </li>
 </ul>
 </li>
 </ul>
