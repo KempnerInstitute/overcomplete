@@ -8,7 +8,7 @@ readme = "README.md"
 
 # requirements
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.8,<3.13"
 numpy = "*"
 matplotlib = "*"
 scikit-learn = "^1.2.0"
@@ -20,7 +20,7 @@ torchvision = "*"
 timm = "*"
 
 # requirements dev
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 tox = "*"
 ruff = "*"
 pytest = "*"
