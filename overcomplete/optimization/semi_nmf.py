@@ -7,6 +7,7 @@ For sake of simplicity, we will use the following notation:
 - D: dictionary of concepts, tensor of shape (nb_concepts, n_features)
 """
 
+from tqdm import tqdm
 import torch
 from torch.linalg import pinv
 

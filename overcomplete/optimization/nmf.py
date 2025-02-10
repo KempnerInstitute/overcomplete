@@ -7,7 +7,7 @@ For sake of simplicity, we will use the following notation:
 - D: dictionary of concepts, tensor of shape (nb_concepts, n_features)
 """
 
-import tqdm
+from tqdm import tqdm
 import torch
 from scipy.optimize import nnls as scipy_nnls
 from sklearn.decomposition._nmf import _initialize_nmf

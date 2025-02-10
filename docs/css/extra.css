@@ -75,6 +75,14 @@ h4 code {
     font-size: 95% !important;
 }
 
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kt {
+    color: var(--synthax-blue) !important;
+}
+
+.highlight .nc, .highlight .ne, .highlight .nf, .highlight .nn {
+    color: var(--synthax-red) !important;
+}
+
 p {
     text-align: justify
 }
@@ -280,4 +288,4 @@ span.parameter-type {
         background-position: 0% 50%;
         transform: scale(var(--max-scale));
     }
-  }
+}
