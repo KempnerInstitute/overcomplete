@@ -112,7 +112,7 @@ class DictionaryLayer(nn.Module):
         If a custom normalization is needed, a callable can be passed.
     initializer : torch.Tensor, optional
         Initial dictionary tensor, by default None.
-    multiplier : bool, optional
+    use_multiplier : bool, optional
         Whether to train a positive scalar to multiply the dictionary after normalization,
         (e.g. to control the radius of the l2 ball when l2 norm is applied), by default False.
     device : str, optional

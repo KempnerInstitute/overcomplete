@@ -1,31 +1,17 @@
 <div align="center">
-    <img src="docs/assets/banner.png" width="50%" alt="Overcomplete logo" align="center" />
+    <img src="https://github.com/KempnerInstitute/Overcomplete/blob/main/docs/assets/banner.png?raw=True" width="50%" alt="Overcomplete logo" align="center" />
 </div>
 
 <br>
 
 <div align="center">
-    <a href="#">
-        <img src="https://img.shields.io/badge/Python-3.8, 3.9, 3.10-efefef">
-    </a>
-    <a href="https://github.com/fel-thomas/Overcomplete/actions/workflows/lint.yml/badge.svg">
-        <img alt="PyLint" src="https://github.com/fel-thomas/Overcomplete/actions/workflows/lint.yml/badge.svg">
-    </a>
-    <a href="https://github.com/fel-thomas/Overcomplete/actions/workflows/tox.yml/badge.svg">
-        <img alt="Tox" src="https://github.com/fel-thomas/Overcomplete/actions/workflows/tox.yml/badge.svg">
-    </a>
-    <a href="https://github.com/fel-thomas/Overcomplete/actions/workflows/publish.yml/badge.svg">
-        <img alt="Pypi" src="https://github.com/fel-thomas/Overcomplete/actions/workflows/publish.yml/badge.svg">
-    </a>
-    <a href="https://kempnerinstitute.github.io/Overcomplete/">
-        <img src="https://img.shields.io/badge/Documentation-Online-00BCD4">
-    </a>
-    <a href="https://pepy.tech/project/overcomplete">
-        <img alt="Pepy" src="https://static.pepy.tech/badge/overcomplete">
-    </a>
-    <a href="#">
-        <img src="https://img.shields.io/badge/License-MIT-efefef">
-    </a>
+    <img src="https://img.shields.io/badge/Python-3.8, 3.9, 3.10-efefef">
+    <img alt="PyLint" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/lint.yml/badge.svg">
+    <img alt="Tox" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/tox.yml/badge.svg">
+    <img alt="Pypi" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/publish.yml/badge.svg">
+    <img src="https://img.shields.io/badge/Documentation-Online-00BCD4">
+    <img alt="Pepy" src="https://static.pepy.tech/badge/overcomplete">
+    <img src="https://img.shields.io/badge/License-MIT-efefef">
 </div>
 
 

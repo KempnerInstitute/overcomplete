@@ -24,7 +24,7 @@ class RelaxedArchetypalDictionary(nn.Module):
         Real data points (or point in the convex hull) used to find the candidates archetypes.
     delta: float, optional
         Constraint on the relaxation term, by default 1.0.
-    multiplier : bool, optional
+    use_multiplier : bool, optional
         Whether to train a positive scalar to multiply the dictionary after convex combination,
         making the dictionary in the conical hull (and not convex hull) of the data points,
         by default True.
