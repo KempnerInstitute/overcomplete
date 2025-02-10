@@ -425,18 +425,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      encode
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      encode
+      get_dictionary
     </span>
   </a>
   
@@ -723,18 +723,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      encode
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      encode
+      get_dictionary
     </span>
   </a>
   
@@ -870,19 +870,6 @@
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Return the learned dictionary.
-<br></p>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Learned dictionary tensor of shape (nb_components, input_size).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
 <h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
 <p>Encode input data to latent representation.
 <br></p>
@@ -907,6 +894,19 @@
 <p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
 <li><p> Codes, latent representation tensor (z) of shape (batch_size, nb_components).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
+<p>Return the learned dictionary.
+<br></p>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Learned dictionary tensor of shape (nb_components, input_size).</p> </li>
 </ul>
 </li>
 </ul>

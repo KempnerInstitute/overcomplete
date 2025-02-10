@@ -542,9 +542,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fit" class="md-nav__link">
+  <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
-      fit
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_random_d" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_random_d
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_np_codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      sanitize_np_codes
     </span>
   </a>
   
@@ -554,6 +572,24 @@
   <a href="#sanitize_np_input" class="md-nav__link">
     <span class="md-ellipsis">
       sanitize_np_input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      fit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
     </span>
   </a>
   
@@ -572,42 +608,6 @@
   <a href="#init_random_z" class="md-nav__link">
     <span class="md-ellipsis">
       init_random_z
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#init_random_d" class="md-nav__link">
-    <span class="md-ellipsis">
-      init_random_d
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_codes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
-    <span class="md-ellipsis">
-      encode
     </span>
   </a>
   
@@ -759,9 +759,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fit" class="md-nav__link">
+  <a href="#decode" class="md-nav__link">
     <span class="md-ellipsis">
-      fit
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#init_random_d" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_random_d
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_np_codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      sanitize_np_codes
     </span>
   </a>
   
@@ -771,6 +789,24 @@
   <a href="#sanitize_np_input" class="md-nav__link">
     <span class="md-ellipsis">
       sanitize_np_input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      fit
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
     </span>
   </a>
   
@@ -789,42 +825,6 @@
   <a href="#init_random_z" class="md-nav__link">
     <span class="md-ellipsis">
       init_random_z
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#init_random_d" class="md-nav__link">
-    <span class="md-ellipsis">
-      init_random_d
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sanitize_np_codes" class="md-nav__link">
-    <span class="md-ellipsis">
-      sanitize_np_codes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
-    <span class="md-ellipsis">
-      encode
     </span>
   </a>
   
@@ -923,21 +923,75 @@
 </ul>
 </li>
 </ul>
-<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
-<p>Fit the Semi-NMF model to the input data.
+<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
+<p>Decode the input tensor (the codes) using Semi-NMF.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Decoded output (the activations).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="init_random_d"><code>init_random_d(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#init_random_d" title="Permanent link">&para;</a></h4>
+<p>Initialize the dictionary D using matrix inversion.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
 <li><p> Input tensor of shape (batch_size, n_features).</p> </li>
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Maximum number of iterations, by default 500.</p> </li>
+<li><p> Codes tensor of shape (batch_size, nb_concepts).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>D</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Initialized dictionary tensor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="sanitize_np_codes"><code>sanitize_np_codes(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#sanitize_np_codes" title="Permanent link">&para;</a></h4>
+<p>Ensure the codes tensor (Z) is a numpy array of shape (batch_size, nb_concepts).
+Convert from pytorch tensor or DataLoader if necessary.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Sanitized codes tensor.</p> </li>
 </ul>
 </li>
 </ul>
@@ -961,6 +1015,59 @@ Convert from pytorch tensor or DataLoader if necessary.
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
 <li><p> Sanitized input tensor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="fit"><code>fit(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp; max_iter=500)</code><a class="headerlink" href="#fit" title="Permanent link">&para;</a></h4>
+<p>Fit the Semi-NMF model to the input data.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<ul>
+<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+<ul>
+<li><p> Maximum number of iterations, by default 500.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_iter=300,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=None)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
+<p>Encode the input tensor (the activations) using Semi-NMF.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
+<ul>
+<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
+<ul>
+<li><p> Maximum number of iterations, by default 300.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>tol</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<ul>
+<li><p> Tolerance value for the stopping criterion, by default the value set in the constructor.</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Encoded features (the codes).</p> </li>
 </ul>
 </li>
 </ul>
@@ -996,113 +1103,6 @@ Convert from pytorch tensor or DataLoader if necessary.
 <p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
 <li><p> Initialized codes tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="init_random_d"><code>init_random_d(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#init_random_d" title="Permanent link">&para;</a></h4>
-<p>Initialize the dictionary D using matrix inversion.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Codes tensor of shape (batch_size, nb_concepts).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>D</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Initialized dictionary tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
-<p>Decode the input tensor (the codes) using Semi-NMF.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>Z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Decoded output (the activations).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="sanitize_np_codes"><code>sanitize_np_codes(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#sanitize_np_codes" title="Permanent link">&para;</a></h4>
-<p>Ensure the codes tensor (Z) is a numpy array of shape (batch_size, nb_concepts).
-Convert from pytorch tensor or DataLoader if necessary.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Encoded tensor (the codes) of shape (batch_size, nb_concepts).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Sanitized codes tensor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max_iter=300,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tol=None)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
-<p>Encode the input tensor (the activations) using Semi-NMF.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>A</span></strong>            : <span class='parameter-type'>torch.Tensor or Iterable</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, n_features).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>max_iter</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
-<ul>
-<li><p> Maximum number of iterations, by default 300.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>tol</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Tolerance value for the stopping criterion, by default the value set in the constructor.</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Encoded features (the codes).</p> </li>
 </ul>
 </li>
 </ul>

@@ -235,18 +235,6 @@ span.parameter-type {
     opacity: 1.0;
 }
 
-
-.overcomplete_logo {
-    background-repeat: no-repeat;
-    background-image: url("https://kempnerinstitute.github.io/Overcomplete/assets/banner.png");
-    background-size: contain;
-    background-position: center;
-}
-
-.overcomplete_logo img {
-    backdrop-filter: blur(5px) saturate(2);
-}
-
 .md-header__button.md-logo::after {
     position: absolute;
     content: "";
