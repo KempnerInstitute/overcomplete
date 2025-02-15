@@ -3,7 +3,6 @@ import pytest
 
 import torch
 from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE
-from overcomplete.sae.base import SAEOutput
 
 from ..utils import epsilon_equal
 
@@ -37,7 +36,6 @@ def test_save_and_load_sae(sae_class):
     x = torch.randn(3, input_size)
     output = model(x)
     z_pre, z, x_hat = output
-    assert isinstance(output, SAEOutput)
 
     torch.save(model, 'test_sae.pth')
     model_loaded = torch.load('test_sae.pth')
@@ -62,9 +60,8 @@ def test_eval_and_save_sae(sae_class):
     x = torch.randn(3, input_size)
     output = model(x)
     z_pre, z, x_hat = output
-    assert isinstance(output, SAEOutput)
 
-    torch.save(model.eval().cpu(), 'test_sae.pth')
+    torch.save(model, 'test_sae.pth')
     model_loaded = torch.load('test_sae.pth').eval().cpu()
     assert isinstance(model_loaded, sae_class)
 

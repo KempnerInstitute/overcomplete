@@ -160,6 +160,8 @@ class DictionaryLayer(nn.Module):
             # by default, the multiplier will be exp(0) = 1 and not trainable
             self.register_buffer("multiplier", torch.tensor(0.0, device=device))
 
+        self._fused_dictionary = None
+
     def forward(self, z):
         """
         Reconstruct input data from latent representation.
@@ -187,6 +189,28 @@ class DictionaryLayer(nn.Module):
         torch.Tensor
             The dictionary tensor of shape (nb_components, dimensions).
         """
-        with torch.no_grad():
-            self._weights.data = self.normalization(self._weights)
-        return self._weights * torch.exp(self.multiplier)
+        if self.training:
+            # we are in training mode, apply normalization
+            with torch.no_grad():
+                self._weights.data = self.normalization(self._weights)
+            return self._weights * torch.exp(self.multiplier)
+        else:
+            # we are in eval mode, return the fused dictionary
+            assert self._fused_dictionary is not None, "Dictionary is not initialized."
+            return self._fused_dictionary
+
+    def train(self, mode=True):
+        """
+        Hook called when switching between training and evaluation mode.
+        We use it to fuse W, C, Relax and multiplier into a single dictionary.
+
+        Parameters
+        ----------
+        mode : bool, optional
+            Whether to set the model to training mode or not, by default True.
+        """
+        if not mode:
+            # we are in .eval() mode, fuse the dictionary
+            self._fused_dictionary = self.get_dictionary()
+
+        super().train(mode)

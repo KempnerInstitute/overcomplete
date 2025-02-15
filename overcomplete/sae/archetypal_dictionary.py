@@ -56,6 +56,8 @@ class RelaxedArchetypalDictionary(nn.Module):
             # by default, the multiplier will be exp(0) = 1 and not trainable
             self.register_buffer("multiplier", torch.tensor(0.0, device=device))
 
+        self._fused_dictionary = None
+
     def forward(self, z):
         """
         Reconstruct input data from latent representation.
@@ -83,17 +85,38 @@ class RelaxedArchetypalDictionary(nn.Module):
         torch.Tensor
             The dictionary tensor of shape (nb_components, dimensions).
         """
-        with torch.no_grad():
-            # ensure W remains row-stochastic (positive and row sum to one)
-            W = torch.relu(self.W)
-            W /= (W.sum(dim=-1, keepdim=True) + 1e-8)
-            self.W.data = W
+        if self.training:
+            # we are in .train() mode, compute the dictionary on the fly
+            with torch.no_grad():
+                # ensure W remains row-stochastic (positive and row sum to one)
+                W = torch.relu(self.W)
+                W /= (W.sum(dim=-1, keepdim=True) + 1e-8)
+                self.W.data = W
 
-            # enforce the norm constraint on $\Lambda$ to limit deviation from conv(C)
-            norm_Lambda = self.Relax.norm(dim=-1, keepdim=True)  # norm per row
-            scaling_factor = torch.clamp(self.delta / norm_Lambda, max=1)  # safe scaling factor
-            self.Relax *= scaling_factor  # scale $\Lambda$ to satisfy $||\Lambda|| \leq \delta$
+                # enforce the norm constraint on Lambda to limit deviation from conv(C)
+                norm_Lambda = self.Relax.norm(dim=-1, keepdim=True)  # norm per row
+                scaling_factor = torch.clamp(self.delta / norm_Lambda, max=1)  # safe scaling factor
+                self.Relax.data *= scaling_factor  # scale Lambda to satisfy ||Lambda|| < delta
 
-        # compute the dictionary as a convex combination plus relaxation
-        D = self.W @ self.C + self.Relax
-        return D * torch.exp(self.multiplier)
+            # compute the dictionary as a convex combination plus relaxation
+            D = self.W @ self.C + self.Relax
+            return D * torch.exp(self.multiplier)
+        else:
+            # we are in .eval() mode, return the fused dictionary
+            assert self._fused_dictionary is not None, "Dictionary is not initialized."
+            return self._fused_dictionary
+
+    def train(self, mode=True):
+        """
+        Hook called when switching between training and evaluation mode.
+        We use it to fuse W, C, Relax and multiplier into a single dictionary.
+
+        Parameters
+        ----------
+        mode : bool, optional
+            Whether to set the model to training mode or not, by default True.
+        """
+        if not mode:
+            # we are in .eval() mode, fuse the dictionary
+            self._fused_dictionary = self.get_dictionary()
+        super().train(mode)
