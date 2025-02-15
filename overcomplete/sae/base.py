@@ -11,36 +11,6 @@ from .dictionary import DictionaryLayer
 from .factory import EncoderFactory
 
 
-@dataclass
-class SAEOutput:
-    """
-    SAEOuput dataclass to store the output of the SAE model.
-
-    Pre-codes may not be available if the encoder does not return them. In this case,
-    the pre-codes will usually be the same as the codes.
-
-    pre_codes: torch.Tensor
-        Pre-activation outputs.
-    codes: torch.Tensor
-        Post-activation (latent codes) (Z).
-    reconstruction: torch.Tensor
-        Reconstructed input.
-    """
-    pre_codes: torch.Tensor
-    codes: torch.Tensor
-    reconstruction: torch.Tensor
-
-    def __iter__(self):
-        """
-        Allow to simply unpack the dataclass.
-
-            data = SAEOutput(a, b, c)
-            a, b, c = sae_output
-
-        """
-        return iter((self.pre_codes, self.codes, self.reconstruction))
-
-
 class SAE(BaseDictionaryLearning):
     """
     Sparse Autoencoder (SAE) model for dictionary learning.
@@ -155,7 +125,7 @@ class SAE(BaseDictionaryLearning):
 
         x_reconstructed = self.decode(codes)
 
-        return SAEOutput(pre_codes, codes, x_reconstructed)
+        return pre_codes, codes, x_reconstructed
 
     def encode(self, x):
         """

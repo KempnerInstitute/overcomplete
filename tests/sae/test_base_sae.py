@@ -2,7 +2,6 @@ import pytest
 
 import torch
 from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE
-from overcomplete.sae.base import SAEOutput
 
 all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
 
@@ -25,8 +24,6 @@ def test_sae(sae_class):
 
     x = torch.randn(3, input_size)
     output = model(x)
-
-    assert isinstance(output, SAEOutput)
 
     z_pre, z, x_hat = output
 
