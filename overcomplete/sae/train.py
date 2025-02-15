@@ -189,6 +189,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
+            logs['r2'].append(avg_error)
             logs['time_epoch'].append(epoch_duration)
             logs['z_sparsity'].append(avg_sparsity)
             logs['dead_features'].append(dead_ratio)
@@ -321,6 +322,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             epoch_duration = time.time() - start_time
 
             logs['avg_loss'].append(avg_loss)
+            logs['r2'].append(avg_error)
             logs['z_sparsity'].append(avg_sparsity)
             logs['time_epoch'].append(epoch_duration)
             logs['epoch_nan_fallbacks'].append(nan_fallback_count)
