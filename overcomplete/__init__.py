@@ -2,7 +2,7 @@
 Overcomplete: Personal toolbox for experimenting with Dictionary Learning.
 """
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 
 
 from .optimization import (SkPCA, SkICA, SkNMF, SkKMeans,
