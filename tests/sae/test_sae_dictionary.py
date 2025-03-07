@@ -1,9 +1,11 @@
 import torch
 import pytest
 
-from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE
+from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE
 
 from ..utils import epsilon_equal
+
+all_saes = [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE]
 
 
 def test_dictionary_layer_initialization():
@@ -103,7 +105,7 @@ def test_dictionary_layer_get_dictionary_normalization():
     assert epsilon_equal(norms, expected_norms)
 
 
-@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE])
+@pytest.mark.parametrize("sae_class", all_saes)
 def test_sae_init_dictionary_layer_normalizations(sae_class):
     nb_concepts = 5
     dimensions = 10
@@ -146,7 +148,7 @@ def test_sae_init_dictionary_layer_normalizations(sae_class):
     assert torch.equal(dictionary_identity, sae.dictionary._weights)
 
 
-@pytest.mark.parametrize("sae_class", [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE])
+@pytest.mark.parametrize("sae_class", all_saes)
 def test_class_sae_dictionary_init(sae_class):
     # ensure every sae class can pass an initializer for the dictionary, and check if
     # the dictionary is correctly initialized

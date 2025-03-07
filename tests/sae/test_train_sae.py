@@ -8,11 +8,12 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE
+from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE
 
 from ..utils import epsilon_equal
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE]
+saes_attention_conv_format = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
 
 
 @pytest.mark.parametrize(
@@ -75,7 +76,7 @@ def test_train_mlp_sae(module_name, sae_class):
     assert "time_epoch" in logs
 
 
-@pytest.mark.parametrize("sae_class", all_sae)
+@pytest.mark.parametrize("sae_class", saes_attention_conv_format)
 def test_train_resnet_sae(sae_class):
     """Ensure we can train resnet sae"""
     torch.autograd.set_detect_anomaly(True)
@@ -107,7 +108,7 @@ def test_train_resnet_sae(sae_class):
     assert "time_epoch" in logs
 
 
-@pytest.mark.parametrize("sae_class", all_sae)
+@pytest.mark.parametrize("sae_class", saes_attention_conv_format)
 def test_train_attention_sae(sae_class):
     """Ensure we can train attention sae"""
     torch.autograd.set_detect_anomaly(True)
