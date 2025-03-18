@@ -8,7 +8,7 @@ from collections import defaultdict
 import torch
 from einops import rearrange
 
-from ..metrics import l2, sparsity, r2_score
+from ..metrics import l2, sparsity, r2_score, sparsity_eps
 from .trackers import DeadCodeTracker
 
 
@@ -178,7 +178,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
-                epoch_sparsity += sparsity(z).mean().item()
+                epoch_sparsity += sparsity_eps(z, 0).sum().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring and batch_count > 0:
@@ -311,7 +311,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
-                epoch_sparsity += sparsity(z).mean().item()
+                epoch_sparsity += sparsity_eps(z).mean().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring and batch_count > 0:
