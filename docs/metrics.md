@@ -4,6 +4,7 @@ The `overcomplete.metrics` module provides a collection of evaluation metrics de
 
 ## Overview
 This module includes metrics for:
+
 - **Norm-based evaluations**: L0, L1, L2, and Lp norms.
 - **Reconstruction losses**: Absolute and relative errors.
 - **Sparsity metrics**: Hoyer score, L1/L2 ratio, and Kappa-4.

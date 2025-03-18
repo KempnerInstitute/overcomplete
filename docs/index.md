@@ -4,16 +4,16 @@
 
 <div align="center">
     <img src="https://img.shields.io/badge/Python-3.8, 3.9, 3.10-efefef">
-    <a href="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/lint.yml/badge.svg">
-        <img alt="PyLint" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/lint.yml/badge.svg">
+    <a href="https://github.com/KempnerInstitute/overcomplete/actions/workflows/lint.yml/badge.svg">
+        <img alt="PyLint" src="https://github.com/KempnerInstitute/overcomplete/actions/workflows/lint.yml/badge.svg">
     </a>
-    <a href="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/tox.yml/badge.svg">
-        <img alt="Tox" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/tox.yml/badge.svg">
+    <a href="https://github.com/KempnerInstitute/overcomplete/actions/workflows/tox.yml/badge.svg">
+        <img alt="Tox" src="https://github.com/KempnerInstitute/overcomplete/actions/workflows/tox.yml/badge.svg">
     </a>
-    <a href="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/publish.yml/badge.svg">
-        <img alt="Pypi" src="https://github.com/KempnerInstitute/Overcomplete/actions/workflows/publish.yml/badge.svg">
+    <a href="https://github.com/KempnerInstitute/overcomplete/actions/workflows/publish.yml/badge.svg">
+        <img alt="Pypi" src="https://github.com/KempnerInstitute/overcomplete/actions/workflows/publish.yml/badge.svg">
     </a>
-    <a href="https://kempnerinstitute.github.io/Overcomplete/">
+    <a href="https://kempnerinstitute.github.io/overcomplete/">
         <img src="https://img.shields.io/badge/Documentation-Online-00BCD4">
     </a>
     <a href="https://pepy.tech/project/overcomplete">
@@ -78,12 +78,42 @@ This work has been made possible in part by the generous support provided by the
 
 # Additional Resources
 
-For a complete LLM implementation of the SAE, we strongly recommend exploring the following resources. The Sparsify library by EleutherAI (https://github.com/EleutherAI/sparsify) provides a comprehensive toolset for implementing the SAE. The original TopK implementation is available through OpenAI's Sparse Autoencoder (https://github.com/openai/sparse_autoencoder). Additionally, SAE Lens (https://github.com/jbloomAus/SAELens) is an excellent resource, especially if you are interested in using the SAE-vis associated tools found at (https://github.com/callummcdougall/sae_vis).
+For a complete LLM implementation of the SAE, we strongly recommend exploring the following resources. The [Sparsify library by EleutherAI](https://github.com/EleutherAI/sparsify) provides a comprehensive toolset for implementing the SAE. The original TopK implementation is available through [OpenAI's Sparse Autoencoder](https://github.com/openai/sparse_autoencoder). Additionally, [SAE Lens](https://github.com/jbloomAus/SAELens) is an excellent resource, especially if you are interested in using the [SAE-vis](https://github.com/callummcdougall/sae_vis).
 
-# Citation
+# Related Publications
+
+The Overcomplete framework has contributed to the following research publications.
 
 ```
-@article{coming soon}
+@article{fel2025archetypal,
+  title     = {Archetypal SAE: Adaptive and Stable Dictionary Learning for Concept Extraction in Large Vision Models},
+  author    = {Fel, Thomas and Lubana, Ekdeep Singh and Prince, Jacob S. and Kowal, Matthew and Boutin, Victor and Papadimitriou, Isabel and Wang, Binxu and Wattenberg, Martin and Ba, Demba and Konkle, Talia},
+  journal   = {arXiv preprint arXiv:2502.12892},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2502.12892}
+}
+```
+
+```
+@article{thasarathan2025universal,
+  title     = {Universal Sparse Autoencoders: Interpretable Cross-Model Concept Alignment},
+  author    = {Thasarathan, Harrish and Forsyth, Julian and Fel, Thomas and Kowal, Matthew and Derpanis, Konstantinos},
+  journal   = {arXiv preprint arXiv:2502.03714},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2502.03714}
+}
+
+```
+
+```
+@article{hindupur2025projecting,
+  title     = {Projecting Assumptions: The Duality Between Sparse Autoencoders and Concept Geometry},
+  author    = {Hindupur, Sai Sumedh R. and Lubana, Ekdeep Singh and Fel, Thomas and Ba, Demba},
+  journal   = {arXiv preprint arXiv:2503.01822},
+  year      = {2025},
+  url       = {https://arxiv.org/abs/2503.01822}
+}
+
 ```
 
 

@@ -3,7 +3,7 @@ site_description: Overcomplete library documentation.
 site_author: Thomas Fel
 
 repo_name: "Kempner/Overcomplete"
-repo_url: https://github.com/KempnerInstitute/Overcomplete
+repo_url: https://github.com/KempnerInstitute/overcomplete
 
 theme:
   name: material
@@ -39,6 +39,7 @@ nav:
     - TopK: saes/topk.md
     - JumpReLU: saes/jumprelu.md
     - BatchTopK: saes/batchtopk.md
+    - Archetypal: saes/archetypal.md
   - Optimization:
     - NMF: optimization/nmf.md
     - Semi-NMF: optimization/seminmf.md
