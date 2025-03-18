@@ -95,4 +95,8 @@ def test_all_outputs_positive(model_name):
 
     pre_codes, codes = model(x)
 
+    # identity is an exception
+    if model_name == "identity":
+        return
+
     assert (codes >= 0).all(), f"Model {model_name} has negative output values"

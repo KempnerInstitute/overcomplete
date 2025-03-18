@@ -174,3 +174,64 @@ def test_module_factory(module_name, args, kwargs):
 def test_invalid_module():
     with pytest.raises(ValueError):
         EncoderFactory.create_module("invalid_module_name", INPUT_SIZE, N_COMPONENTS)
+
+
+@pytest.mark.parametrize("input_size", [INPUT_SIZE, 64, 128])
+def test_identity_encoder_shape(input_size):
+    """
+    Test that IdentityEncoder correctly preserves input shape.
+    """
+    x = torch.randn(BATCH_SIZE, input_size)
+    model = EncoderFactory.create_module("identity", input_shape=input_size)
+    pre_z, z = model(x)
+
+    assert pre_z.shape == z.shape == x.shape, "IdentityEncoder should not modify input shape."
+
+
+@pytest.mark.parametrize("input_size", [INPUT_SIZE, 64, 128])
+def test_identity_encoder_values(input_size):
+    """
+    Test that IdentityEncoder returns the same values as the input.
+    """
+    x = torch.randn(BATCH_SIZE, input_size)
+    model = EncoderFactory.create_module("identity", input_shape=input_size)
+    pre_z, z = model(x)
+
+    assert torch.equal(pre_z, x), "pre_z should be identical to input x"
+    assert torch.equal(z, x), "z should be identical to input x"
+
+
+def test_identity_encoder_factory_registration():
+    """
+    Test that IdentityEncoder is correctly registered in EncoderFactory.
+    """
+    assert "identity" in EncoderFactory.list_modules(), "IdentityEncoder should be registered in EncoderFactory"
+
+
+@pytest.mark.parametrize("input_size", [INPUT_SIZE])
+def test_identity_encoder_with_different_dtypes(input_size):
+    """
+    Test IdentityEncoder with different data types.
+    """
+    for dtype in [torch.float16, torch.float32, torch.float64]:
+        x = torch.randn(BATCH_SIZE, input_size, dtype=dtype)
+        model = EncoderFactory.create_module("identity", input_shape=input_size)
+        pre_z, z = model(x)
+
+        assert pre_z.dtype == dtype, "IdentityEncoder should preserve dtype"
+        assert z.dtype == dtype, "IdentityEncoder should preserve dtype"
+
+
+@pytest.mark.parametrize("input_size", [INPUT_SIZE])
+def test_identity_encoder_device_transfer(input_size):
+    """
+    Test that IdentityEncoder correctly transfers data across devices.
+    """
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        x = torch.randn(BATCH_SIZE, input_size).to(device)
+        model = EncoderFactory.create_module("identity", input_shape=input_size).to(device)
+        pre_z, z = model(x)
+
+        assert pre_z.device == device, "pre_z should be on the same device as input"
+        assert z.device == device, "z should be on the same device as input"

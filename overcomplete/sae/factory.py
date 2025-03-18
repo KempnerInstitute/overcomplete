@@ -19,7 +19,7 @@ model = EncoderFactory.create_module("attention_1b", attention_heads=2)
 
 from torch import nn
 
-from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
+from .modules import IdentityEncoder, MLPEncoder, AttentionEncoder, ResNetEncoder
 
 
 class EncoderFactory:
@@ -77,6 +77,19 @@ class EncoderFactory:
             A list of names of all registered modules.
         """
         return list(EncoderFactory._module_registry.keys())
+
+
+@EncoderFactory.register_module("identity")
+def identity(input_shape, **kwargs):
+    """
+    Creates an Identity Encoder.
+
+    Parameters
+    ----------
+    input_shape : int
+        The input size of the encoder.
+    """
+    return IdentityEncoder(input_shape)
 
 
 @EncoderFactory.register_module("linear")

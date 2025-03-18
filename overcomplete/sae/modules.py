@@ -5,6 +5,48 @@ Collections of torch modules for the encoding of SAE.
 from torch import nn
 from einops import rearrange
 
+import torch
+import torch.nn as nn
+
+
+class IdentityEncoder(nn.Module):
+    """
+    Identity Encoder for SAE.
+
+    This encoder simply returns the input as both the pre-activation and encoded representation.
+    It is useful for some testing purposes or SAEs where no transformation is needed.
+
+    Parameters
+    ----------
+    input_shape : int
+        The input size of the encoder. Must be a single integer.
+    """
+
+    def __init__(self, input_shape):
+        super().__init__()
+        assert isinstance(input_shape, int), "Input shape must be a single integer."
+        self.input_size = input_shape
+
+    def forward(self, x):
+        """
+        Forward pass through the Identity Encoder.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (batch_size, input_size).
+
+        Returns
+        -------
+        pre_z : torch.Tensor
+            Pre-activation tensor (same as input).
+        z : torch.Tensor
+            Encoded tensor (same as input).
+        """
+        assert x.shape[1] == self.input_size, "Input tensor shape mismatch."
+
+        return x, x
+
 
 class MLPEncoder(nn.Module):
     """
