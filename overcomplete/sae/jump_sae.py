@@ -269,7 +269,8 @@ class JumpSAE(SAE):
         self.kernel_fn = self._KERNELS[kernel]
         self.bandwith = torch.tensor(bandwith, device=device)
 
-        self.thresholds = nn.Parameter(torch.zeros(nb_concepts, device=device), requires_grad=True)
+        # exp(-3) make the thresholds start around 0.05
+        self.thresholds = nn.Parameter(torch.ones(nb_concepts, device=device)*(-3.0), requires_grad=True)
 
     def encode(self, x):
         """
