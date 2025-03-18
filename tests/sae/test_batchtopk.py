@@ -137,3 +137,87 @@ def test_gradient_flow(dummy_model):
     expected_grad = torch.tensor([[0., 1., 1.]], dtype=torch.float32)
     assert x.grad is not None
     assert epsilon_equal(x.grad, expected_grad)
+
+
+@pytest.mark.parametrize("input_size, nb_concepts, top_k", [(20, 10, 3), (30, 15, 5)])
+def test_sparsity_and_topk(input_size, nb_concepts, top_k):
+    model = BatchTopKSAE(input_size, nb_concepts, top_k=top_k)
+    model.train()
+
+    x = torch.randn(5, input_size)  # Batch size = 5
+    pre_codes, z = model.encode(x)
+
+    # Ensure correct sparsity (each batch should have top_k active per flattening)
+    assert (z != 0).sum().item() == top_k, "Sparsity is incorrect: not exactly top-k nonzero values!"
+
+    # Ensure nonzero values match top-k thresholding
+    flat_codes = pre_codes.view(-1)
+    top_k_values, _ = torch.topk(flat_codes, top_k)
+    threshold = top_k_values[-1]
+
+    assert torch.all(z[z != 0] >= threshold), "Some nonzero values are below the threshold!"
+
+
+@pytest.mark.parametrize("input_size, nb_concepts, top_k", [(20, 10, 3)])
+def test_threshold_persistence(input_size, nb_concepts, top_k, tmp_path):
+    model = BatchTopKSAE(input_size, nb_concepts, top_k=top_k)
+    model.train()
+
+    x = torch.randn(5, input_size)
+    _, _ = model.encode(x)  # First pass updates running threshold
+
+    # Save the model
+    model_path = tmp_path / "test_sae.pth"
+    torch.save(model, model_path)
+
+    # Load and check threshold consistency
+    model_loaded = torch.load(model_path, map_location="cpu").eval()
+    assert isinstance(model_loaded, BatchTopKSAE)
+
+    assert model.running_threshold is not None, "Running threshold was not initialized!"
+    assert model_loaded.running_threshold is not None, "Loaded model has no running threshold!"
+    assert epsilon_equal(model.running_threshold, model_loaded.running_threshold), "Threshold mismatch after loading!"
+
+
+@pytest.mark.parametrize("input_size, nb_concepts, top_k", [(20, 10, 3)])
+def test_eval_mode_threshold(input_size, nb_concepts, top_k):
+    model = BatchTopKSAE(input_size, nb_concepts, top_k=top_k)
+
+    x = torch.randn(5, input_size)
+    model.train()
+    _, _ = model.encode(x)  # Updates running threshold
+
+    model.eval()
+    pre_codes_eval, z_eval = model.encode(x)
+
+    # Ensure threshold is the stored running threshold
+    assert model.running_threshold is not None, "Running threshold not set!"
+    assert torch.all(z_eval[z_eval != 0] >= model.running_threshold), "Thresholding failed in eval mode!"
+
+
+@pytest.mark.parametrize("input_size, nb_concepts, top_k", [(20, 10, 3)])
+def test_saving_loading_batchtopk_sae(input_size, nb_concepts, top_k, tmp_path):
+    model = BatchTopKSAE(input_size, nb_concepts, top_k=top_k)
+    model.train()
+
+    x = torch.randn(5, input_size)
+    _, z_before = model.encode(x)
+
+    # Save model
+    model_path = tmp_path / "test_sae.pth"
+    torch.save(model, model_path)
+
+    # Load model
+    model_loaded = torch.load(model_path, map_location="cpu").eval()
+    assert isinstance(model_loaded, BatchTopKSAE)
+
+    # Ensure threshold is correctly persisted
+    assert model.running_threshold is not None, "Threshold was not initialized before saving!"
+    assert model_loaded.running_threshold is not None, "Loaded model has no threshold!"
+    assert epsilon_equal(model.running_threshold, model_loaded.running_threshold), "Threshold mismatch after loading!"
+
+    # Re-run encoding on loaded model
+    _, z_after = model_loaded.encode(x)
+
+    # Check consistency
+    assert epsilon_equal(z_before, z_after), "Sparse representations changed after loading!"
