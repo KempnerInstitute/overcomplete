@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../topk/">
+        <link rel="prev" href="../batchtopk/">
       
       
-        <link rel="next" href="../batchtopk/">
+        <link rel="next" href="../../optimization/nmf/">
       
       
       <link rel="icon" href="../../assets/logo.ico">
@@ -24,7 +24,7 @@
     
     
       
-        <title>JumpReLU - Overcomplete</title>
+        <title>Archetypal - Overcomplete</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jumprelu-sae" class="md-skip">
+        <a href="#relaxed-archetypal-dictionary" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              JumpReLU
+              Archetypal
             
           </span>
         </div>
@@ -351,30 +351,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    JumpReLU
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../jumprelu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -383,95 +363,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#JumpSAE" class="md-nav__link">
-    <span class="md-ellipsis">
-      JumpSAE
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="JumpSAE">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#9595init__" class="md-nav__link">
-    <span class="md-ellipsis">
-      __init__
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#forward" class="md-nav__link">
-    <span class="md-ellipsis">
-      forward
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
-    <span class="md-ellipsis">
-      encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_dictionary
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -502,10 +393,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../archetypal/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Archetypal
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -514,6 +425,86 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#RelaxedArchetypalDictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      RelaxedArchetypalDictionary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RelaxedArchetypalDictionary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#9595init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      forward
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#train" class="md-nav__link">
+    <span class="md-ellipsis">
+      train
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_dictionary
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -707,13 +698,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#JumpSAE" class="md-nav__link">
+  <a href="#RelaxedArchetypalDictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      JumpSAE
+      RelaxedArchetypalDictionary
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JumpSAE">
+    <nav class="md-nav" aria-label="RelaxedArchetypalDictionary">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -735,18 +726,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#encode" class="md-nav__link">
+  <a href="#train" class="md-nav__link">
     <span class="md-ellipsis">
-      encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
+      train
     </span>
   </a>
   
@@ -784,37 +766,42 @@
   
 
 
-<h1 id="jumprelu-sae">JumpReLU SAE<a class="headerlink" href="#jumprelu-sae" title="Permanent link">&para;</a></h1>
-<p><a href="https://arxiv.org/html/2407.14435">JumpReLU SAE</a> is a variation of the standard Sparse Autoencoder (SAE) that incorporates the JumpReLU activation function to have an adaptive sparsity without shriking.
-This involve a learnable thresholding mechanism on each concept. As all SAEs, it include an encoder, a decoder, and a forward method.</p>
-<ul>
-<li><code>encode</code> returns the pre-codes (<code>z_pre</code>, before ReLU) and codes (<code>z</code>) given an input (<code>x</code>).</li>
-<li><code>decode</code> returns a reconstructed input (<code>x_hat</code>) based on an input (<code>x</code>).</li>
-<li><code>forward</code> returns the pre-codes, codes, and reconstructed input.</li>
-</ul>
-<p>kernel='silverman', bandwith=1e-3,</p>
-<p>The specificity of this architecture is that i contains 2 hyperparamter, a bandwith and a kernel.
-We strongly encourage you to check the original paper <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> to know more about JumpReLU.</p>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">overcomplete</span> <span class="kn">import</span> <span class="n">JumpSAE</span>
+<h1 id="relaxed-archetypal-dictionary">Relaxed Archetypal Dictionary<a class="headerlink" href="#relaxed-archetypal-dictionary" title="Permanent link">&para;</a></h1>
+<p><a href="https://arxiv.org/abs/2502.12892">Archetypal SAE</a> introduces a constraint on the dictionary where each atom is formed as a convex combination of data points with an additional relaxation term. This method enhances stability and interpretability in dictionary learning, making it a robust drop-in replacement for the dictionary layer in any Sparse Autoencoder. Simply initialize the archetypal dictionary and assign it to your SAE (e.g., <code>sae.dictionary = archetypal_dict</code>).</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">overcomplete.sae.batchtopk_sae</span> <span class="kn">import</span> <span class="n">BatchTopKSAE</span>
+<span class="kn">from</span> <span class="nn">overcomplete.sae.archetypal_dictionary</span> <span class="kn">import</span> <span class="n">RelaxedArchetypalDictionary</span>
 
-<span class="c1"># define a JumpReLU SAE with input dimension 768 and 10k concepts</span>
-<span class="n">sae</span> <span class="o">=</span> <span class="n">JumpSAE</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
+<span class="c1"># initialize any sae</span>
+<span class="n">sae</span> <span class="o">=</span> <span class="n">BatchTopKSAE</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
-<span class="c1"># adjust kernel and bandwith</span>
-<span class="n">sae</span> <span class="o">=</span> <span class="n">JumpSAE</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="n">bandwith</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span>
-              <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;silverman&#39;</span><span class="p">)</span>
+<span class="c1"># assume &#39;points&#39; is a tensor of candidate data points (e.g., sampled from your dataset)</span>
+<span class="c1"># the original paper recommend k-means</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">768</span><span class="p">)</span>
+
+<span class="c1"># create our ra-sae</span>
+<span class="n">archetypal_dict</span> <span class="o">=</span> <span class="n">RelaxedArchetypalDictionary</span><span class="p">(</span>
+    <span class="n">in_dimensions</span><span class="o">=</span><span class="mi">768</span><span class="p">,</span>
+    <span class="n">nb_concepts</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># set the SAE&#39;s dictionary with the archetypal dictionary</span>
+<span class="n">sae</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">archetypal_dict</span>
+<span class="c1"># you can now train normally your sae</span>
 </code></pre></div>
-<h2 class="numkdoc" id="JumpSAE"><code>JumpSAE</code><a class="headerlink" href="#JumpSAE" title="Permanent link">&para;</a></h2>
-<p>JumpReLU Sparse Autoencoder (SAE).
+<h2 class="numkdoc" id="RelaxedArchetypalDictionary"><code>RelaxedArchetypalDictionary</code><a class="headerlink" href="#RelaxedArchetypalDictionary" title="Permanent link">&para;</a></h2>
+<p>Dictionary used for Relaxed Archetypal SAE (RA-SAE).
 <br></p>
-<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input_shape,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel='silverman',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bandwith=0.001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoder_module=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dictionary_params=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu')</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
+<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in_dimensions,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; points,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delta=1.0,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; use_multiplier=True,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu')</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>input_shape</span></strong>            : <span class='parameter-type'>int or tuple of int</span> </p>
+<p><strong><span class='parameter-name'>in_dimensions</span></strong>            : <span class='parameter-type'>int</span> </p>
 <ul>
-<li><p> Dimensionality of the input data, do not include batch dimensions.</p><p> It is usually 1d (dim), 2d (seq length, dim) or 3d (dim, height, width).</p> </li>
+<li><p> Dimensionality of the input data (e.g number of channels).</p> </li>
 </ul>
 </li>
 <li>
@@ -824,88 +811,32 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>kernel</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
+<p><strong><span class='parameter-name'>points</span></strong>            : <span class='parameter-type'>tensors</span> </p>
 <ul>
-<li><p> Kernel function to use in the JumpReLU activation, by default 'silverman'.</p><p> Current options are :     - 'rectangle'     - 'gaussian'     - 'triangular'     - 'cosine'     - 'epanechnikov'     - 'quartic'     - 'silverman'     - 'cauchy'.</p> </li>
+<li><p> Real data points (or point in the convex hull) used to find the candidates archetypes.</p> </li>
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>bandwith</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<p><strong><span class='parameter-name'>delta</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
 <ul>
-<li><p> Bandwith of the kernel, by default 1e-3.</p> </li>
+<li><p> Constraint on the relaxation term, by default 1.0.</p> </li>
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>encoder_module</span></strong>            : <span class='parameter-type'>nn.Module or string, optional</span> </p>
+<p><strong><span class='parameter-name'>use_multiplier</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
 <ul>
-<li><p> Custom encoder module, by default None.</p><p> If None, a simple Linear + BatchNorm default encoder is used.</p><p> If string, the name of the registered encoder module.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>dictionary_params</span></strong>            : <span class='parameter-type'>dict, optional</span> </p>
-<ul>
-<li><p> Parameters that will be passed to the dictionary layer.</p><p> See DictionaryLayer for more details.</p> </li>
+<li><p> Whether to train a positive scalar to multiply the dictionary after convex combination, making the dictionary in the conical hull (and not convex hull) of the data points, by default True.</p> </li>
 </ul>
 </li>
 <li>
 <p><strong><span class='parameter-name'>device</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
 <ul>
-<li><p> Device to run the model on, by default 'cpu'.</p> </li>
+<li><p> Device to run the model on ('cpu' or 'cuda'), by default 'cpu'.</p> </li>
 </ul>
 </li>
 </ul>
-<h4 class="numkdoc" id="forward"><code>forward(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#forward" title="Permanent link">&para;</a></h4>
-<p>Perform a forward pass through the autoencoder.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>SAEOuput</span></strong>            </p>
-<ul>
-<li><p> Return the pre_codes (z_pre), codes (z) and reconstructed input tensor (x_hat).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
-<p>Encode input data to latent representation.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>pre_codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Pre-codes tensor of shape (batch_size, nb_components) before the jump operation.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Codes, latent representation tensor (z) of shape (batch_size, nb_components).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
-<p>Decode latent representation to reconstruct input data.
+<h4 class="numkdoc" id="forward"><code>forward(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#forward" title="Permanent link">&para;</a></h4>
+<p>Reconstruct input data from latent representation.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -921,20 +852,34 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> Reconstructed input tensor of shape (batch_size, input_size).</p> </li>
+<li><p> Reconstructed input tensor of shape (batch_size, dimensions).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="train"><code>train(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mode=True)</code><a class="headerlink" href="#train" title="Permanent link">&para;</a></h4>
+<p>Hook called when switching between training and evaluation mode.
+We use it to fuse W, C, Relax and multiplier into a single dictionary.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>mode</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to set the model to training mode or not, by default True.</p> </li>
 </ul>
 </li>
 </ul>
 <p><br></p>
 <h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Return the learned dictionary.
+<p>Get the dictionary.
 <br></p>
 <p><strong>Return</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> Learned dictionary tensor of shape (nb_components, input_size).</p> </li>
+<li><p> The dictionary tensor of shape (nb_components, dimensions).</p> </li>
 </ul>
 </li>
 </ul>
@@ -943,7 +888,7 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 <hr />
 <ol>
 <li id="fn:1">
-<p><a href="https://arxiv.org/html/2407.14435">Jumping Ahead: Improving Reconstruction Fidelity with JumpReLU Sparse Autoencoders (2024)</a> by Rajamanoharan et al. (2024).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p><a href="https://arxiv.org/abs/2502.12892">Archetypal-SAE</a> by Fel et al. (2025).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
