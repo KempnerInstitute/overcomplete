@@ -1,9 +1,9 @@
 import pytest
 
 import torch
-from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE
+from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE]
 
 
 def test_dictionary_layer():
@@ -29,7 +29,6 @@ def test_sae(sae_class):
 
     assert z.shape == (3, nb_concepts)
     assert x_hat.shape == (3, input_size)
-    assert z_pre.shape == (3, nb_concepts)
 
     dictionary = model.get_dictionary()
     assert dictionary.shape == (nb_concepts, input_size)

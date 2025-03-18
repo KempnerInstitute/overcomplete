@@ -17,6 +17,8 @@ class MpSAE(SAE):
     with the current residual is chosen and its contribution is subtracted
     from the residual. This process is repeated k times. An optional dropout
     can be applied on the dictionary elements at each iteration.
+    Warning: for this SAE, the encoding is returning (1) the residual and (2) the
+    codes -- as the pre_codes are just the input.
 
     Parameters
     ----------
@@ -39,7 +41,7 @@ class MpSAE(SAE):
     """
 
     def __init__(self, input_shape, nb_concepts, k=1, dropout=None,
-                 encoder_module=None, dictionary_params=None, device='cpu'):
+                 encoder_module="identity", dictionary_params=None, device='cpu'):
         # input shape must be int or length-1 tuple
         assert isinstance(input_shape, int) or len(input_shape) == 1, \
             "MpSAE Doesn't handle 3d or 4d data format."
@@ -70,9 +72,8 @@ class MpSAE(SAE):
 
         Returns
         -------
-        pre_codes : torch.Tensor
-            The sparse codes before any additional post-processing; here it
-            is the same as the final codes, repeated for consistency.
+        residual : torch.Tensor
+            The residual after k Matching Pursuit iterations.
         codes : torch.Tensor
             The final sparse codes obtained after k Matching Pursuit iterations.
         """
@@ -100,4 +101,4 @@ class MpSAE(SAE):
             codes = codes + to_add
             residual = residual - to_add @ W
 
-        return codes, codes
+        return residual, codes

@@ -8,11 +8,11 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE
+from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
 
 from ..utils import epsilon_equal
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE]
 saes_attention_conv_format = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
 
 

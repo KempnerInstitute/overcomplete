@@ -80,7 +80,7 @@ class EncoderFactory:
 
 
 @EncoderFactory.register_module("identity")
-def identity(input_shape, **kwargs):
+def identity(input_shape, n_components=None, **kwargs):
     """
     Creates an Identity Encoder.
 
@@ -89,7 +89,7 @@ def identity(input_shape, **kwargs):
     input_shape : int
         The input size of the encoder.
     """
-    return IdentityEncoder(input_shape)
+    return IdentityEncoder(input_shape, n_components)
 
 
 @EncoderFactory.register_module("linear")

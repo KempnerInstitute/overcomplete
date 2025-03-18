@@ -15,3 +15,4 @@ from .topk_sae import TopKSAE
 from .qsae import QSAE
 from .batchtopk_sae import BatchTopKSAE
 from .mp_sae import MpSAE
+from .omp_sae import OMPSAE

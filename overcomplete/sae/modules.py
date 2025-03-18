@@ -5,9 +5,6 @@ Collections of torch modules for the encoding of SAE.
 from torch import nn
 from einops import rearrange
 
-import torch
-import torch.nn as nn
-
 
 class IdentityEncoder(nn.Module):
     """
@@ -22,7 +19,7 @@ class IdentityEncoder(nn.Module):
         The input size of the encoder. Must be a single integer.
     """
 
-    def __init__(self, input_shape):
+    def __init__(self, input_shape, n_components=None):
         super().__init__()
         assert isinstance(input_shape, int), "Input shape must be a single integer."
         self.input_size = input_shape

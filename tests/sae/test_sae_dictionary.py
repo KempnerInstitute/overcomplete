@@ -1,11 +1,11 @@
 import torch
 import pytest
 
-from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE
+from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE, OMPSAE
 
 from ..utils import epsilon_equal
 
-all_saes = [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE]
+all_saes = [SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE, OMPSAE]
 
 
 def test_dictionary_layer_initialization():
