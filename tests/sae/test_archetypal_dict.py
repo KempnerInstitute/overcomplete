@@ -1,7 +1,8 @@
 import torch
 import pytest
+import os
 
-from overcomplete.sae import RelaxedArchetypalDictionary
+from overcomplete.sae import RelaxedArchetypalDictionary, DictionaryLayer
 from ..utils import epsilon_equal
 
 
@@ -230,3 +231,38 @@ def test_batch_processing(batch_size):
     x_hat = layer.forward(z)
 
     assert x_hat.shape == (batch_size, dimensions)
+
+
+@pytest.mark.parametrize("nb_concepts, dimensions, nb_points", [(5, 10, 15)])
+def test_fused(nb_concepts, dimensions, nb_points, tmp_path):
+    # Set up
+    points = torch.randn(nb_points, dimensions)
+    layer = RelaxedArchetypalDictionary(dimensions, nb_concepts, points)
+
+    z = torch.randn(1, nb_concepts)
+    x_hat = layer.forward(z)
+
+    # Check output shape
+    assert x_hat.shape == (1, dimensions)
+
+    # Verify fused dictionary exists
+    layer.eval()
+    assert layer._fused_dictionary is not None
+    assert layer._fused_dictionary.shape == (nb_concepts, dimensions)
+
+    d1 = layer.get_dictionary()
+
+    x_hat_fused = layer.forward(z)  # noqa: F841 (ensures function runs)
+
+    # Save and reload using temporary path
+    model_path = tmp_path / "test_dictionary_layer.pth"
+    torch.save(layer, model_path)
+
+    # Reload and validate
+    layer = torch.load(model_path, map_location="cpu")
+    assert isinstance(layer, RelaxedArchetypalDictionary)
+    assert layer._fused_dictionary is not None
+
+    d2 = layer.get_dictionary()
+    assert d1.shape == d2.shape
+    assert torch.allclose(d1, d2, atol=1e-6)
