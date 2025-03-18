@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Overcomplete"
-version = "0.2.5"
+version = "0.2.6"
 description = "Toolbox for experimenting with (Overcomplete) Dictionary Learning for Vision model"
 authors = ["Thomas Fel <tfel@g.harvard.edu>"]
 license = "MIT"
@@ -32,7 +32,7 @@ mkdocs-material = "*"
 
 # versioning
 [tool.bumpversion]
-current_version = "0.2.5"
+current_version = "0.2.6"
 commit = true
 tag = true
 
