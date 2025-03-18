@@ -450,7 +450,10 @@ def _cosine_distance_matrix(x, y):
 
 def cosine_hungarian_loss(dictionary1, dictionary2):
     """
-    Compute the cosine Hungarian loss between two dictionaries.
+    Compute the cosine Hungarian loss between two dictionaries. A score of 0 indicates
+    that the two dictionaries are identical up to a permutation. A score of 'dim' indicates
+    that the two dictionaries are orthogonal. To have a normalized score, we recommend to
+    divide the score by the dimension of the dictionary.
 
     Parameters
     ----------

@@ -11,7 +11,11 @@ class RelaxedArchetypalDictionary(nn.Module):
     Dictionary used for Relaxed Archetypal SAE (RA-SAE).
 
     Constructs a dictionary where each atom is a convex combination of data
-    points from C, with a small relaxation term (Lambda) constrained by delta.
+    points from C, with a small relaxation term constrained by delta.
+
+    For more details, see the paper:
+    "Archetypal SAE: Adaptive and Stable Dictionary Learning for Concept Extraction
+    in Large Vision Models" by Fel et al. (2025), https://arxiv.org/abs/2502.12892
 
     Parameters
     ----------
@@ -22,7 +26,7 @@ class RelaxedArchetypalDictionary(nn.Module):
         the number of concepts > in_dimensions.
     points : tensors
         Real data points (or point in the convex hull) used to find the candidates archetypes.
-    delta: float, optional
+    delta : float, optional
         Constraint on the relaxation term, by default 1.0.
     use_multiplier : bool, optional
         Whether to train a positive scalar to multiply the dictionary after convex combination,
