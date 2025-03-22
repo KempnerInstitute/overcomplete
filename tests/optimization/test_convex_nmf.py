@@ -3,7 +3,7 @@ import torch
 from sklearn.decomposition import NMF as SkNMF
 
 from overcomplete.optimization import ConvexNMF
-from overcomplete.metrics import relative_avg_l2_loss, sparsity
+from overcomplete.metrics import relative_avg_l2_loss, l0_eps
 
 data_shape = (50, 10)
 nb_concepts = 5
@@ -157,10 +157,10 @@ def test_sparsity():
     model2 = ConvexNMF(nb_concepts=nb_concepts, max_iter=1000, solver='pgd', l1_penalty=0.5)
     Z2, D2 = model2.fit(A)
 
-    s1 = sparsity(Z1)
-    s2 = sparsity(Z2)
+    s1 = l0_eps(Z1)
+    s2 = l0_eps(Z2)
 
-    assert s2 > s1, "Stronger penalty should induce better sparsity."
+    assert s2 < s1, "Stronger penalty should induce better sparsity."
 
 
 @pytest.mark.parametrize("solver", solvers)

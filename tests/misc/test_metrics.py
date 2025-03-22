@@ -8,8 +8,6 @@ from overcomplete.metrics import (
     avg_l1_loss,
     relative_avg_l1_loss,
     relative_avg_l2_loss,
-    sparsity,
-    sparsity_eps,
     dead_codes,
     hungarian_loss,
     _max_non_diagonal,
@@ -21,6 +19,7 @@ from overcomplete.metrics import (
     energy_of_codes,
     frechet_distance,
     l0,
+    l0_eps,
     l1,
     l2,
     lp,
@@ -79,20 +78,22 @@ def test_relative_l1_loss():
     assert epsilon_equal(relative_avg_l1_loss(x, x_hat), expected_loss)
 
 
-def test_sparsity():
+def test_l0():
     x = torch.tensor([[0.0, 1.0], [0.0, 0.0]])
-    expected_sparsity = 3 / 4
+    expected_l0 = 1 / 4
 
-    assert epsilon_equal(sparsity(x), expected_sparsity)
-    assert epsilon_equal(sparsity(x, dims=0), torch.tensor([1.0, 0.5]))
+    assert epsilon_equal(l0(x), expected_l0)
+    assert epsilon_equal(l0(x, dims=0), torch.tensor([1.0, 0.0]))
 
 
-def test_sparsity_eps():
-    x = torch.tensor([[0.0, 1.0], [0.0, 1e-7]])
-    expected_sparsity = 3 / 4
+def test_l0_eps():
+    x = torch.tensor([[0.0, 1.0], [0.0, 1e-5]]).double()
+    expected_l0 = 2 / 4
+    expected_l0_eps = 1 / 4
 
-    assert epsilon_equal(sparsity_eps(x, threshold=1e-6), expected_sparsity)
-    assert epsilon_equal(sparsity_eps(x, dims=0, threshold=1e-6), torch.tensor([1.0, 0.5]))
+    assert epsilon_equal(l0_eps(x), expected_l0)
+    assert epsilon_equal(l0_eps(x, threshold=1e-3), expected_l0_eps)
+    assert epsilon_equal(l0_eps(x, dims=1, threshold=1e-3), torch.tensor([0.5, 0.0]))
 
 
 def test_dead_codes():

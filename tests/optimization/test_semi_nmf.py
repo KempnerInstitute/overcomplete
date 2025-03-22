@@ -3,7 +3,7 @@ import torch
 from sklearn.decomposition import NMF as SkNMF
 
 from overcomplete.optimization import SemiNMF
-from overcomplete.metrics import relative_avg_l2_loss, sparsity
+from overcomplete.metrics import relative_avg_l2_loss, l0_eps
 
 
 data_shape = (50, 10)
@@ -129,10 +129,10 @@ def test_sparsity():
     model2 = SemiNMF(nb_concepts=nb_concepts, max_iter=1000, solver='pgd', l1_penalty=1.0)
     Z_strong, D_strong = model2.fit(A)
 
-    s_Z = sparsity(Z)
-    s_Z_strong = sparsity(Z_strong)
+    s_Z = l0_eps(Z)
+    s_Z_strong = l0_eps(Z_strong)
 
-    assert s_Z_strong > s_Z, "Stronger penalty should induce better sparsity."
+    assert s_Z_strong < s_Z, "Stronger penalty should induce better sparsity."
 
 
 @pytest.mark.parametrize("solver", solvers)

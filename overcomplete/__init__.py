@@ -16,7 +16,6 @@ from .visualization import (overlay_top_heatmaps, evidence_top_images,
                             zoom_top_images, contour_top_image)
 from .metrics import (l0, l1, l2, lp, avg_l1_loss, avg_l2_loss,
                       relative_avg_l1_loss, relative_avg_l2_loss,
-                      sparsity, sparsity_eps, hoyer, kappa_4,
-                      r2_score, dead_codes, hungarian_loss,
+                      hoyer, kappa_4, r2_score, dead_codes, hungarian_loss,
                       cosine_hungarian_loss, dictionary_collinearity,
                       wasserstein_1d, frechet_distance)

@@ -8,7 +8,7 @@ from collections import defaultdict
 import torch
 from einops import rearrange
 
-from ..metrics import l2, sparsity, r2_score, sparsity_eps
+from ..metrics import l2, r2_score, l0_eps
 from .trackers import DeadCodeTracker
 
 
@@ -95,7 +95,7 @@ def _log_metrics(monitoring, logs, model, z, loss, optimizer):
         logs['z'].append(z.detach()[::10])
         logs['z_l2'].append(l2(z).item())
 
-        logs['dictionary_sparsity'].append(sparsity(model.get_dictionary()).mean().item())
+        logs['dictionary_sparsity'].append(l0_eps(model.get_dictionary()).mean().item())
         logs['dictionary_norms'].append(l2(model.get_dictionary(), -1).mean().item())
 
         for name, param in model.named_parameters():
@@ -178,7 +178,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
-                epoch_sparsity += sparsity_eps(z, 0).sum().item()
+                epoch_sparsity += l0_eps(z, 0).sum().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring and batch_count > 0:
@@ -195,7 +195,7 @@ def train_sae(model, dataloader, criterion, optimizer, scheduler=None,
             logs['dead_features'].append(dead_ratio)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"R2: {avg_error:.4f}, L0: {avg_sparsity:.4f}, "
                   f"Dead Features: {dead_ratio*100:.1f}%, "
                   f"Time: {epoch_duration:.4f} seconds")
 
@@ -311,7 +311,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             if monitoring:
                 epoch_loss += loss.item()
                 epoch_error += _compute_reconstruction_error(x, x_hat)
-                epoch_sparsity += sparsity_eps(z).mean().item()
+                epoch_sparsity += l0_eps(z, 0).sum().item()
                 _log_metrics(monitoring, logs, model, z, loss, optimizer)
 
         if monitoring and batch_count > 0:
@@ -329,7 +329,7 @@ def train_sae_amp(model, dataloader, criterion, optimizer, scheduler=None,
             logs['dead_features'].append(dead_ratio)
 
             print(f"Epoch[{epoch+1}/{nb_epochs}], Loss: {avg_loss:.4f}, "
-                  f"R2: {avg_error:.4f}, Sparsity: {avg_sparsity:.4f}, "
+                  f"R2: {avg_error:.4f}, L0: {avg_sparsity:.4f}, "
                   f"Dead Features: {dead_ratio*100:.1f}%, "
                   f"Time: {epoch_duration:.4f} seconds")
 

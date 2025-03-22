@@ -182,54 +182,46 @@ def relative_avg_l1_loss(x, x_hat, epsilon=Epsilon):
 
 def l0(x, dims=None):
     """
-    Compute the average number of zero elements.
+    Compute the average number of non-zero elements.
 
     Parameters
     ----------
     x : torch.Tensor
         Input tensor.
     dims : tuple, optional
-        Dimensions over which to compute the sparsity, by default None.
+        Dimensions over which to average the l0 norm, by default average across all dims.
 
     Returns
     -------
     torch.Tensor
-        Average sparsity if dims=None else sparsity across dims.
+        Average l0 norm if dims=None else l0 across dims.
     """
     if dims is None:
-        return torch.mean((x == 0).float())
-    return torch.mean((x == 0).float(), dims)
+        return torch.mean((x != 0).float())
+    return torch.mean((x != 0).float(), dims)
 
 
-# alias for the default sparsity metric
-sparsity = l0
-
-
-def sparsity_eps(x, dims=None, threshold=1e-6):
+def l0_eps(x, dims=None, threshold=1e-6):
     """
-    Compute the sparsity allowing for an epsilon tolerance.
+    Compute the l0 norm allowing for an epsilon tolerance.
 
     Parameters
     ----------
     x : torch.Tensor
         Input tensor.
     dims : tuple, optional
-        Dimensions over which to compute the sparsity, by default None.
+        Dimensions over which to average the l0 norm, by default all dims.
     threshold : float, optional
         Epsilon tolerance, by default 1e-6.
 
     Returns
     -------
     torch.Tensor
-        Average sparsity if dims=None else sparsity across dims.
+        Average l0 if dims=None else l0 across dims.
     """
     if dims is None:
-        return torch.mean((torch.abs(x) <= threshold).float())
-    return torch.mean((torch.abs(x) <= threshold).float(), dims)
-
-
-# alias for the default sparsity metric with epsilon
-l0_eps = sparsity_eps
+        return torch.mean((torch.abs(x) >= threshold).float())
+    return torch.mean((torch.abs(x) >= threshold).float(), dims)
 
 
 def l1_l2_ratio(x, dims=-1):
