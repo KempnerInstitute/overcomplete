@@ -8,3 +8,4 @@ from .sklearn_wrappers import (SkPCA, SkICA, SkNMF, SkKMeans,
 from .nmf import NMF
 from .semi_nmf import SemiNMF
 from .convex_nmf import ConvexNMF
+from .utils import batched_matrix_nnls

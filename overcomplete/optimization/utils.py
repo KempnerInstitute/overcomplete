@@ -5,6 +5,68 @@ Utility functions for the optimization module of Overcomplete.
 import torch
 
 
+def batched_matrix_nnls(D, X, max_iter=50, tol=1e-5, Z_init=None):
+    """
+    batched non-negative least squares (nnls) via projected gradient descent.
+
+    solves for Z in:
+        min_Z ||Z @ D - X||^2  subject to Z >= 0
+    for each sample in the batch.
+    Z is initialized to zero if not provided and is of shape (n, k).
+    D is of shape (n, k, d) and X is of shape (n, d).
+    n is the batch size, k is the number of concepts, and d is the dimensionality of the data.
+
+    Parameters
+    ----------
+    D : torch.Tensor
+        dictionary of shape (n, k, d)
+    X : torch.Tensor
+        targets of shape (n, d)
+    max_iter : int
+        number of pgd steps
+    tol : float
+        convergence threshold on gradient norm
+    Z_init : torch.Tensor or None
+        optional initial value for Z, shape (n, k)
+
+    Returns
+    -------
+    Z : torch.Tensor
+        codes of shape (n, k), with Z >= 0
+    """
+    n, k, d = D.shape
+
+    # initialize z
+    if Z_init is not None:
+        assert Z_init.shape == (n, k), f"z_init must have shape ({n}, {k})"
+        Z = Z_init.to(D.device).clone()
+    else:
+        Z = torch.zeros(n, k, device=D.device)
+
+    # precompute q = d d^t and p = d x^t
+    Q = torch.bmm(D, D.transpose(2, 1))
+    P = torch.bmm(D, X.unsqueeze(2)).squeeze(2)
+
+    # compute per-batch learning rate from q norm
+    # as ||Z @ D - X|| is L-lipschitz
+    Q_norms = Q.square().sum(dim=(1, 2)).sqrt() + 1e-8
+    lr = 1.0 / Q_norms
+
+    for _ in range(max_iter):
+        # gradient step
+        grad = torch.bmm(Q, Z.unsqueeze(2)).squeeze(2) - P
+        Z = Z - lr.unsqueeze(1) * grad
+
+        # project onto non-negative orthant
+        Z = torch.clamp(Z, min=0)
+
+        # early stop if gradient norm is below threshold
+        if torch.norm(grad, p='fro') < tol:
+            break
+
+    return Z
+
+
 def matrix_nnls(A, B, max_iter=50, tol=1e-3):
     """
     Non-negative least squares problem solver (NNLS):
