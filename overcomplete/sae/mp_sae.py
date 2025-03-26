@@ -102,3 +102,18 @@ class MpSAE(SAE):
             residual = residual - to_add @ W
 
         return residual, codes
+
+    def train(self, mode=True):
+        """
+        Hook called when switching between training and evaluation mode.
+        We use it to ensure no dropout is applied during evaluation.
+
+        Parameters
+        ----------
+        mode : bool, optional
+            Whether to set the model to training mode or not, by default True.
+        """
+        if not mode:
+            self.dropout = None
+
+        return super().train(mode)

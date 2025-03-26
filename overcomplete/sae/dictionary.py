@@ -213,4 +213,4 @@ class DictionaryLayer(nn.Module):
             # we are in .eval() mode, fuse the dictionary
             self._fused_dictionary = self.get_dictionary()
 
-        super().train(mode)
+        return super().train(mode)
