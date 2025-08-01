@@ -23,7 +23,7 @@ def test_methods_save_and_load(methods):
     D = model.D
 
     torch.save(model, 'test_optimization_model.pth')
-    model = torch.load('test_optimization_model.pth')
+    model = torch.load('test_optimization_model.pth', map_location='cpu', weights_only=False)
 
     assert epsilon_equal(model.D, D), "Loaded model does not produce the same results."
 

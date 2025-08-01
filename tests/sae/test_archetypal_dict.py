@@ -259,7 +259,7 @@ def test_fused(nb_concepts, dimensions, nb_points, tmp_path):
     torch.save(layer, model_path)
 
     # Reload and validate
-    layer = torch.load(model_path, map_location="cpu")
+    layer = torch.load(model_path, map_location="cpu", weights_only=False)
     assert isinstance(layer, RelaxedArchetypalDictionary)
     assert layer._fused_dictionary is not None
 
