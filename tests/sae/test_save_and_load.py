@@ -24,7 +24,7 @@ def test_save_and_load_dictionary_layer(nb_concepts, dimensions, tmp_path):
     torch.save(layer, model_path)
 
     # Reload and validate
-    layer = torch.load(model_path, map_location="cpu")
+    layer = torch.load(model_path, map_location="cpu", weights_only=False)
     assert isinstance(layer, DictionaryLayer)
 
     # Check consistency after loading
@@ -47,7 +47,7 @@ def test_save_and_load_sae(sae_class, tmp_path):
     torch.save(model, model_path)
 
     # Load and validate
-    model_loaded = torch.load(model_path, map_location="cpu")
+    model_loaded = torch.load(model_path, map_location="cpu", weights_only=False)
     assert isinstance(model_loaded, sae_class)
 
     # Run inference again
@@ -75,7 +75,7 @@ def test_eval_and_save_sae(sae_class, tmp_path):
     torch.save(model, model_path)
 
     # Load, set to eval mode, and validate
-    model_loaded = torch.load(model_path, map_location="cpu").eval()
+    model_loaded = torch.load(model_path, map_location="cpu", weights_only=False).eval()
     assert isinstance(model_loaded, sae_class)
 
     # Run inference again

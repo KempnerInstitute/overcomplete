@@ -171,7 +171,7 @@ def test_threshold_persistence(input_size, nb_concepts, top_k, tmp_path):
     torch.save(model, model_path)
 
     # Load and check threshold consistency
-    model_loaded = torch.load(model_path, map_location="cpu").eval()
+    model_loaded = torch.load(model_path, map_location="cpu", weights_only=False).eval()
     assert isinstance(model_loaded, BatchTopKSAE)
 
     assert model.running_threshold is not None, "Running threshold was not initialized!"
@@ -208,7 +208,7 @@ def test_saving_loading_batchtopk_sae(input_size, nb_concepts, top_k, tmp_path):
     torch.save(model, model_path)
 
     # Load model
-    model_loaded = torch.load(model_path, map_location="cpu").eval()
+    model_loaded = torch.load(model_path, map_location="cpu", weights_only=False).eval()
     assert isinstance(model_loaded, BatchTopKSAE)
 
     # Ensure threshold is correctly persisted
