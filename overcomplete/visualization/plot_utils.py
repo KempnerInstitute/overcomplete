@@ -181,7 +181,7 @@ def clip_percentile(img, percentile=0.1, clip_method='nearest'):
                    np.percentile(img, 100 - percentile, method=clip_method),)
 
 
-def show(img, normalize=True, **kwargs):
+def show(img, norm=True, **kwargs):
     """
     Display an image with normalization and channels in the last dimension.
 
@@ -197,7 +197,7 @@ def show(img, normalize=True, **kwargs):
     None
     """
     img = np_channel_last(img)
-    if normalize:
+    if norm:
         img = normalize(img)
     plt.imshow(img, **kwargs)
     plt.axis('off')
