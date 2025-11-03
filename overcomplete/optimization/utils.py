@@ -7,7 +7,7 @@ import torch
 
 def batched_matrix_nnls(D, X, max_iter=50, tol=1e-5, Z_init=None):
     """
-    batched non-negative least squares (nnls) via projected gradient descent.
+    Batched non-negative least squares (nnls) via projected gradient descent.
 
     solves for Z in:
         min_Z ||Z @ D - X||^2  subject to Z >= 0

@@ -145,5 +145,4 @@ def test_jumprelu_backward_specific_values():
     # minus sign come from the fact that:
     # 'increasing the threshold will decrease the output'
     expected_grad_threshold = torch.tensor([-1.0, -1.0, 0.0], dtype=torch.float32)
-    assert torch.allclose(threshold.grad, expected_grad_threshold), f"Expected grad_threshold {
-        expected_grad_threshold}, but got {threshold.grad}"
+    assert torch.allclose(threshold.grad, expected_grad_threshold), "Grad Threshold error"
