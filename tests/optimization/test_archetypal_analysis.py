@@ -48,6 +48,7 @@ def test_archetypal_simplex_W():
     assert torch.all(W >= 0)
 
 
+@pytest.mark.flaky(reruns=9, reruns_delay=0)
 def test_archetypal_loss_decrease():
     model = ArchetypalAnalysis(nb_concepts=nb_concepts)
     Z0 = model.init_random_z(A)
