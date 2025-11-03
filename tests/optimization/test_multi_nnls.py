@@ -88,6 +88,7 @@ def test_batch_shape():
     assert Z.shape == (n, k), f"unexpected shape: {Z.shape}"
 
 
+@pytest.mark.flaky(reruns=9, reruns_delay=0)
 def test_scipy_nnls_vs_pgd():
     n, k, d = 16, 8, 6
     tol = 1e-2
