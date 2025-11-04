@@ -9,8 +9,9 @@ For sake of simplicity, we will use the following notation:
 
 from tqdm import tqdm
 import torch
-from scipy.optimize import nnls as scipy_nnls
 from sklearn.decomposition._nmf import _initialize_nmf
+from scipy.optimize import nnls as scipy_nnls
+
 
 from .base import BaseOptimDictionaryLearning
 from .utils import matrix_nnls, stopping_criterion, _assert_shapes
