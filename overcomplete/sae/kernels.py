@@ -6,7 +6,6 @@ For more information, see https://en.wikipedia.org/wiki/Kernel_(statistics).
 """
 
 import torch
-import matplotlib.pyplot as plt
 
 
 def rectangle_kernel(x, bandwith):
