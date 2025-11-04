@@ -3,10 +3,15 @@ import pytest
 
 import torch
 from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal
 
 all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE]
+
+
+def _load(path):
+    return torch.load(path, map_location="cpu", weights_only=False)
 
 
 @pytest.mark.parametrize("nb_concepts, dimensions", [(5, 10)])
@@ -86,3 +91,62 @@ def test_eval_and_save_sae(sae_class, tmp_path):
     assert epsilon_equal(z, z_loaded)
     assert epsilon_equal(x_hat, x_hat_loaded)
     assert epsilon_equal(z_pre, z_pre_loaded)
+
+
+@pytest.mark.parametrize("sae_class", all_sae)
+def test_save_and_load_tied_sae(sae_class, tmp_path):
+    """Test that tied SAE can be saved and loaded."""
+    input_size = 10
+    nb_concepts = 5
+
+    model = sae_class(input_size, nb_concepts)
+    model.tied()
+
+    x = torch.randn(3, input_size)
+    output = model(x)
+    z_pre, z, x_hat = output
+
+    # Save
+    model_path = tmp_path / "test_tied_sae.pth"
+    torch.save(model, model_path)
+
+    # Load
+    model_loaded = _load(model_path)
+    assert isinstance(model_loaded, sae_class)
+
+    # Test output consistency
+    output_loaded = model_loaded(x)
+    z_pre_loaded, z_loaded, x_hat_loaded = output_loaded
+
+    assert epsilon_equal(z, z_loaded)
+    assert epsilon_equal(x_hat, x_hat_loaded)
+
+
+@pytest.mark.parametrize("sae_class", all_sae)
+def test_save_and_load_untied_with_copy(sae_class, tmp_path):
+    """Test that untied SAE with copied weights can be saved and loaded."""
+    input_size = 10
+    nb_concepts = 5
+
+    model = sae_class(input_size, nb_concepts)
+    model.tied()
+    model.untied(copy_from_dictionary=True)
+
+    x = torch.randn(3, input_size)
+    output = model(x)
+    z_pre, z, x_hat = output
+
+    # Save
+    model_path = tmp_path / "test_untied_sae.pth"
+    torch.save(model, model_path)
+
+    # Load
+    model_loaded = _load(model_path)
+    assert isinstance(model_loaded, sae_class)
+
+    # Test output consistency
+    output_loaded = model_loaded(x)
+    z_pre_loaded, z_loaded, x_hat_loaded = output_loaded
+
+    assert epsilon_equal(z, z_loaded)
+    assert epsilon_equal(x_hat, x_hat_loaded)

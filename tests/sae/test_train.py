@@ -40,7 +40,6 @@ def test_train_model():
 
     logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs
@@ -72,7 +71,6 @@ def test_only_dataloader():
     logs = train_sae(model, dataloader, criterion, optimizer, monitoring=2, device="cpu")
 
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs

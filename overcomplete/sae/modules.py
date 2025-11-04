@@ -2,6 +2,7 @@
 Collections of torch modules for the encoding of SAE.
 """
 
+import torch
 from torch import nn
 from einops import rearrange
 
@@ -463,3 +464,74 @@ class ResNetEncoder(nn.Module):
         z = self.final_activation(pre_z)
 
         return pre_z, z
+
+
+class TieableEncoder(nn.Module):
+    """
+    Linear encoder that can be tied to a dictionary or use independent weights.
+
+    Parameters
+    ----------
+    in_dimensions : int
+        Input dimensionality.
+    nb_concepts : int
+        Number of latent dimensions.
+    bias : bool, optional
+        Whether to include bias, by default True.
+    tied_to : DictionaryLayer, optional
+        If provided, uses D^T (tied weights). If None, uses independent weights, by default None.
+    weight_init : torch.Tensor, optional
+        Initial weights for untied mode, by default None (uses Xavier initialization).
+    device : str, optional
+        Device for parameters, by default 'cpu'.
+    """
+
+    def __init__(self, in_dimensions, nb_concepts, bias=False,
+                 tied_to=None, weight_init=None, device='cpu'):
+        super().__init__()
+        self.tied_to = tied_to
+
+        if tied_to is None:
+            # untied: create own weights
+            self.weight = nn.Parameter(torch.empty(nb_concepts, in_dimensions, device=device))
+            if weight_init is not None:
+                self.weight.data.copy_(weight_init)
+            else:
+                nn.init.xavier_uniform_(self.weight)
+        else:
+            # tied weights: we use the dictionary transpose as encoder
+            # no weights needed
+            self.register_parameter('weight', None)
+
+        if bias:
+            self.bias = nn.Parameter(torch.zeros(nb_concepts, device=device))
+        else:
+            self.register_parameter('bias', None)
+
+    def forward(self, x):
+        """
+        Encode input.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input of shape (batch_size, in_dimensions).
+
+        Returns
+        -------
+        z_pre : torch.Tensor
+            Pre-activation codes.
+        z : torch.Tensor
+            Activated codes (ReLU applied).
+        """
+        if self.tied_to is not None:
+            z_pre = x @ self.tied_to.get_dictionary().T
+        else:
+            # untied mode: use own weights
+            z_pre = x @ self.weight.T
+
+        if self.bias is not None:
+            z_pre = z_pre + self.bias
+
+        z = torch.relu(z_pre)
+        return z_pre, z

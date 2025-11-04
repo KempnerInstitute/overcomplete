@@ -2,6 +2,7 @@ import torch
 import pytest
 
 from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal
 
@@ -270,3 +271,46 @@ def test_multiplier_optimizer_step():
 
     # Check that the multiplier has been updated.
     assert not torch.allclose(init_multiplier, layer.multiplier.detach(), atol=1e-6)
+
+
+def test_tied_encoder_shares_dictionary_weights():
+    """Test that tied encoder uses dictionary weights (not a copy)."""
+    input_size = 10
+    nb_concepts = 5
+
+    dictionary = DictionaryLayer(input_size, nb_concepts)
+    encoder = TieableEncoder(input_size, nb_concepts, tied_to=dictionary)
+
+    x = torch.randn(3, input_size)
+
+    # Forward pass
+    z_pre1, z1 = encoder(x)
+
+    # Modify dictionary weights
+    with torch.no_grad():
+        dictionary._weights.data *= 10.0
+        dictionary._weights.data += torch.randn_like(dictionary._weights)
+
+    # Forward pass again
+    z_pre2, z2 = encoder(x)
+
+    # Results should be different (weights are shared)
+    assert not epsilon_equal(z_pre1, z_pre2)
+
+
+def test_tied_encoder_gradient_flow():
+    """Test that gradients flow to dictionary through tied encoder."""
+    input_size = 10
+    nb_concepts = 5
+
+    dictionary = DictionaryLayer(input_size, nb_concepts)
+    encoder = TieableEncoder(input_size, nb_concepts, tied_to=dictionary)
+
+    x = torch.randn(3, input_size, requires_grad=True)
+    z_pre, z = encoder(x)
+
+    loss = z.sum()
+    loss.backward()
+
+    # Dictionary should have gradients
+    assert dictionary._weights.grad is not None

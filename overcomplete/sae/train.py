@@ -91,8 +91,8 @@ def _log_metrics(monitoring, logs, model, z, loss, optimizer):
 
     if monitoring > 1:
         # store directly some z values
-        # and the params / gradients norms
-        logs['z'].append(z.detach()[::10])
+        # if needed you can even store z statistics here,
+        # e.g. logs['z'].append(z.detach()[::10])
         logs['z_l2'].append(l2(z).item())
 
         logs['dictionary_sparsity'].append(l0_eps(model.get_dictionary()).mean().item())
