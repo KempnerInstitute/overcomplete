@@ -30,6 +30,7 @@ pylint = "*"
 bumpversion = "*"
 mkdocs = "*"
 mkdocs-material = "*"
+numkdoc = "*"
 
 # versioning
 [tool.bumpversion]
