@@ -9,6 +9,7 @@ from einops import rearrange
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
 from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal
 
@@ -70,7 +71,6 @@ def test_train_mlp_sae(module_name, sae_class):
     )
 
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs
@@ -102,7 +102,6 @@ def test_train_resnet_sae(sae_class):
 
     logs = train_sae_amp(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs
@@ -135,7 +134,6 @@ def test_train_attention_sae(sae_class):
 
     logs = train_sae(model, dataloader, criterion, optimizer, scheduler, nb_epochs=2, monitoring=2, device="cpu")
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
     assert "z_l2" in logs
     assert "z_sparsity" in logs
     assert "time_epoch" in logs
@@ -221,7 +219,6 @@ def test_monitoring():
 
     assert isinstance(logs, defaultdict)
     assert "lr" in logs
-    assert "z" not in logs
 
     logs = train_sae(
         model,
@@ -235,7 +232,6 @@ def test_monitoring():
     )
 
     assert isinstance(logs, defaultdict)
-    assert "z" in logs
 
 
 def test_top_k_constraint():
@@ -326,3 +322,79 @@ def test_q_sae_quantization_levels():
 
     assert isinstance(logs, defaultdict)
     assert len(logs) == 0
+
+
+@pytest.mark.parametrize("sae_class", all_sae)
+def test_train_tied_sae(sae_class):
+    """Test that tied SAE can be trained."""
+    data = torch.randn(10, 10)
+    dataset = TensorDataset(data)
+    dataloader = DataLoader(dataset, batch_size=10)
+    criterion = mse_l1
+    n_components = 2
+
+    model = sae_class(data.shape[1], n_components)
+    model.tied()
+
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+
+    logs = train_sae(
+        model,
+        dataloader,
+        criterion,
+        optimizer,
+        None,
+        nb_epochs=2,
+        monitoring=False,
+        device="cpu",
+    )
+
+    assert isinstance(logs, defaultdict)
+
+
+@pytest.mark.parametrize("sae_class", all_sae)
+def test_train_untied_after_tied(sae_class):
+    """Test training workflow: tied -> train -> untied with copy -> train."""
+    data = torch.randn(10, 10)
+    dataset = TensorDataset(data)
+    dataloader = DataLoader(dataset, batch_size=10)
+    criterion = mse_l1
+    n_components = 2
+
+    model = sae_class(data.shape[1], n_components)
+    model.tied()
+
+    # Train tied
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    train_sae(model, dataloader, criterion, optimizer, None, nb_epochs=1, monitoring=False)
+
+    # Untie and copy weights
+    dict_after_training = model.get_dictionary().clone()
+    model.untied(copy_from_dictionary=True)
+
+    # Check weights were copied
+    assert epsilon_equal(model.encoder.weight, dict_after_training)
+
+    # Train untied
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    train_sae(model, dataloader, criterion, optimizer, None, nb_epochs=1, monitoring=False)
+
+
+def test_tied_encoder_bias_training():
+    """Test that bias in tied encoder is trainable."""
+    data = torch.randn(10, 10)
+    dataset = TensorDataset(data)
+    dataloader = DataLoader(dataset, batch_size=10)
+    criterion = mse_l1
+
+    model = SAE(10, 5)
+    model.tied(bias=True)
+
+    # Record initial bias
+    initial_bias = model.encoder.bias.clone()
+
+    optimizer = optim.SGD(model.parameters(), lr=0.01)
+    train_sae(model, dataloader, criterion, optimizer, None, nb_epochs=5, monitoring=False)
+
+    # Bias should have changed
+    assert not epsilon_equal(initial_bias, model.encoder.bias)

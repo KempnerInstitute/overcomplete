@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from ..base import BaseDictionaryLearning
 from .dictionary import DictionaryLayer
 from .factory import EncoderFactory
+from .modules import TieableEncoder
 
 
 class SAE(BaseDictionaryLearning):
@@ -172,3 +173,53 @@ class SAE(BaseDictionaryLearning):
         """
         raise NotImplementedError('SAE does not support fit method. You have to train the model \
                                   using a custom training loop.')
+
+    def tied(self, bias=False):
+        """
+        Tie encoder weights to dictionary (use D^T as encoder).
+
+        Parameters
+        ----------
+        bias : bool, optional
+            Whether to include bias in encoder, by default False.
+
+        Returns
+        -------
+        self
+            Returns self for method chaining.
+        """
+        self.encoder = TieableEncoder(
+            in_dimensions=self.dictionary.in_dimensions,
+            nb_concepts=self.nb_concepts,
+            bias=bias,
+            tied_to=self.dictionary,
+            device=self.device
+        )
+        return self
+
+    def untied(self, bias=False, copy_from_dictionary=True):
+        """
+        Create a new encoder with weight from the current dictionary (or random init).
+
+        Parameters
+        ----------
+        bias : bool, optional
+            Whether to include bias in encoder, by default False.
+        copy_from_dictionary : bool, optional
+            If True, initialize encoder with current dictionary weights, by default True.
+
+        Returns
+        -------
+        self
+            Returns self for method chaining.
+        """
+        weight_init = self.get_dictionary().clone().detach() if copy_from_dictionary else None
+        self.encoder = TieableEncoder(
+            in_dimensions=self.dictionary.in_dimensions,
+            nb_concepts=self.nb_concepts,
+            bias=bias,
+            tied_to=None,
+            weight_init=weight_init,
+            device=self.device
+        )
+        return self
