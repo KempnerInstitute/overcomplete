@@ -1,41 +1,55 @@
+import pytest
 import torch
+
 from overcomplete.sae import RATopKSAE, RAJumpSAE
 
-def test_ra_implementations():
-    # Mock data
-    batch_size = 32
-    input_dim = 128
-    nb_concepts = 20
-    
-    #RelaxedArchetypalDictionary usually expects points to be [N, input_dim] ???
-    points = torch.randn(100, input_dim) 
-    input_data = torch.randn(batch_size, input_dim)
+INPUT_SIZE = 128
+NB_CONCEPTS = 20
+POINTS_COUNT = 100
+BATCH_SIZE = 32
+TOP_K = 5
+BANDWIDTH = 0.001
 
-    print("Testing RATopKSAE...")
-    ra_topk = RATopKSAE(
-        input_shape=input_dim, 
-        nb_concepts=nb_concepts, 
-        points=points, 
-        top_k=5
-    )
-    
-    z_pre, z, x_hat = ra_topk(input_data)
-    print(f"TopK Output shape: {x_hat.shape}")
+
+@pytest.mark.parametrize("device", ['cpu'])
+@pytest.mark.parametrize("ra_class", [RATopKSAE, RAJumpSAE])
+def test_ra_sae_device_propagation(device, ra_class):
+    # points need to be on the same device as the module for initialization
+    points = torch.randn(POINTS_COUNT, INPUT_SIZE, device=device)
+
+    if ra_class == RATopKSAE:
+        model = ra_class(INPUT_SIZE, NB_CONCEPTS, points=points, top_k=TOP_K, device=device)
+    else:
+        model = ra_class(INPUT_SIZE, NB_CONCEPTS, points=points, bandwidth=BANDWIDTH, device=device)
+
+    # check encoder parameters
+    for param in model.encoder.parameters():
+        assert param.device.type == device
+
+    # check dictionary parameters
+    for param in model.dictionary.parameters():
+        assert param.device.type == device
+
+    # check all parameters
+    for param in model.parameters():
+        assert param.device.type == device
+
+
+@pytest.mark.parametrize("ra_class", [RATopKSAE, RAJumpSAE])
+def test_ra_sae_forward_shape(ra_class):
+    # run forward pass on cpu to ensure shape correctness
+    device = 'cpu'
+    points = torch.randn(POINTS_COUNT, INPUT_SIZE, device=device)
+    input_data = torch.randn(BATCH_SIZE, INPUT_SIZE, device=device)
+
+    if ra_class == RATopKSAE:
+        model = ra_class(INPUT_SIZE, NB_CONCEPTS, points=points, top_k=TOP_K, device=device)
+    else:
+        model = ra_class(INPUT_SIZE, NB_CONCEPTS, points=points, bandwidth=BANDWIDTH, device=device)
+
+    z_pre, z, x_hat = model(input_data)
+
+    # check output shapes
     assert x_hat.shape == input_data.shape
-
-    print("\nTesting RAJumpSAE...")
-    ra_jump = RAJumpSAE(
-        input_shape=input_dim, 
-        nb_concepts=nb_concepts, 
-        points=points,
-        bandwith=0.001
-    )
-    
-    z_pre, z, x_hat = ra_jump(input_data)
-    print(f"Jump Output shape: {x_hat.shape}")
-    assert x_hat.shape == input_data.shape
-    
-    print("\nSuccess! Both RA classes instantiated and forwarded.")
-
-if __name__ == "__main__":
-    test_ra_implementations()
+    assert z.shape == (BATCH_SIZE, NB_CONCEPTS)
+    assert z_pre.shape == (BATCH_SIZE, NB_CONCEPTS)

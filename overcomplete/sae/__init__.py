@@ -12,7 +12,7 @@ from .modules import MLPEncoder, AttentionEncoder, ResNetEncoder
 from .factory import EncoderFactory
 from .jump_sae import JumpSAE, jump_relu, heaviside
 from .topk_sae import TopKSAE
-from .ra_sae import RATopKSAE, RAJumpSAE
+from .rasae import RATopKSAE, RAJumpSAE
 from .qsae import QSAE
 from .batchtopk_sae import BatchTopKSAE
 from .mp_sae import MpSAE
