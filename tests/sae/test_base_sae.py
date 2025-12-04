@@ -1,12 +1,21 @@
 import pytest
 
 import torch
-from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae import SAE, DictionaryLayer, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE, RATopKSAE, RAJumpSAE
 from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE, RATopKSAE, RAJumpSAE]
+
+
+def get_sae_kwargs(sae_class, input_size, nb_concepts, device):
+    """Return specific kwargs required for certain SAE classes."""
+    kwargs = {}
+    # archetypal SAEs require 'points'
+    if sae_class in [RATopKSAE, RAJumpSAE]:
+        kwargs['points'] = torch.randn(nb_concepts * 2, input_size, device=device)
+    return kwargs
 
 
 def test_dictionary_layer():
@@ -23,7 +32,9 @@ def test_dictionary_layer():
 def test_sae(sae_class):
     input_size = 10
     nb_concepts = 5
-    model = sae_class(input_size, nb_concepts)
+
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_concepts, device='cpu')
+    model = sae_class(input_size, nb_concepts, **extra_kwargs)
 
     x = torch.randn(3, input_size)
     output = model(x)
@@ -43,13 +54,15 @@ def test_sae_device(sae_class):
     input_size = 10
     nb_components = 5
 
-    model = sae_class(input_size, nb_components, device='meta')
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_components, device='meta')
+    model = sae_class(input_size, nb_components, device='meta', **extra_kwargs)
 
     # ensure dictionary is on the meta device
     dictionary = model.get_dictionary()
     assert dictionary.device.type == 'meta'
 
-    model = sae_class(input_size, nb_components, device='cpu')
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_components, device='cpu')
+    model = sae_class(input_size, nb_components, device='cpu', **extra_kwargs)
 
     # ensure dictionary is on the cpu device
     dictionary = model.get_dictionary()
@@ -111,7 +124,8 @@ def test_sae_tied_untied(sae_class):
     input_size = 10
     nb_concepts = 5
 
-    model = sae_class(input_size, nb_concepts)
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_concepts, device='cpu')
+    model = sae_class(input_size, nb_concepts, **extra_kwargs)
 
     # Tie weights
     model.tied()
@@ -130,7 +144,8 @@ def test_sae_tied_forward(sae_class):
     input_size = 10
     nb_concepts = 5
 
-    model = sae_class(input_size, nb_concepts)
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_concepts, device='cpu')
+    model = sae_class(input_size, nb_concepts, **extra_kwargs)
     model.tied()
 
     x = torch.randn(3, input_size)
@@ -146,7 +161,8 @@ def test_sae_untied_copy_weights(sae_class):
     input_size = 10
     nb_concepts = 5
 
-    model = sae_class(input_size, nb_concepts)
+    extra_kwargs = get_sae_kwargs(sae_class, input_size, nb_concepts, device='cpu')
+    model = sae_class(input_size, nb_concepts, **extra_kwargs)
     model.tied()
 
     # Get dictionary before untying

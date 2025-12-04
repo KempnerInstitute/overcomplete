@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae import DictionaryLayer, SAE, QSAE, TopKSAE, JumpSAE, BatchTopKSAE, MpSAE, OMPSAE, RATopKSAE, RAJumpSAE
 from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal

@@ -8,13 +8,22 @@ from einops import rearrange
 
 from overcomplete.sae.train import train_sae, train_sae_amp
 from overcomplete.sae.losses import mse_l1
-from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE
+from overcomplete.sae import SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE, RATopKSAE, RAJumpSAE
 from overcomplete.sae.modules import TieableEncoder
 
 from ..utils import epsilon_equal
 
-all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE]
+all_sae = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE, MpSAE, OMPSAE, RATopKSAE, RAJumpSAE]
 saes_attention_conv_format = [SAE, JumpSAE, TopKSAE, QSAE, BatchTopKSAE]
+
+
+def get_sae_kwargs(sae_class, input_size, nb_concepts, device):
+    """Return specific kwargs required for certain SAE classes."""
+    kwargs = {}
+    # archetypal SAEs require 'points'
+    if sae_class in [RATopKSAE, RAJumpSAE]:
+        kwargs['points'] = torch.randn(nb_concepts * 2, input_size, device=device)
+    return kwargs
 
 
 @pytest.mark.parametrize(
@@ -38,7 +47,8 @@ def test_train_mlp_sae(module_name, sae_class):
     criterion = mse_l1
     n_components = 2
 
-    model = sae_class(data.shape[1], n_components, encoder_module=module_name)
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1], n_components, device='cpu')
+    model = sae_class(data.shape[1], n_components, encoder_module=module_name, **extra_kwargs)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -90,7 +100,8 @@ def test_train_resnet_sae(sae_class):
     dataloader = DataLoader(dataset, batch_size=10)
     n_components = 2
 
-    model = sae_class(data.shape[1:], n_components, encoder_module="resnet_3b")
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1:], n_components, device='cpu')
+    model = sae_class(data.shape[1:], n_components, encoder_module="resnet_3b", **extra_kwargs)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -121,7 +132,8 @@ def test_train_attention_sae(sae_class):
     dataloader = DataLoader(dataset, batch_size=10)
     n_components = 2
 
-    model = sae_class(data.shape[1:], n_components, encoder_module="attention_3b")
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1:], n_components, device='cpu')
+    model = sae_class(data.shape[1:], n_components, encoder_module="attention_3b", **extra_kwargs)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -159,7 +171,8 @@ def test_train_without_amp(module_name, sae_class):
     criterion = mse_l1
     n_components = 2
 
-    model = sae_class(data.shape[1], n_components, encoder_module=module_name)
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1], n_components, device='cpu')
+    model = sae_class(data.shape[1], n_components, encoder_module=module_name, **extra_kwargs)
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
     scheduler = None
@@ -333,7 +346,8 @@ def test_train_tied_sae(sae_class):
     criterion = mse_l1
     n_components = 2
 
-    model = sae_class(data.shape[1], n_components)
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1], n_components, device='cpu')
+    model = sae_class(data.shape[1], n_components, **extra_kwargs)
     model.tied()
 
     optimizer = optim.SGD(model.parameters(), lr=0.001)
@@ -361,7 +375,8 @@ def test_train_untied_after_tied(sae_class):
     criterion = mse_l1
     n_components = 2
 
-    model = sae_class(data.shape[1], n_components)
+    extra_kwargs = get_sae_kwargs(sae_class, data.shape[1], n_components, device='cpu')
+    model = sae_class(data.shape[1], n_components, **extra_kwargs)
     model.tied()
 
     # Train tied
