@@ -13,25 +13,25 @@
       
       
       
-        <link rel="prev" href="../optimization/convexnmf/">
+        <link rel="prev" href="../archetypal/">
       
       
-        <link rel="next" href="../metrics/">
+        <link rel="next" href="../mp/">
       
       
-      <link rel="icon" href="../assets/logo.ico">
+      <link rel="icon" href="../../assets/logo.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
     
     
       
-        <title>Visualization - Overcomplete</title>
+        <title>Archetypal SAEs - Overcomplete</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,9 +50,9 @@
       
     
     
-      <link rel="stylesheet" href="../css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#visualization-modules" class="md-skip">
+        <a href="#archetypal-sparse-autoencoders-topk-jump" class="md-skip">
           Skip to content
         </a>
       
@@ -94,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Overcomplete" class="md-header__button md-logo" aria-label="Overcomplete" data-md-component="logo">
+    <a href="../.." title="Overcomplete" class="md-header__button md-logo" aria-label="Overcomplete" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="../../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Visualization
+              Archetypal SAEs
             
           </span>
         </div>
@@ -226,9 +226,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Overcomplete" class="md-nav__button md-logo" aria-label="Overcomplete" data-md-component="logo">
+    <a href="../.." title="Overcomplete" class="md-nav__button md-logo" aria-label="Overcomplete" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="../../assets/logo.png" alt="logo">
 
     </a>
     Overcomplete
@@ -255,7 +255,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -272,17 +272,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -296,7 +298,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Saes
@@ -310,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/vanilla/" class="md-nav__link">
+      <a href="../vanilla/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -331,7 +333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/topk/" class="md-nav__link">
+      <a href="../topk/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -352,7 +354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/jumprelu/" class="md-nav__link">
+      <a href="../jumprelu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -373,7 +375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/batchtopk/" class="md-nav__link">
+      <a href="../batchtopk/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -394,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/archetypal/" class="md-nav__link">
+      <a href="../archetypal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -412,10 +414,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../saes/archetypal_saes/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Archetypal SAEs
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -424,6 +446,101 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#RATopKSAE" class="md-nav__link">
+    <span class="md-ellipsis">
+      RATopKSAE
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RATopKSAE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#RAJumpSAE" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAJumpSAE
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAJumpSAE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encode" class="md-nav__link">
+    <span class="md-ellipsis">
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -436,7 +553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/mp/" class="md-nav__link">
+      <a href="../mp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -457,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/omp/" class="md-nav__link">
+      <a href="../omp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -478,7 +595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/dead_codes/" class="md-nav__link">
+      <a href="../dead_codes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -541,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/nmf/" class="md-nav__link">
+      <a href="../../optimization/nmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -562,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/seminmf/" class="md-nav__link">
+      <a href="../../optimization/seminmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -583,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/convexnmf/" class="md-nav__link">
+      <a href="../../optimization/convexnmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -608,30 +725,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Visualization
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../visualization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -640,86 +737,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example Usage
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Example Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#overlay_top_heatmaps" class="md-nav__link">
-    <span class="md-ellipsis">
-      overlay_top_heatmaps
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#evidence_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      evidence_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#zoom_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      zoom_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contour_top_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      contour_top_image
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -731,7 +748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../metrics/" class="md-nav__link">
+      <a href="../../metrics/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -771,55 +788,70 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Basic Usage
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
+  <a href="#RATopKSAE" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Usage
+      RATopKSAE
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Example Usage">
+    <nav class="md-nav" aria-label="RATopKSAE">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#overlay_top_heatmaps" class="md-nav__link">
+  <a href="#__init__" class="md-nav__link">
     <span class="md-ellipsis">
-      overlay_top_heatmaps
+      __init__
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#evidence_top_images" class="md-nav__link">
+  <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
-      evidence_top_images
+      encode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#RAJumpSAE" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAJumpSAE
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAJumpSAE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#zoom_top_images" class="md-nav__link">
+  <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
-      zoom_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contour_top_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      contour_top_image
+      encode
     </span>
   </a>
   
@@ -848,172 +880,188 @@
   
 
 
-<h1 id="visualization-modules">Visualization Modules<a class="headerlink" href="#visualization-modules" title="Permanent link">&para;</a></h1>
-<p>The <code>overcomplete.visualization</code> module provides a set of tools for analyzing and visualizing <strong>top-concept activations</strong> in batches of images. These tools help for understanding which part of an images contribute for some concept.</p>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The visualization module includes functions for:
-- Overlaying <strong>heatmaps</strong> onto images to highlight top-concept activations.
-- Displaying the <strong>most representative</strong> images for a given concept.
-- Applying <strong>contour visualizations</strong> to emphasize highly activating regions.
-- Zooming into the <strong>hottest points</strong> of a heatmap.
-- Highlighting <strong>evidence areas</strong> using percentile-based heatmap thresholding.</p>
-<h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">overlay_top_heatmaps</span><span class="p">,</span>
-<span class="n">evidence_top_images</span><span class="p">,</span> <span class="n">zoom_top_images</span><span class="p">,</span> <span class="n">contour_top_image</span><span class="p">)</span>
-<span class="c1"># lets imagine we have 100 images and 10k concepts maps</span>
-<span class="c1"># and we want to visualize concept 3</span>
-<span class="n">images</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
-<span class="n">heatmaps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
+<h1 id="archetypal-sparse-autoencoders-topk-jump">Archetypal Sparse Autoencoders (TopK &amp; Jump)<a class="headerlink" href="#archetypal-sparse-autoencoders-topk-jump" title="Permanent link">&para;</a></h1>
+<p>Archetypal SAEs combine the archetypal dictionary constraint with familiar sparse encoders:
+- <strong>RATopKSAE</strong>: TopK selection with archetypal atoms.
+- <strong>RAJumpSAE</strong>: JumpReLU selection with archetypal atoms.</p>
+<p>Dictionary atoms stay close to convex combinations of provided data points (controlled by <code>delta</code> and an optional multiplier), stabilizing training and improving interpretability. This is the SAE-form of the <a href="https://arxiv.org/abs/2502.12892">Archetypal SAE</a> idea.</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.sae</span><span class="w"> </span><span class="kn">import</span> <span class="n">RATopKSAE</span><span class="p">,</span> <span class="n">RAJumpSAE</span>
 
-<span class="c1"># heatmap + transparency (recommended)</span>
-<span class="n">overlay_top_heatmaps</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">)</span>
-<span class="c1"># transparency based</span>
-<span class="n">evidence_top_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="c1"># zoom into max activating crops</span>
-<span class="n">zoom_top_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zoom_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="c1"># contour of most important part (boundary)</span>
-<span class="n">contour_top_image</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2_000</span><span class="p">,</span> <span class="mi">768</span><span class="p">)</span>  <span class="c1"># e.g. k-means centroids or sampled activations</span>
+
+<span class="n">ra_topk</span> <span class="o">=</span> <span class="n">RATopKSAE</span><span class="p">(</span>
+    <span class="n">input_shape</span><span class="o">=</span><span class="mi">768</span><span class="p">,</span>
+    <span class="n">nb_concepts</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>          <span class="c1"># relaxation radius</span>
+    <span class="n">use_multiplier</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># learnable scaling of the archetypal hull</span>
+<span class="p">)</span>
+
+<span class="n">ra_jump</span> <span class="o">=</span> <span class="n">RAJumpSAE</span><span class="p">(</span>
+    <span class="n">input_shape</span><span class="o">=</span><span class="mi">768</span><span class="p">,</span>
+    <span class="n">nb_concepts</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="mf">1.5</span>
+<span class="p">)</span>
 </code></pre></div>
-<p>For more details, see the module in <code>Overcomplete.visualization</code>.</p>
-<h4 class="numkdoc" id="overlay_top_heatmaps"><code>overlay_top_heatmaps(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmap=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alpha=0.35)</code><a class="headerlink" href="#overlay_top_heatmaps" title="Permanent link">&para;</a></h4>
-<p>Visualize the top activating image for a concepts and overlay the associated heatmap.
+<p>Tips:
+- Provide reasonably diverse <code>points</code> (e.g., k-means cluster centers) for stable archetypes.
+- <code>use_multiplier</code> allows atoms to scale beyond the convex hull; set False to stay tighter.
+- All standard training utilities (<code>train_sae</code>, custom losses) work unchanged.</p>
+<h2 class="numkdoc" id="RATopKSAE"><code>RATopKSAE</code><a class="headerlink" href="#RATopKSAE" title="Permanent link">&para;</a></h2>
+<p>Relaxed Archetypal TopK SAE.
+<br></p>
+<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input_shape,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; points,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; top_k=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delta=1.0,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; use_multiplier=True,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **kwargs)</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>input_shape</span></strong>            : <span class='parameter-type'>int</span> </p>
+<ul>
+<li><p> Dimensionality of the input data (excluding the batch dimension).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>nb_concepts</span></strong>            : <span class='parameter-type'>int</span> </p>
+<ul>
+<li><p> Number of dictionary atoms (concepts).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>points</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> The data points used to initialize/define the archetypes.</p><p> Shape should be (num_points, input_shape).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>top_k</span></strong>            : <span class='parameter-type'>int</span> </p>
+<ul>
+<li><p> Number of top activations to keep in the latent representation.</p><p> By default, 10% sparsity is used.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>delta</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<ul>
+<li><p> Delta parameter for the archetypal dictionary, by default 1.0.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>use_multiplier</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to use a learnable multiplier that parametrize the ball (e.g. if this parameter is 3 then the dictionary atoms are all on the ball of radius 3). By default True.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'></strong>kwargs</span>**            : <span class='parameter-type'>dict, optional</span> </p>
+<ul>
+<li><p> Additional arguments passed to the parent TopKSAE (e.g., encoder_module, device).</p> </li>
+</ul>
+</li>
+</ul>
+<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
+<p>Encode input data to latent representation.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
+<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
+<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>pre_codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Pre-codes tensor of shape (batch_size, nb_components) before the relu and top-k operation.</p> </li>
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>z_heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>cmap</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
-<ul>
-<li><p> Colormap for the heatmap, by default 'jet'.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>alpha</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Transparency of the heatmap overlay, by default 0.35.</p> </li>
+<li><p> Codes, latent representation tensor (z) of shape (batch_size, nb_components).</p> </li>
 </ul>
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="evidence_top_images"><code>evidence_top_images(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; percentiles=None)</code><a class="headerlink" href="#evidence_top_images" title="Permanent link">&para;</a></h4>
-<p>Visualize the top activating image for a concept and highlight the top activating pixels.
+<h2 class="numkdoc" id="RAJumpSAE"><code>RAJumpSAE</code><a class="headerlink" href="#RAJumpSAE" title="Permanent link">&para;</a></h2>
+<p>Relaxed Archetypal Jump SAE.
+<br></p>
+<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input_shape,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; points,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bandwidth=0.001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delta=1.0,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; use_multiplier=True,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **kwargs)</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>input_shape</span></strong>            : <span class='parameter-type'>int</span> </p>
+<ul>
+<li><p> Dimensionality of the input data (excluding the batch dimension).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>nb_concepts</span></strong>            : <span class='parameter-type'>int</span> </p>
+<ul>
+<li><p> Number of dictionary atoms (concepts).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>points</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> The data points used to initialize/define the archetypes.</p><p> Shape should be (num_points, input_shape).</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>bandwidth</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<ul>
+<li><p> Bandwidth parameter for the Jump SAE kernel, by default 1e-3.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>delta</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<ul>
+<li><p> Delta parameter for the archetypal dictionary, by default 1.0.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>use_multiplier</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to use a learnable multiplier that parametrize the ball (e.g. if this parameter is 3 then the dictionary atoms are all on the ball of radius 3). By default True.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'></strong>kwargs</span>**            : <span class='parameter-type'>dict, optional</span> </p>
+<ul>
+<li><p> Additional arguments passed to the parent JumpSAE (e.g., encoder_module, device).</p> </li>
+</ul>
+</li>
+</ul>
+<h4 class="numkdoc" id="encode"><code>encode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#encode" title="Permanent link">&para;</a></h4>
+<p>Encode input data to latent representation.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
+<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>percentiles</span></strong>            : <span class='parameter-type'>list of int, optional</span> </p>
-<ul>
-<li><p> List of percentiles to highlight, by default None.</p> </li>
+<li><p> Input tensor of shape (batch_size, input_size).</p> </li>
 </ul>
 </li>
 </ul>
-<p><br></p>
-<h4 class="numkdoc" id="zoom_top_images"><code>zoom_top_images(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zoom_size=100)</code><a class="headerlink" href="#zoom_top_images" title="Permanent link">&para;</a></h4>
-<p>Zoom into the hottest point in the heatmaps for a specific concept.
-<br></p>
-<p><strong>Parameters</strong></p>
+<p><strong>Return</strong></p>
 <ul>
 <li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
+<p><strong><span class='parameter-name'>pre_codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
+<li><p> Pre-codes tensor of shape (batch_size, nb_components) before the jump operation.</p> </li>
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
+<p><strong><span class='parameter-name'>codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>zoom_size</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
-<ul>
-<li><p> Size of the zoomed area around the hottest point, by default 100.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="contour_top_image"><code>contour_top_image(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; percentiles=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmap='viridis',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; linewidth=1.0)</code><a class="headerlink" href="#contour_top_image" title="Permanent link">&para;</a></h4>
-<p>Contour the best images for a specific concept using heatmap percentiles.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>percentiles</span></strong>            : <span class='parameter-type'>list of int, optional</span> </p>
-<ul>
-<li><p> List of percentiles to contour, by default [70].</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>cmap</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
-<ul>
-<li><p> Colormap for the contours, by default "viridis".</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>linewidth</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Width of the contour lines, by default 1.0.</p> </li>
+<li><p> Codes, latent representation tensor (z) of shape (batch_size, nb_components).</p> </li>
 </ul>
 </li>
 </ul>
@@ -1094,10 +1142,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
     
   </body>

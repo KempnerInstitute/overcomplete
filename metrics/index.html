@@ -396,7 +396,91 @@
         
   
   <span class="md-ellipsis">
-    Archetypal
+    Archetypal Dictionary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saes/archetypal_saes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archetypal SAEs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saes/mp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saes/omp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orthogonal Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saes/dead_codes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dead Codes
   </span>
   
 
@@ -737,15 +821,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#l0" class="md-nav__link">
-    <span class="md-ellipsis">
-      l0
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#l1_l2_ratio" class="md-nav__link">
     <span class="md-ellipsis">
       l1_l2_ratio
@@ -1044,15 +1119,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#l0" class="md-nav__link">
-    <span class="md-ellipsis">
-      l0
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#l1_l2_ratio" class="md-nav__link">
     <span class="md-ellipsis">
       l1_l2_ratio
@@ -1201,7 +1267,7 @@
 <li><strong>Code analysis</strong>: Detecting dead codes and assessing sparsity.</li>
 </ul>
 <h2 id="example-usage-key-metrics">Example Usage (Key Metrics)<a class="headerlink" href="#example-usage-key-metrics" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">overcomplete.metrics</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dead_codes</span><span class="p">,</span> <span class="n">r2_score</span><span class="p">,</span> <span class="n">hungarian_loss</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">dead_codes</span><span class="p">,</span> <span class="n">r2_score</span><span class="p">,</span> <span class="n">hungarian_loss</span><span class="p">,</span>
                                  <span class="n">cosine_hungarian_loss</span><span class="p">,</span> <span class="n">wasserstein_1d</span><span class="p">)</span>
 <span class="c1"># inputs</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -1240,7 +1306,7 @@
 </ul>
 <h3 id="sparsity-metrics"><strong>Sparsity Metrics</strong><a class="headerlink" href="#sparsity-metrics" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>sparsity(x)</code>: Alias for <code>l0(x)</code>.</li>
+<li><code>l0(x)</code>: Cardinality of the support of <code>x</code>.</li>
 <li><code>sparsity_eps(x, threshold)</code>: L0 with an epsilon threshold.</li>
 <li><code>kappa_4(x)</code>: Kurtosis-based sparsity measure.</li>
 <li><code>dead_codes(x)</code>: Identifies unused codes in a dictionary.</li>
@@ -1472,7 +1538,7 @@
 </ul>
 <p><br></p>
 <h4 class="numkdoc" id="l0"><code>l0(x,<br>&nbsp;&nbsp; dims=None)</code><a class="headerlink" href="#l0" title="Permanent link">&para;</a></h4>
-<p>Compute the average number of zero elements.
+<p>Compute the average number of non-zero elements.
 <br></p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -1485,7 +1551,7 @@
 <li>
 <p><strong><span class='parameter-name'>dims</span></strong>            : <span class='parameter-type'>tuple, optional</span> </p>
 <ul>
-<li><p> Dimensions over which to compute the sparsity, by default None.</p> </li>
+<li><p> Dimensions over which to average the l0 norm, by default average across all dims.</p> </li>
 </ul>
 </li>
 </ul>
@@ -1494,35 +1560,7 @@
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> Average sparsity if dims=None else sparsity across dims.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="l0"><code>l0(x,<br>&nbsp;&nbsp; dims=None)</code><a class="headerlink" href="#l0" title="Permanent link">&para;</a></h4>
-<p>Compute the average number of zero elements.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>x</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Input tensor.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>dims</span></strong>            : <span class='parameter-type'>tuple, optional</span> </p>
-<ul>
-<li><p> Dimensions over which to compute the sparsity, by default None.</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Average sparsity if dims=None else sparsity across dims.</p> </li>
+<li><p> Average l0 norm if dims=None else l0 across dims.</p> </li>
 </ul>
 </li>
 </ul>

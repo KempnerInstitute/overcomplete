@@ -16,7 +16,7 @@
         <link rel="prev" href="../batchtopk/">
       
       
-        <link rel="next" href="../../optimization/nmf/">
+        <link rel="next" href="../archetypal_saes/">
       
       
       <link rel="icon" href="../../assets/logo.ico">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Archetypal - Overcomplete</title>
+        <title>Archetypal Dictionary - Overcomplete</title>
       
     
     
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Archetypal
+              Archetypal Dictionary
             
           </span>
         </div>
@@ -409,7 +409,7 @@
           
   
   <span class="md-ellipsis">
-    Archetypal
+    Archetypal Dictionary
   </span>
   
 
@@ -420,7 +420,7 @@
         
   
   <span class="md-ellipsis">
-    Archetypal
+    Archetypal Dictionary
   </span>
   
 
@@ -461,7 +461,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#9595init__" class="md-nav__link">
+  <a href="#__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
     </span>
@@ -470,9 +470,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#forward" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      forward
+      get_dictionary
     </span>
   </a>
   
@@ -488,9 +488,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#forward" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      forward
     </span>
   </a>
   
@@ -505,6 +505,90 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archetypal_saes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archetypal SAEs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../omp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orthogonal Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dead_codes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dead Codes
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -708,7 +792,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#9595init__" class="md-nav__link">
+  <a href="#__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
     </span>
@@ -717,9 +801,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#forward" class="md-nav__link">
+  <a href="#get_dictionary" class="md-nav__link">
     <span class="md-ellipsis">
-      forward
+      get_dictionary
     </span>
   </a>
   
@@ -735,9 +819,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
+  <a href="#forward" class="md-nav__link">
     <span class="md-ellipsis">
-      get_dictionary
+      forward
     </span>
   </a>
   
@@ -769,9 +853,9 @@
 <h1 id="relaxed-archetypal-dictionary">Relaxed Archetypal Dictionary<a class="headerlink" href="#relaxed-archetypal-dictionary" title="Permanent link">&para;</a></h1>
 <p><a href="https://arxiv.org/abs/2502.12892">Archetypal SAE</a> introduces a constraint on the dictionary where each atom is formed as a convex combination of data points with an additional relaxation term. This method enhances stability and interpretability in dictionary learning, making it a robust drop-in replacement for the dictionary layer in any Sparse Autoencoder. Simply initialize the archetypal dictionary and assign it to your SAE (e.g., <code>sae.dictionary = archetypal_dict</code>).</p>
 <h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">overcomplete.sae.batchtopk_sae</span> <span class="kn">import</span> <span class="n">BatchTopKSAE</span>
-<span class="kn">from</span> <span class="nn">overcomplete.sae.archetypal_dictionary</span> <span class="kn">import</span> <span class="n">RelaxedArchetypalDictionary</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.sae.batchtopk_sae</span><span class="w"> </span><span class="kn">import</span> <span class="n">BatchTopKSAE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.sae.archetypal_dictionary</span><span class="w"> </span><span class="kn">import</span> <span class="n">RelaxedArchetypalDictionary</span>
 
 <span class="c1"># initialize any sae</span>
 <span class="n">sae</span> <span class="o">=</span> <span class="n">BatchTopKSAE</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
@@ -835,24 +919,15 @@
 </ul>
 </li>
 </ul>
-<h4 class="numkdoc" id="forward"><code>forward(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#forward" title="Permanent link">&para;</a></h4>
-<p>Reconstruct input data from latent representation.
+<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
+<p>Get the dictionary.
 <br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Latent representation tensor of shape (batch_size, nb_components).</p> </li>
-</ul>
-</li>
-</ul>
 <p><strong>Return</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> Reconstructed input tensor of shape (batch_size, dimensions).</p> </li>
+<li><p> The dictionary tensor of shape (nb_components, dimensions).</p> </li>
 </ul>
 </li>
 </ul>
@@ -871,15 +946,24 @@ We use it to fuse W, C, Relax and multiplier into a single dictionary.
 </li>
 </ul>
 <p><br></p>
-<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Get the dictionary.
+<h4 class="numkdoc" id="forward"><code>forward(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#forward" title="Permanent link">&para;</a></h4>
+<p>Reconstruct input data from latent representation.
 <br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Latent representation tensor of shape (batch_size, nb_components).</p> </li>
+</ul>
+</li>
+</ul>
 <p><strong>Return</strong></p>
 <ul>
 <li>
 <p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
 <ul>
-<li><p> The dictionary tensor of shape (nb_components, dimensions).</p> </li>
+<li><p> Reconstructed input tensor of shape (batch_size, dimensions).</p> </li>
 </ul>
 </li>
 </ul>

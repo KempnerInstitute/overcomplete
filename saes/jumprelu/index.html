@@ -419,9 +419,45 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#9595init__" class="md-nav__link">
+  <a href="#__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tied" class="md-nav__link">
+    <span class="md-ellipsis">
+      tied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#untied" class="md-nav__link">
+    <span class="md-ellipsis">
+      untied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_dictionary
     </span>
   </a>
   
@@ -440,24 +476,6 @@
   <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
       encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_dictionary
     </span>
   </a>
   
@@ -509,7 +527,91 @@
         
   
   <span class="md-ellipsis">
-    Archetypal
+    Archetypal Dictionary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archetypal_saes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archetypal SAEs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../omp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orthogonal Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dead_codes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dead Codes
   </span>
   
 
@@ -717,9 +819,45 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#9595init__" class="md-nav__link">
+  <a href="#__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      decode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tied" class="md-nav__link">
+    <span class="md-ellipsis">
+      tied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#untied" class="md-nav__link">
+    <span class="md-ellipsis">
+      untied
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_dictionary
     </span>
   </a>
   
@@ -738,24 +876,6 @@
   <a href="#encode" class="md-nav__link">
     <span class="md-ellipsis">
       encode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#decode" class="md-nav__link">
-    <span class="md-ellipsis">
-      decode
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_dictionary
     </span>
   </a>
   
@@ -796,7 +916,7 @@ This involve a learnable thresholding mechanism on each concept. As all SAEs, it
 <p>The specificity of this architecture is that i contains 2 hyperparamter, a bandwith and a kernel.
 We strongly encourage you to check the original paper <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> to know more about JumpReLU.</p>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">overcomplete</span> <span class="kn">import</span> <span class="n">JumpSAE</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete</span><span class="w"> </span><span class="kn">import</span> <span class="n">JumpSAE</span>
 
 <span class="c1"># define a JumpReLU SAE with input dimension 768 and 10k concepts</span>
 <span class="n">sae</span> <span class="o">=</span> <span class="n">JumpSAE</span><span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
@@ -808,7 +928,7 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 <h2 class="numkdoc" id="JumpSAE"><code>JumpSAE</code><a class="headerlink" href="#JumpSAE" title="Permanent link">&para;</a></h2>
 <p>JumpReLU Sparse Autoencoder (SAE).
 <br></p>
-<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input_shape,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel='silverman',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bandwith=0.001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoder_module=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dictionary_params=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu')</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
+<h4 class="numkdoc" id="__init__"><code>__init__(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input_shape,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nb_concepts,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel='silverman',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bandwidth=0.001,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; encoder_module=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dictionary_params=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; device='cpu')</code><a class="headerlink" href="#__init__" title="Permanent link">&para;</a></h4>
 <p><strong>Parameters</strong></p>
 <ul>
 <li>
@@ -830,9 +950,9 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 </ul>
 </li>
 <li>
-<p><strong><span class='parameter-name'>bandwith</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
+<p><strong><span class='parameter-name'>bandwidth</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
 <ul>
-<li><p> Bandwith of the kernel, by default 1e-3.</p> </li>
+<li><p> Bandwidth of the kernel, by default 1e-3.</p> </li>
 </ul>
 </li>
 <li>
@@ -854,6 +974,91 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 </ul>
 </li>
 </ul>
+<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
+<p>Decode latent representation to reconstruct input data.
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
+<ul>
+<li><p> Latent representation tensor of shape (batch_size, nb_components).</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Reconstructed input tensor of shape (batch_size, input_size).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="tied"><code>tied(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp; bias=False)</code><a class="headerlink" href="#tied" title="Permanent link">&para;</a></h4>
+<p>Tie encoder weights to dictionary (use D^T as encoder).
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>bias</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to include bias in encoder, by default False.</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>self</span></strong>            </p>
+<ul>
+<li><p> Returns self for method chaining.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="untied"><code>untied(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bias=False,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; copy_from_dictionary=True)</code><a class="headerlink" href="#untied" title="Permanent link">&para;</a></h4>
+<p>Create a new encoder with weight from the current dictionary (or random init).
+<br></p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>bias</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> Whether to include bias in encoder, by default False.</p> </li>
+</ul>
+</li>
+<li>
+<p><strong><span class='parameter-name'>copy_from_dictionary</span></strong>            : <span class='parameter-type'>bool, optional</span> </p>
+<ul>
+<li><p> If True, initialize encoder with current dictionary weights, by default True.</p> </li>
+</ul>
+</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>self</span></strong>            </p>
+<ul>
+<li><p> Returns self for method chaining.</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
+<p>Return the learned dictionary.
+<br></p>
+<p><strong>Return</strong></p>
+<ul>
+<li>
+<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
+<ul>
+<li><p> Learned dictionary tensor of shape (nb_components, input_size).</p> </li>
+</ul>
+</li>
+</ul>
+<p><br></p>
 <h4 class="numkdoc" id="forward"><code>forward(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x)</code><a class="headerlink" href="#forward" title="Permanent link">&para;</a></h4>
 <p>Perform a forward pass through the autoencoder.
 <br></p>
@@ -900,41 +1105,6 @@ We strongly encourage you to check the original paper <sup id="fnref:1"><a class
 <p><strong><span class='parameter-name'>codes</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
 <ul>
 <li><p> Codes, latent representation tensor (z) of shape (batch_size, nb_components).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="decode"><code>decode(<span class='parameter-self'>self</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; z)</code><a class="headerlink" href="#decode" title="Permanent link">&para;</a></h4>
-<p>Decode latent representation to reconstruct input data.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>z</span></strong>            : <span class='parameter-type'>torch.Tensor</span> </p>
-<ul>
-<li><p> Latent representation tensor of shape (batch_size, nb_components).</p> </li>
-</ul>
-</li>
-</ul>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Reconstructed input tensor of shape (batch_size, input_size).</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="get_dictionary"><code>get_dictionary(<span class='parameter-self'>self</span>)</code><a class="headerlink" href="#get_dictionary" title="Permanent link">&para;</a></h4>
-<p>Return the learned dictionary.
-<br></p>
-<p><strong>Return</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>torch.Tensor</span></strong>            </p>
-<ul>
-<li><p> Learned dictionary tensor of shape (nb_components, input_size).</p> </li>
 </ul>
 </li>
 </ul>

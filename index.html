@@ -406,7 +406,91 @@
         
   
   <span class="md-ellipsis">
-    Archetypal
+    Archetypal Dictionary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="saes/archetypal_saes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Archetypal SAEs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="saes/mp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="saes/omp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orthogonal Matching Pursuit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="saes/dead_codes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dead Codes
   </span>
   
 
@@ -635,9 +719,9 @@
 </code></pre></div>
 <p>With Overcomplete installed, you can dive into an optimisation based dictionary learning method to extract visual features or use the latest SAEs variant. The API is designed to be intuitive, requiring only a few hyperparameters to get started.</p>
 <p>Example usage:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
-<span class="kn">from</span> <span class="nn">overcomplete.sae</span> <span class="kn">import</span> <span class="n">TopKSAE</span><span class="p">,</span> <span class="n">train_sae</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.sae</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopKSAE</span><span class="p">,</span> <span class="n">train_sae</span>
 
 <span class="n">Activations</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 <span class="n">sae</span> <span class="o">=</span> <span class="n">TopKSAE</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">nb_concepts</span><span class="o">=</span><span class="mi">16_000</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
@@ -645,7 +729,7 @@
 <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">TensorDataset</span><span class="p">(</span><span class="n">Activations</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">sae</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">criterion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">pre_codes</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">criterion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">pre_codes</span><span class="p">,</span> <span class="n">codes</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>
   <span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_hat</span><span class="p">)</span><span class="o">.</span><span class="n">square</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
   <span class="k">return</span> <span class="n">mse</span>
 

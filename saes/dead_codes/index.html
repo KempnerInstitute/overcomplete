@@ -13,25 +13,25 @@
       
       
       
-        <link rel="prev" href="../optimization/convexnmf/">
+        <link rel="prev" href="../omp/">
       
       
-        <link rel="next" href="../metrics/">
+        <link rel="next" href="../../optimization/nmf/">
       
       
-      <link rel="icon" href="../assets/logo.ico">
+      <link rel="icon" href="../../assets/logo.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
     
     
       
-        <title>Visualization - Overcomplete</title>
+        <title>Dead Codes - Overcomplete</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,9 +50,9 @@
       
     
     
-      <link rel="stylesheet" href="../css/extra.css">
+      <link rel="stylesheet" href="../../css/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#visualization-modules" class="md-skip">
+        <a href="#handling-dead-codes-in-saes" class="md-skip">
           Skip to content
         </a>
       
@@ -94,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Overcomplete" class="md-header__button md-logo" aria-label="Overcomplete" data-md-component="logo">
+    <a href="../.." title="Overcomplete" class="md-header__button md-logo" aria-label="Overcomplete" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="../../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Visualization
+              Dead Codes
             
           </span>
         </div>
@@ -226,9 +226,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Overcomplete" class="md-nav__button md-logo" aria-label="Overcomplete" data-md-component="logo">
+    <a href="../.." title="Overcomplete" class="md-nav__button md-logo" aria-label="Overcomplete" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="../../assets/logo.png" alt="logo">
 
     </a>
     Overcomplete
@@ -255,7 +255,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -272,17 +272,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -296,7 +298,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Saes
@@ -310,7 +312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/vanilla/" class="md-nav__link">
+      <a href="../vanilla/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -331,7 +333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/topk/" class="md-nav__link">
+      <a href="../topk/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -352,7 +354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/jumprelu/" class="md-nav__link">
+      <a href="../jumprelu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -373,7 +375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/batchtopk/" class="md-nav__link">
+      <a href="../batchtopk/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -394,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/archetypal/" class="md-nav__link">
+      <a href="../archetypal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -415,7 +417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/archetypal_saes/" class="md-nav__link">
+      <a href="../archetypal_saes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -436,7 +438,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/mp/" class="md-nav__link">
+      <a href="../mp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -457,7 +459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saes/omp/" class="md-nav__link">
+      <a href="../omp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -475,10 +477,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../saes/dead_codes/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Dead Codes
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -487,6 +509,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How it works
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-auxiliary-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Auxiliary Loss
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Auxiliary Loss">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#guidance-for-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Guidance for Implementation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -541,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/nmf/" class="md-nav__link">
+      <a href="../../optimization/nmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -562,7 +637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/seminmf/" class="md-nav__link">
+      <a href="../../optimization/seminmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -583,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optimization/convexnmf/" class="md-nav__link">
+      <a href="../../optimization/convexnmf/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -608,30 +683,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Visualization
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../visualization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -640,86 +695,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example Usage
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Example Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#overlay_top_heatmaps" class="md-nav__link">
-    <span class="md-ellipsis">
-      overlay_top_heatmaps
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#evidence_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      evidence_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#zoom_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      zoom_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contour_top_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      contour_top_image
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -731,7 +706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../metrics/" class="md-nav__link">
+      <a href="../../metrics/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -771,55 +746,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      How it works
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
+  <a href="#recommended-auxiliary-loss" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Usage
+      Recommended Auxiliary Loss
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Example Usage">
+    <nav class="md-nav" aria-label="Recommended Auxiliary Loss">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#overlay_top_heatmaps" class="md-nav__link">
+  <a href="#guidance-for-implementation" class="md-nav__link">
     <span class="md-ellipsis">
-      overlay_top_heatmaps
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#evidence_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      evidence_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#zoom_top_images" class="md-nav__link">
-    <span class="md-ellipsis">
-      zoom_top_images
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contour_top_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      contour_top_image
+      Guidance for Implementation
     </span>
   </a>
   
@@ -848,176 +796,41 @@
   
 
 
-<h1 id="visualization-modules">Visualization Modules<a class="headerlink" href="#visualization-modules" title="Permanent link">&para;</a></h1>
-<p>The <code>overcomplete.visualization</code> module provides a set of tools for analyzing and visualizing <strong>top-concept activations</strong> in batches of images. These tools help for understanding which part of an images contribute for some concept.</p>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The visualization module includes functions for:
-- Overlaying <strong>heatmaps</strong> onto images to highlight top-concept activations.
-- Displaying the <strong>most representative</strong> images for a given concept.
-- Applying <strong>contour visualizations</strong> to emphasize highly activating regions.
-- Zooming into the <strong>hottest points</strong> of a heatmap.
-- Highlighting <strong>evidence areas</strong> using percentile-based heatmap thresholding.</p>
-<h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">overcomplete.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">overlay_top_heatmaps</span><span class="p">,</span>
-<span class="n">evidence_top_images</span><span class="p">,</span> <span class="n">zoom_top_images</span><span class="p">,</span> <span class="n">contour_top_image</span><span class="p">)</span>
-<span class="c1"># lets imagine we have 100 images and 10k concepts maps</span>
-<span class="c1"># and we want to visualize concept 3</span>
-<span class="n">images</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
-<span class="n">heatmaps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
+<h1 id="handling-dead-codes-in-saes">Handling Dead Codes in SAEs<a class="headerlink" href="#handling-dead-codes-in-saes" title="Permanent link">&para;</a></h1>
+<p>One of the most persistent challenges in training Sparse Autoencoders (SAEs) is the issue of <strong>dead dictionary elements</strong> (often called "dead codes" or feature collapse). These are latent features that, early in training, fall into a regime where they never activate (i.e., they have zero magnitude), preventing them from receiving gradients and learning useful representations.</p>
+<p>Below is a simple auxiliary loss to gently nudge inactive atoms back into use while keeping the main reconstruction objective intact.</p>
+<h3 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Identify Dead Codes:</strong> It calculates a boolean mask for features that have not fired a single time across the current batch.</li>
+<li><strong>Boost Pre-activations:</strong> It isolates the "pre-codes" (the values <em>before</em> the activation function like ReLU or TopK is applied) for these dead atoms.</li>
+<li><strong>Revive:</strong> It subtracts these pre-activation values from the loss. Since the optimizer minimizes loss, this effectively <strong>pushes the pre-activations toward the positive direction</strong>, making them more likely to cross the activation threshold in future steps.</li>
+</ol>
+<h2 id="recommended-auxiliary-loss">Recommended Auxiliary Loss<a class="headerlink" href="#recommended-auxiliary-loss" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">criterion</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">pre_codes</span><span class="p">,</span> <span class="n">codes</span><span class="p">):</span>
+    <span class="c1"># 1. Standard reconstruction loss (MSE)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_hat</span><span class="p">)</span><span class="o">.</span><span class="n">square</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-<span class="c1"># heatmap + transparency (recommended)</span>
-<span class="n">overlay_top_heatmaps</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">)</span>
-<span class="c1"># transparency based</span>
-<span class="n">evidence_top_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="c1"># zoom into max activating crops</span>
-<span class="n">zoom_top_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zoom_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="c1"># contour of most important part (boundary)</span>
-<span class="n">contour_top_image</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">heatmaps</span><span class="p">,</span> <span class="n">concept_id</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="c1"># 2. Identify dead codes</span>
+    <span class="c1"># is_dead has shape [dict_size] and is 1.0 when a code never fires in the batch</span>
+    <span class="n">is_dead</span> <span class="o">=</span> <span class="p">((</span><span class="n">codes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+    <span class="c1"># 3. Calculate re-animation term</span>
+    <span class="c1"># We want to maximize the pre_codes of dead atoms to push them &gt; 0</span>
+    <span class="c1"># Therefore, we subtract their mean value from the loss.</span>
+    <span class="n">reanim_loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">pre_codes</span> <span class="o">*</span> <span class="n">is_dead</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="c1"># 4. Combine</span>
+    <span class="n">loss</span> <span class="o">-=</span> <span class="n">reanim_loss</span> <span class="o">*</span> <span class="mf">1e-3</span>  <span class="c1"># Keep this factor small</span>
+
+    <span class="k">return</span> <span class="n">loss</span>
 </code></pre></div>
-<p>For more details, see the module in <code>Overcomplete.visualization</code>.</p>
-<h4 class="numkdoc" id="overlay_top_heatmaps"><code>overlay_top_heatmaps(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmap=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alpha=0.35)</code><a class="headerlink" href="#overlay_top_heatmaps" title="Permanent link">&para;</a></h4>
-<p>Visualize the top activating image for a concepts and overlay the associated heatmap.
-<br></p>
-<p><strong>Parameters</strong></p>
+<h3 id="guidance-for-implementation">Guidance for Implementation<a class="headerlink" href="#guidance-for-implementation" title="Permanent link">&para;</a></h3>
 <ul>
-<li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
+<li><strong>Coefficient Sensitivity:</strong> Use a <strong>small coefficient</strong> (e.g., <code>1e-4,1e-3</code>) so the reconstruction error remains the dominant term. If the coefficient is too high, the model may hallucinate features just to satisfy the auxiliary loss.</li>
+<li><strong>Monitoring:</strong> Monitor the <code>dead_codes</code> metric (e.g., via <code>overcomplete.metrics.dead_codes</code>) to confirm the auxiliary term is reducing the dead count without simply creating "dense" noise.</li>
+<li><strong>Scheduling:</strong> This is primarily useful during the early to mid-stages of training. You can anneal the coefficient to <code>0</code> once the dictionary utilization stabilizes.</li>
+<li><strong>Compatibility:</strong> This auxiliary pairs well with any SAE variant (TopK, JumpReLU, Standard ReLU) provided you have access to the <code>pre_codes</code>.</li>
 </ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>z_heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>cmap</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
-<ul>
-<li><p> Colormap for the heatmap, by default 'jet'.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>alpha</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Transparency of the heatmap overlay, by default 0.35.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="evidence_top_images"><code>evidence_top_images(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; percentiles=None)</code><a class="headerlink" href="#evidence_top_images" title="Permanent link">&para;</a></h4>
-<p>Visualize the top activating image for a concept and highlight the top activating pixels.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>percentiles</span></strong>            : <span class='parameter-type'>list of int, optional</span> </p>
-<ul>
-<li><p> List of percentiles to highlight, by default None.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="zoom_top_images"><code>zoom_top_images(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; zoom_size=100)</code><a class="headerlink" href="#zoom_top_images" title="Permanent link">&para;</a></h4>
-<p>Zoom into the hottest point in the heatmaps for a specific concept.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>zoom_size</span></strong>            : <span class='parameter-type'>int, optional</span> </p>
-<ul>
-<li><p> Size of the zoomed area around the hottest point, by default 100.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<h4 class="numkdoc" id="contour_top_image"><code>contour_top_image(images,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heatmaps,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; concept_id,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; percentiles=None,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cmap='viridis',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; linewidth=1.0)</code><a class="headerlink" href="#contour_top_image" title="Permanent link">&para;</a></h4>
-<p>Contour the best images for a specific concept using heatmap percentiles.
-<br></p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li>
-<p><strong><span class='parameter-name'>images</span></strong>            : <span class='parameter-type'>torch.Tensor or PIL.Image or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of input images of shape (batch_size, channels, height, width).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>heatmaps</span></strong>            : <span class='parameter-type'>torch.Tensor or np.ndarray</span> </p>
-<ul>
-<li><p> Batch of heatmaps corresponding to the input images of shape (batch_size, height, width, num_concepts).</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>concept_id</span></strong>            : <span class='parameter-type'>int</span> </p>
-<ul>
-<li><p> Index of the concept to visualize.</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>percentiles</span></strong>            : <span class='parameter-type'>list of int, optional</span> </p>
-<ul>
-<li><p> List of percentiles to contour, by default [70].</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>cmap</span></strong>            : <span class='parameter-type'>str, optional</span> </p>
-<ul>
-<li><p> Colormap for the contours, by default "viridis".</p> </li>
-</ul>
-</li>
-<li>
-<p><strong><span class='parameter-name'>linewidth</span></strong>            : <span class='parameter-type'>float, optional</span> </p>
-<ul>
-<li><p> Width of the contour lines, by default 1.0.</p> </li>
-</ul>
-</li>
-</ul>
-<p><br></p>
 
 
 
@@ -1094,10 +907,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
     
   </body>
