@@ -51,7 +51,7 @@ wasserstein_dist = wasserstein_1d(x, x_hat)
 - `r2_score(x, x_hat)`: Measures reconstruction accuracy.
 
 ### **Sparsity Metrics**
-- `sparsity(x)`: Alias for `l0(x)`.
+- `l0(x)`: Cardinality of the support of `x`.
 - `sparsity_eps(x, threshold)`: L0 with an epsilon threshold.
 - `kappa_4(x)`: Kurtosis-based sparsity measure.
 - `dead_codes(x)`: Identifies unused codes in a dictionary.
@@ -75,7 +75,6 @@ For further details, refer to the module documentation.
 {{overcomplete.metrics.relative_avg_l2_loss}}
 {{overcomplete.metrics.relative_avg_l1_loss}}
 {{overcomplete.metrics.l0}}
-{{overcomplete.metrics.sparsity}}
 {{overcomplete.metrics.l1_l2_ratio}}
 {{overcomplete.metrics.hoyer}}
 {{overcomplete.metrics.kappa_4}}
