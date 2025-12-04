@@ -39,7 +39,11 @@ nav:
     - TopK: saes/topk.md
     - JumpReLU: saes/jumprelu.md
     - BatchTopK: saes/batchtopk.md
-    - Archetypal: saes/archetypal.md
+    - Archetypal Dictionary: saes/archetypal.md
+    - Archetypal SAEs: saes/archetypal_saes.md
+    - Matching Pursuit: saes/mp.md
+    - Orthogonal Matching Pursuit: saes/omp.md
+    - Dead Codes: saes/dead_codes.md
   - Optimization:
     - NMF: optimization/nmf.md
     - Semi-NMF: optimization/seminmf.md
