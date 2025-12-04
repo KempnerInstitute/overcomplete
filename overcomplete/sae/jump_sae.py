@@ -15,7 +15,7 @@ class JumpReLU(torch.autograd.Function):
     JumpReLU activation function with pseudo-gradient for threshold.
     """
     @staticmethod
-    def forward(ctx, x, threshold, kernel_fn, bandwith):
+    def forward(ctx, x, threshold, kernel_fn, bandwidth):
         """
         Forward pass of the JumpReLU activation function.
         Save the necessary variables for the backward pass.
@@ -28,11 +28,11 @@ class JumpReLU(torch.autograd.Function):
             Threshold tensor, learnable parameter.
         kernel_fn : callable
             Kernel function.
-        bandwith : float
-            Bandwith of the kernel.
+        bandwidth : float
+            Bandwidth of the kernel.
         """
         ctx.save_for_backward(x, threshold)
-        ctx.bandwith = bandwith
+        ctx.bandwidth = bandwidth
         ctx.kernel_fn = kernel_fn
 
         output = x.clone()
@@ -52,7 +52,7 @@ class JumpReLU(torch.autograd.Function):
             Gradient of the loss w.r.t. the output.
         """
         x, threshold = ctx.saved_tensors
-        bandwith = ctx.bandwith
+        bandwidth = ctx.bandwidth
         kernel_fn = ctx.kernel_fn
 
         # gradient w.r.t. input (normal gradient)
@@ -61,11 +61,11 @@ class JumpReLU(torch.autograd.Function):
 
         # pseudo-gradient w.r.t. threshold parameters
         delta = x - threshold
-        kernel_values = kernel_fn(delta, bandwith)
+        kernel_values = kernel_fn(delta, bandwidth)
 
         # @tfel: we have a singularity at threshold=0, thus the
         # re-parametrization trick in JumpSAE class
-        grad_threshold = - (threshold / bandwith) * kernel_values * grad_output
+        grad_threshold = - (threshold / bandwidth) * kernel_values * grad_output
         grad_threshold = grad_threshold.sum(0)
 
         return grad_input, grad_threshold, None, None
@@ -81,7 +81,7 @@ class HeavisidePseudoGradient(torch.autograd.Function):
     The pseudo-gradient is used to approximate the gradient at the threshold.
     """
     @staticmethod
-    def forward(ctx, x, threshold, kernel_fn, bandwith):
+    def forward(ctx, x, threshold, kernel_fn, bandwidth):
         """
         Forward pass of the Heaviside step function.
         Save the necessary variables for the backward pass.
@@ -94,11 +94,11 @@ class HeavisidePseudoGradient(torch.autograd.Function):
             Threshold tensor, learnable parameter.
         kernel_fn : callable
             Kernel function.
-        bandwith : float
-            Bandwith of the kernel.
+        bandwidth : float
+            Bandwidth of the kernel.
         """
         ctx.save_for_backward(x, threshold)
-        ctx.bandwith = bandwith
+        ctx.bandwidth = bandwidth
         ctx.kernel_fn = kernel_fn
 
         output = (x > threshold).float()
@@ -117,14 +117,14 @@ class HeavisidePseudoGradient(torch.autograd.Function):
             Gradient of the loss w.r.t. the output.
         """
         x, threshold = ctx.saved_tensors
-        bandwith = ctx.bandwith
+        bandwidth = ctx.bandwidth
         kernel_fn = ctx.kernel_fn
 
         delta = x - threshold
-        kernel_values = kernel_fn(delta, bandwith)
+        kernel_values = kernel_fn(delta, bandwidth)
 
         # see the paper for the formula
-        grad_threshold = - (1 / bandwith) * kernel_values * grad_output
+        grad_threshold = - (1 / bandwidth) * kernel_values * grad_output
         grad_threshold = grad_threshold.sum(0)
 
         grad_input = torch.zeros_like(x)
@@ -132,7 +132,7 @@ class HeavisidePseudoGradient(torch.autograd.Function):
         return grad_input, grad_threshold, None, None
 
 
-def jump_relu(x, threshold, kernel_fn, bandwith):
+def jump_relu(x, threshold, kernel_fn, bandwidth):
     """
     Apply the JumpReLU activation function to the input tensor.
 
@@ -144,18 +144,18 @@ def jump_relu(x, threshold, kernel_fn, bandwith):
         Threshold tensor, learnable parameter.
     kernel_fn : callable
         Kernel function.
-    bandwith : float
-        Bandwith of the kernel.
+    bandwidth : float
+        Bandwidth of the kernel.
 
     Returns
     -------
     torch.Tensor
         Output tensor.
     """
-    return JumpReLU.apply(x, threshold, kernel_fn, bandwith)
+    return JumpReLU.apply(x, threshold, kernel_fn, bandwidth)
 
 
-def heaviside(x, threshold, kernel_fn, bandwith):
+def heaviside(x, threshold, kernel_fn, bandwidth):
     """
     Apply the Heaviside step function to the input tensor.
 
@@ -167,15 +167,15 @@ def heaviside(x, threshold, kernel_fn, bandwith):
         Threshold tensor, learnable parameter.
     kernel_fn : callable
         Kernel function.
-    bandwith : float
-        Bandwith of the kernel.
+    bandwidth : float
+        Bandwidth of the kernel.
 
     Returns
     -------
     torch.Tensor
         Output tensor.
     """
-    return HeavisidePseudoGradient.apply(x, threshold, kernel_fn, bandwith)
+    return HeavisidePseudoGradient.apply(x, threshold, kernel_fn, bandwidth)
 
 
 class JumpSAE(SAE):
@@ -222,8 +222,8 @@ class JumpSAE(SAE):
             - 'quartic'
             - 'silverman'
             - 'cauchy'.
-    bandwith : float, optional
-        Bandwith of the kernel, by default 1e-3.
+    bandwidth : float, optional
+        Bandwidth of the kernel, by default 1e-3.
     encoder_module : nn.Module or string, optional
         Custom encoder module, by default None.
         If None, a simple Linear + BatchNorm default encoder is used.
@@ -257,7 +257,7 @@ class JumpSAE(SAE):
         'cauchy': cauchy_kernel
     }
 
-    def __init__(self, input_shape, nb_concepts, kernel='silverman', bandwith=1e-3,
+    def __init__(self, input_shape, nb_concepts, kernel='silverman', bandwidth=1e-3,
                  encoder_module=None, dictionary_params=None, device='cpu'):
         assert isinstance(encoder_module, (str, nn.Module, type(None)))
         assert isinstance(input_shape, (int, tuple, list))
@@ -267,7 +267,7 @@ class JumpSAE(SAE):
                          dictionary_params, device)
 
         self.kernel_fn = self._KERNELS[kernel]
-        self.bandwith = torch.tensor(bandwith, device=device)
+        self.bandwidth = torch.tensor(bandwidth, device=device)
 
         # exp(-3) make the thresholds start around 0.05
         self.thresholds = nn.Parameter(torch.ones(nb_concepts, device=device)*(-3.0), requires_grad=True)
@@ -297,7 +297,7 @@ class JumpSAE(SAE):
         # see paper, appendix J
         codes = torch.relu(pre_codes)
 
-        codes = jump_relu(codes, exp_thresholds, bandwith=self.bandwith,
+        codes = jump_relu(codes, exp_thresholds, bandwidth=self.bandwidth,
                           kernel_fn=self.kernel_fn)
 
         return pre_codes, codes
