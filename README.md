@@ -14,6 +14,19 @@
     <img src="https://img.shields.io/badge/License-MIT-efefef">
 </div>
 
+<br>
+
+<div align="center">
+  <strong>
+    <a href="https://kempnerinstitute.github.io/overcomplete">📖 Read the Documentation</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link">🚀 Getting Started Notebooks</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="https://kempnerinstitute.github.io/overcomplete/saes/dead_codes/">🧪 Handling dead codes</a>
+  </strong>
+</div>
+
+<br>
 
 **Overcomplete** is a compact research library in Pytorch designed to study (Overcomplete)-Dictionary learning methods to extract concepts from large **Vision models**. In addition, this repository also introduces various visualization methods, attribution and metrics. However, Overcomplete emphasizes **experimentation**.
 
@@ -52,7 +65,7 @@ logs = train_sae(sae, dataloader, criterion, optimizer,
 
 - Getting started: [![Open](https://img.shields.io/badge/Starter-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1rB71_RdmCzr50I1Ebwfq49cEqoxt1G3X?usp=drive_link)
 - TopK, BatchTopK, JumpReLU, Vanilla SAE: [![Open](https://img.shields.io/badge/TopK_JumpReLU-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1LeLPF_q0Jlm9qygFtZy4KyJq5UB6E71z?usp=drive_link)
-- Stable Dictionary with Archetypal-SAE: _Coming soon_
+- Stable Dictionary with Archetypal-SAE: [![Open](https://img.shields.io/badge/Archetypal-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1TmAtUhIdFGSMlDhKr2ndXGR8GU4R4aTq?usp=sharing)
 - Advanced metrics to study the solution of SAE: [![Open](https://img.shields.io/badge/Metrics-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1hGZst7AfuxreXAOxLgJS5BtbXsdNGH09?usp=drive_link)
 - The visualization module: [![Open](https://img.shields.io/badge/Visualization-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1VWwOxyW8SVDX1_jM9AoDAjw91le_JPla?usp=sharing)
 - NMF, ConvexNMF and Semi-NMF: [![Open](https://img.shields.io/badge/X_NMF-Notebook-00BCD4?style=flat&logo=jupyter)](https://colab.research.google.com/drive/1psE4HOAwdJ74fle_KfNtoXOAPWG533yp?usp=drive_link)
